@@ -55,8 +55,7 @@ class RegisterController extends Controller {
             if ($request->hasFile('foto_outlet')) {
                 $file = $request->file('foto_outlet');
                 $fileName = time() . '_' . Str::slug($request->nama_outlet) . '.' . $file->extension();
-                // Disk 'public' root-nya storage/app/public — pakai disk eksplisit
-                $file->storeAs('outlet', $fileName, 'public');
+                $this->compressAndStore($file, storage_path('app/public/outlet'), $fileName, 60);
                 $fotoPath = $fileName;
             }
             

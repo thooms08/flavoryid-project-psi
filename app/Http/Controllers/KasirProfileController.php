@@ -91,12 +91,7 @@ class KasirProfileController extends Controller
             }
             
             $logoName = time() . '_logo.' . $request->logo->extension();
-            // Disk 'public' root-nya storage/app/public — simpan ke subfolder logo/
-            $destination = storage_path('app/public/logo/' . $logoName);
-            
-            // Kompres gambar dengan kualitas 60%
-            $this->compressImage($request->file('logo'), $destination, 60);
-            
+            $this->compressAndStore($request->file('logo'), storage_path('app/public/logo'), $logoName, 60);
             $informasi->logo = $logoName;
         }
 
@@ -108,12 +103,7 @@ class KasirProfileController extends Controller
             }
             
             $fotoName = time() . '_foto.' . $request->foto_outlet->extension();
-            // Disk 'public' root-nya storage/app/public — simpan ke subfolder outlet/
-            $destination = storage_path('app/public/outlet/' . $fotoName);
-            
-            // Kompres gambar dengan kualitas 60%
-            $this->compressImage($request->file('foto_outlet'), $destination, 60);
-            
+            $this->compressAndStore($request->file('foto_outlet'), storage_path('app/public/outlet'), $fotoName, 60);
             $informasi->foto_outlet = $fotoName;
         }
 
@@ -174,43 +164,4 @@ class KasirProfileController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 
-    /**
-     * Fungsi Helper untuk mengompres gambar menggunakan PHP GD Library
-     */
-    private function compressImage($file, $destination, $quality = 60)
-    {
-        // Dapatkan info MIME type gambar
-        $info = getimagesize($file->getRealPath());
-        $mime = $info['mime'];
-
-        // Buat resource gambar berdasarkan ekstensi
-        switch ($mime) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $image = imagecreatefromjpeg($file->getRealPath());
-                // Simpan & Kompres JPG/JPEG
-                imagejpeg($image, $destination, $quality);
-                break;
-                
-            case 'image/png':
-                $image = imagecreatefrompng($file->getRealPath());
-                
-                // Pertahankan transparansi (alpha channel) pada PNG
-                imagealphablending($image, false);
-                imagesavealpha($image, true);
-                
-                // Skala kompresi PNG di PHP GD adalah 0 (tanpa kompresi) hingga 9 (kompresi max)
-                $compression = 9 - round(($quality / 100) * 9);
-                imagepng($image, $destination, $compression);
-                break;
-                
-            default:
-                // Jika format tidak dikenali (fallback), gunakan move bawaan Laravel (tanpa kompresi)
-                move_uploaded_file($file->getRealPath(), $destination);
-                return;
-        }
-
-        // Bersihkan memori server
-        imagedestroy($image);
-    }
 }
