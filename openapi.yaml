@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: FlavoryID POS API
+  version: v1
+  description: RESTful API untuk mobile Flutter menggunakan Laravel Sanctum.
+servers:
+  - url: /api/v1
+paths:
+  /auth/login:
+    post:
+      summary: Login pengguna
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                      token:
+                        type: string
+        '401':
+          description: Kredensial salah
+  /auth/logout:
+    post:
+      summary: Logout pengguna
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout berhasil
+  /products:
+    get:
+      summary: Daftar produk publik
+      tags: [Products]
+      responses:
+        '200':
+          description: Daftar produk
+    post:
+      summary: Buat produk baru
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nama_menu, harga]
+              properties:
+                nama_menu:
+                  type: string
+                harga:
+                  type: number
+                stok_menu:
+                  type: integer
+                deskripsi:
+                  type: string
+      responses:
+        '201':
+          description: Produk dibuat
+  /products/{id}:
+    get:
+      summary: Detail produk
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+    put:
+      summary: Update produk
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama_menu:
+                  type: string
+                harga:
+                  type: number
+                stok_menu:
+                  type: integer
+    delete:
+      summary: Hapus produk
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+  /orders:
+    get:
+      summary: Daftar order
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Order list
+    post:
+      summary: Buat order baru
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                nama_pelanggan:
+                  type: string
+                no_whatsapp:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [menu_id, qty, harga]
+                    properties:
+                      menu_id:
+                        type: integer
+                      qty:
+                        type: integer
+                      harga:
+                        type: number
+                      variant:
+                        type: string
+      responses:
+        '201':
+          description: Order dibuat
+  /orders/{id}:
+    get:
+      summary: Detail order
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+  /reports/business:
+    get:
+      summary: Laporan bisnis
+      tags: [Reports]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Data laporan bisnis
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,54 @@
+{
+    "name": "Flavory.id Operational System",
+    "short_name": "Flavory.id",
+    "description": "Aplikasi kasir all-in-one untuk manajemen bisnis restoran & kuliner. Dilengkapi AI, laporan otomatis, dan mode offline.",
+    "start_url": "/splash",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#fd7e14",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/logo-192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo-192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/logo-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot-wide.png",
+            "type": "image/png",
+            "sizes": "1280x720",
+            "form_factor": "wide",
+            "label": "Dashboard Kasir Flavory.id di Desktop"
+        },
+        {
+            "src": "/screenshot-narrow.jpeg",
+            "type": "image/jpeg",
+            "sizes": "390x844",
+            "form_factor": "narrow",
+            "label": "Aplikasi Kasir Flavory.id di Mobile"
+        }
+    ],
+    "categories": ["business", "finance", "productivity"],
+    "lang": "id"
+}

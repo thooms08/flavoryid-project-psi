@@ -1,0 +1,133 @@
+[16-Jun-2026 13:17:27 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:27 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:30 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:30 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:31 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:31 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:34 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:34 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:35 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:35 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:37 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:37 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:38 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:38 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:39 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:39 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:41 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:41 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:42 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:42 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:43 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:43 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/flavoryi/public_html/index.php on line 14
+[16-Jun-2026 13:17:48 UTC] PHP Warning:  require_once(/home/flavoryi/public_html/vendor/composer/autoload_real.php): Failed to open stream: Permission denied in /home/flavoryi/public_html/vendor/autoload.php on line 10
+[16-Jun-2026 13:17:48 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/autoload_real.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/autoload.php:10
+Stack trace:
+#0 /home/flavoryi/public_html/index.php(14): require()
+#1 {main}
+  thrown in /home/flavoryi/public_html/vendor/autoload.php on line 10
+[16-Jun-2026 13:17:51 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:51 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:52 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:52 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:53 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:53 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:53 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:53 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:54 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:54 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:54 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:54 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:55 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:17:55 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:18:09 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:18:09 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:18:13 UTC] PHP Warning:  require(/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php): Failed to open stream: No such file or directory in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[16-Jun-2026 13:18:13 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/flavoryi/public_html/vendor/composer/../symfony/deprecation-contracts/function.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/flavoryi/public_html/vendor/composer/autoload_real.php:55
+Stack trace:
+#0 /home/flavoryi/public_html/vendor/composer/autoload_real.php(38): composerRequire854f65f2d917b69d2c2b2bfc8d2b1fcc()
+#1 /home/flavoryi/public_html/vendor/autoload.php(12): ComposerAutoloaderInit854f65f2d917b69d2c2b2bfc8d2b1fcc::getLoader()
+#2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
+#3 {main}
+  thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55

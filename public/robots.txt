@@ -1,0 +1,34 @@
+User-agent: *
+Allow: /
+
+# PROTEKSI HALAMAN PRIVATE (KASIR & MANAGEMENT)
+# Memblokir semua akses bot ke folder kasir dan manajemen stok
+Disallow: /kasir/
+Disallow: /kasir
+Disallow: /stok-management
+Disallow: /stok/
+Disallow: /modal
+Disallow: /modal/
+Disallow: /langganan
+Disallow: /langganan/
+
+# PROTEKSI DATA SENSITIF & EXPORT
+# Mencegah bot mengindeks file export Excel atau data chart
+Disallow: */export
+Disallow: */chart
+Disallow: /kasir/print-struk/
+Disallow: /kasir/print-bt/
+Disallow: /kasir/print-kitchen-bt/
+
+# PROTEKSI AUTH & SYSTEM
+Disallow: /login
+Disallow: /register
+Disallow: /logout
+Disallow: /lupa-password
+Disallow: /verifikasi-password
+Disallow: /check-availability
+Disallow: /kasir/order/sync
+Disallow: /kasir/sync-actions
+
+# SITEMAP
+Sitemap: https://flavory.id/sitemap.xml

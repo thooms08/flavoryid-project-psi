@@ -1,0 +1,1363 @@
+{{-- resources/views/index.blade.php --}}
+@extends('layouts.app')
+
+@section('title', 'Aplikasi Kasir All-in-One Terbaik & Manajemen Bisnis Restoran | Flavory.id')
+
+@push('styles')
+<meta name="description" content="Tingkatkan keuntungan dengan Flavory.id, aplikasi kasir all-in-one dan manajemen bisnis restoran terbaik. Dilengkapi asisten AI, analisa performa bisnis, dan POS kuliner lengkap.">
+<meta name="keywords" content="aplikasi POS terbaik, aplikasi kasir kuliner, manajemen bisnis restoran, aplikasi kasir all in one, software restoran pintar, MineAI, sistem POS F&B">
+<meta name="author" content="Flavory.id">
+
+<style>
+    /* Variabel Warna Utama */
+    :root {
+        --primary-orange: #ff6a00;
+        --light-orange: #fff4ec;
+        --text-muted: #64748b;
+    }
+
+    /* Animasi Dasar */
+    .animate-slide-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .animate-fade-in {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
+    .in-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* ══ HERO SECTION — Light Premium 3D ══ */
+    .hero-section {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #ffffff 0%, #fff4ec 55%, #fff0f7 100%);
+        overflow: hidden;
+        padding: 130px 0 80px;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(255,106,0,.07) 1px, transparent 1px);
+        background-size: 36px 36px;
+        z-index: 0;
+        pointer-events: none;
+    }
+    .hero-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .hero-orb-1 {
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(255,106,0,.12) 0%, transparent 70%);
+        top: -10%; left: -8%;
+        animation: orbDrift1 20s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(238,9,121,.06) 0%, transparent 70%);
+        bottom: -5%; right: 0%;
+        animation: orbDrift2 25s ease-in-out infinite;
+    }
+    @keyframes orbDrift1 {
+        0%,100% { transform: translate(0,0) scale(1); }
+        50%      { transform: translate(30px,-20px) scale(1.05); }
+    }
+    @keyframes orbDrift2 {
+        0%,100% { transform: translate(0,0) scale(1); }
+        50%      { transform: translate(-20px,15px) scale(1.03); }
+    }
+    .hero-content-col { position: relative; z-index: 2; }
+
+    /* Badge pill */
+    .hero-badge-wrap {
+        opacity: 0;
+        filter: blur(6px);
+        transform: translateY(12px);
+        transition: opacity .6s ease, filter .6s ease, transform .6s ease;
+        will-change: opacity, filter, transform;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
+        background: rgba(255,106,0,.07);
+        border: 1.5px solid rgba(255,106,0,.2);
+        border-radius: 100px;
+        margin-bottom: 20px;
+    }
+    .hero-badge-wrap.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+    .hero-badge-wrap.hidden  {
+        opacity: 0; filter: blur(4px); transform: translateY(-8px);
+        transition: opacity .3s, filter .3s, transform .3s;
+    }
+    .hero-badge-dot {
+        width: 7px; height: 7px;
+        background: var(--primary-orange);
+        border-radius: 50%;
+        flex-shrink: 0;
+        animation: dotPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+        0%,100% { box-shadow: 0 0 0 0 rgba(255,106,0,.4); }
+        50%      { box-shadow: 0 0 0 5px rgba(255,106,0,0); }
+    }
+    .hero-badge-text { font-size: .72rem; font-weight: 800; letter-spacing: .4px; color: var(--primary-orange); }
+
+    /* Title — proporsional */
+    .hero-title {
+        font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+        line-height: 1.2;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: #1e293b;
+        margin-bottom: 18px;
+    }
+    .hero-title .w,
+    .hero-subtitle .w,
+    .hero-cta .w {
+        display: inline-block;
+        opacity: 0;
+        filter: blur(8px);
+        transform: translateY(14px);
+        transition: opacity .5s ease, filter .5s ease, transform .5s ease;
+        will-change: opacity, filter, transform;
+    }
+    .w.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+    .w.hidden  { opacity: 0; filter: blur(6px); transform: translateY(-10px); transition: opacity .3s, filter .3s, transform .3s; }
+    #hero-rotating-line { display: block; min-height: 1.35em; position: relative; }
+    #hero-rotating-line .rot-word {
+        display: inline-block;
+        opacity: 0; filter: blur(10px); transform: translateY(14px);
+        transition: opacity .45s ease, filter .45s ease, transform .45s ease;
+        will-change: opacity, filter, transform;
+        background: linear-gradient(135deg, var(--primary-orange), #ff9a50);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    #hero-rotating-line .rot-word.rot-in  { opacity:1; filter:blur(0); transform:translateY(0); }
+    #hero-rotating-line .rot-word.rot-out { opacity:0; filter:blur(8px); transform:translateY(-12px); transition: opacity .3s, filter .3s, transform .3s; }
+
+    /* Subtitle */
+    .hero-subtitle { font-size: .97rem; color: #64748b; line-height: 1.75; margin-bottom: 22px; max-width: 500px; }
+    .hero-subtitle strong { color: #334155; font-weight: 700; }
+
+    /* Trust chips */
+    .hero-trust-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .hero-trust-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 13px;
+        background: rgba(255,255,255,.8);
+        border: 1px solid rgba(255,106,0,.13);
+        border-radius: 100px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    }
+    .hero-trust-chip i    { color: var(--primary-orange); font-size: .8rem; }
+    .hero-trust-chip span { color: #64748b; font-size: .73rem; font-weight: 600; }
+
+    /* CTA */
+    .btn-orange {
+        background: linear-gradient(135deg, var(--primary-orange), #ff8c33);
+        color: #fff;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(255,106,0,.28);
+    }
+    .btn-orange:hover {
+        background: linear-gradient(135deg, #e65f00, var(--primary-orange));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(255,106,0,.35);
+        color: #fff;
+    }
+    .btn-outline-orange {
+        border: 1.5px solid rgba(255,106,0,.4);
+        color: var(--primary-orange);
+        background: rgba(255,106,0,.04);
+        transition: all 0.3s ease;
+    }
+    .btn-outline-orange:hover {
+        background: rgba(255,106,0,.1);
+        border-color: var(--primary-orange);
+        transform: translateY(-2px);
+        color: var(--primary-orange);
+    }
+
+    /* ══ 3D Visual Column ══ */
+    .hero-visual-col { position: relative; z-index: 2; }
+    .hero-3d-wrapper {
+        animation: heroCardFloat 8s ease-in-out infinite;
+    }
+    @keyframes heroCardFloat {
+        0%,100% { transform: translateY(0) perspective(1200px) rotateY(-4deg) rotateX(2deg); }
+        50%      { transform: translateY(-12px) perspective(1200px) rotateY(-2deg) rotateX(1deg); }
+    }
+
+    /* Baris cards di atas gambar */
+    .hero-cards-top {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        justify-content: flex-start;
+    }
+
+    /* Baris cards di bawah gambar */
+    .hero-cards-bottom {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    /* Gambar/GIF — penuh, tidak ada overlay */
+    .hero-main-card {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid rgba(0,0,0,.07);
+        box-shadow: 0 24px 64px rgba(0,0,0,.1), 0 6px 20px rgba(255,106,0,.07);
+    }
+    .hero-main-card img { width: 100%; display: block; }
+    .hero-card-glow {
+        position: absolute;
+        bottom: -28px; left: 50%;
+        transform: translateX(-50%);
+        width: 65%; height: 50px;
+        background: rgba(255,106,0,.15);
+        filter: blur(28px);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* Float cards */
+    .hero-float-card {
+        background: rgba(255,255,255,.97);
+        border: 1px solid rgba(255,106,0,.12);
+        border-radius: 14px;
+        padding: 12px 16px;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 8px 24px rgba(0,0,0,.07);
+        flex-shrink: 0;
+    }
+    .hero-float-card-icon {
+        width: 30px; height: 30px;
+        background: rgba(255,106,0,.08);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .8rem; color: var(--primary-orange);
+        margin-bottom: 6px;
+    }
+    .hero-float-card-label { font-size: .58rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; white-space: nowrap; }
+    .hero-float-card-value { font-size: .95rem; font-weight: 900; color: #1e293b; line-height: 1; margin-bottom: 2px; white-space: nowrap; }
+    .hero-float-card-trend { font-size: .6rem; color: #22c55e; font-weight: 600; white-space: nowrap; }
+    .hero-float-card-sub   { font-size: .6rem; color: #64748b; white-space: nowrap; }
+
+    .fcard-revenue { animation: fcardFloat 7s ease-in-out infinite; }
+    .fcard-ai      { animation: fcardFloat 9s ease-in-out infinite 1.2s; }
+    .fcard-orders  { animation: fcardFloat 8s ease-in-out infinite .6s; }
+    .fcard-stok    { animation: fcardFloat 7.5s ease-in-out infinite .4s; }
+    @keyframes fcardFloat {
+        0%,100% { transform: translateY(0); }
+        50%      { transform: translateY(-7px); }
+    }
+
+    @media (max-width: 991px) {
+        .hero-section { min-height: auto; padding: 100px 0 56px; }
+        .hero-title { font-size: 1.9rem; letter-spacing: -.8px; }
+        .hero-3d-wrapper { animation: none; transform: none; }
+        .hero-cards-top, .hero-cards-bottom { display: none; }
+    }
+    @media (max-width: 575px) {
+        .hero-title { font-size: 1.75rem; letter-spacing: -.6px; }
+        .hero-trust-row { gap: 7px; }
+        .hero-trust-chip { padding: 5px 10px; }
+    }
+
+    /* Features Box */
+    .feature-icon-box {
+        width: 60px; height: 60px;
+        background-color: var(--light-orange);
+        color: var(--primary-orange);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    .feature-card {
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 20px;
+        padding: 30px;
+        transition: all 0.3s ease;
+        height: 100%;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+    .feature-card:hover { 
+        transform: translateY(-10px); 
+        box-shadow: 0 15px 40px rgba(255, 106, 0, 0.08); 
+    }
+    .feature-card:hover .feature-icon-box {
+        transform: scale(1.1);
+    }
+
+    /* Highlight Fitur AI & Prediksi */
+    .feature-highlight-card {
+        background: #fff;
+        border-left: 4px solid var(--primary-orange);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+    }
+    .feature-highlight-card:hover {
+        box-shadow: 0 8px 25px rgba(255, 106, 0, 0.1);
+        transform: translateX(5px);
+    }
+
+    /* Pricing Box */
+    .pricing-card {
+        border-radius: 24px;
+        border: 2px solid #f1f5f9;
+        padding: 40px 30px;
+        background: white;
+        transition: all 0.3s;
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .pricing-card.popular {
+        border-color: var(--primary-orange);
+        box-shadow: 0 20px 40px rgba(255, 106, 0, 0.15);
+        transform: scale(1.05);
+        z-index: 10;
+        background: linear-gradient(to bottom, #ffffff, #fffdfa);
+    }
+    .badge-popular {
+        position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+        background: var(--primary-orange); color: white;
+        padding: 6px 24px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;
+        box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
+        letter-spacing: 0.5px;
+    }
+    .price-strike { text-decoration: line-through; color: #94a3b8; font-size: 1.1rem; font-weight: 500; margin-right: 8px; }
+    .promo-tag { background: #fee2e2; color: #ef4444; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
+
+    /* Check List */
+    .check-list { list-style: none; padding-left: 0; flex-grow: 1; }
+    .check-list li { margin-bottom: 12px; display: flex; align-items: flex-start; }
+    .check-list i { color: var(--primary-orange); margin-right: 12px; font-size: 1.2rem; margin-top: -2px; }
+
+    /* Bonus Banner */
+    .bonus-banner {
+        background: linear-gradient(45deg, var(--primary-orange), #ff8c33);
+        border-radius: 24px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @media (max-width: 991px) {
+        .hero-title { font-size: 2.5rem; }
+        .pricing-card.popular { transform: scale(1); margin-top: 2rem; margin-bottom: 2rem; }
+    }
+
+    /* Blog Section */
+    .blog-card {
+        border: 1px solid rgba(0,0,0,0.06);
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .blog-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(255, 106, 0, 0.1);
+        border-color: rgba(255, 106, 0, 0.2);
+    }
+    .blog-card-img {
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        width: 100%;
+        background: #f8f9fa;
+    }
+    .blog-card-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .blog-category-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        background: var(--light-orange);
+        color: var(--primary-orange);
+        padding: 4px 10px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .blog-card-title {
+        font-size: 0.97rem;
+        font-weight: 700;
+        line-height: 1.45;
+        color: #1a202c;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .blog-card-excerpt {
+        font-size: 0.82rem;
+        color: #64748b;
+        line-height: 1.6;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+    .blog-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 12px;
+        margin-top: auto;
+    }
+    .blog-read-link {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary-orange);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: gap 0.2s ease;
+    }
+    .blog-read-link:hover { gap: 8px; color: #e65f00; }
+    .blog-date {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    /* ===== MINEAI SPOTLIGHT SECTION ===== */
+    @keyframes mineShift {
+        0%   { background-position: 0% 50%; }
+        50%  { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes mineOrbFloat {
+        0%,100% { transform: translate(0,0) scale(1); }
+        33%     { transform: translate(30px,-25px) scale(1.06); }
+        66%     { transform: translate(-20px,18px) scale(.95); }
+    }
+    @keyframes mineScreenFloat {
+        0%,100% { transform: translateY(0) rotate(-1.5deg); }
+        50%     { transform: translateY(-12px) rotate(-1.5deg); }
+    }
+
+    .mineai-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #fff4ec 0%, #fdf0f8 40%, #fff8f0 70%, #fdeef8 100%);
+        background-size: 400% 400%;
+        animation: mineShift 10s ease infinite;
+        padding: 80px 0;
+        border-top: 3px solid transparent;
+        border-image: linear-gradient(135deg, #ff6a00, #ee0979) 1;
+    }
+
+    /* Orbs */
+    .mineai-orb {
+        position: absolute; border-radius: 50%;
+        filter: blur(80px); pointer-events: none; z-index: 1;
+    }
+    .mineai-orb1 {
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(255,106,0,.18), transparent 65%);
+        top: -20%; left: -10%;
+        animation: mineOrbFloat 11s ease-in-out infinite;
+    }
+    .mineai-orb2 {
+        width: 450px; height: 450px;
+        background: radial-gradient(circle, rgba(238,9,121,.14), transparent 65%);
+        bottom: -15%; right: -8%;
+        animation: mineOrbFloat 13s ease-in-out infinite reverse;
+    }
+    .mineai-orb3 {
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(255,154,0,.12), transparent 65%);
+        top: 40%; left: 35%;
+        animation: mineOrbFloat 8s ease-in-out infinite 2s;
+    }
+
+    /* Logo badge */
+    .mineai-logo-badge {
+        width: 52px; height: 52px;
+        border-radius: 14px;
+        object-fit: cover;
+        box-shadow: 0 8px 24px rgba(255,106,0,.4);
+    }
+
+    /* Tag */
+    .mineai-tag {
+        display: inline-block;
+        font-size: .68rem; font-weight: 800; letter-spacing: 1.5px;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        background-size: 200% 200%;
+        animation: mineShift 3s ease infinite;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2px; display: block;
+    }
+    .mineai-name-text {
+        font-size: 1.6rem; font-weight: 900; color: var(--text-dark); line-height: 1;
+    }
+    .mineai-name-text span {
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        background-size: 200% 200%;
+        animation: mineShift 3s ease infinite;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Headline */
+    .mineai-headline {
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        font-weight: 900;
+        color: #1e1e2e;
+        line-height: 1.2;
+        margin-bottom: 1.2rem;
+    }
+    .mineai-grad-text {
+        background: linear-gradient(135deg, #ff6a00, #ee0979, #ff9a00);
+        background-size: 300% 300%;
+        animation: mineShift 4s ease infinite;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Desc */
+    .mineai-desc {
+        color: #475569;
+        font-size: .93rem;
+        line-height: 1.75;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Feature list */
+    .mineai-features li {
+        color: #334155;
+        font-size: .88rem;
+        margin-bottom: .6rem;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .mineai-features li i {
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        background-size: 200%; animation: mineShift 3s ease infinite;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 1rem; flex-shrink: 0;
+    }
+
+    /* CTA buttons */
+    .btn-mineai-cta {
+        display: inline-flex; align-items: center;
+        padding: 13px 28px; border-radius: 50px; border: none;
+        font-weight: 800; font-size: .9rem; color: white;
+        text-decoration: none; cursor: pointer;
+        background: linear-gradient(135deg, #ff6a00, #ee0979, #ff9a00, #ff6a00);
+        background-size: 300% 300%;
+        animation: mineShift 3s ease infinite;
+        box-shadow: 0 8px 28px rgba(255,106,0,.4);
+        transition: transform .25s, box-shadow .25s;
+    }
+    .btn-mineai-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 36px rgba(238,9,121,.5);
+        color: white;
+    }
+    .btn-mineai-ghost {
+        display: inline-flex; align-items: center;
+        padding: 13px 24px; border-radius: 50px;
+        border: 1.5px solid rgba(255,106,0,.4);
+        font-weight: 700; font-size: .88rem;
+        color: #ff6a00;
+        text-decoration: none;
+        background: rgba(255,106,0,.06);
+        transition: all .25s;
+    }
+    .btn-mineai-ghost:hover {
+        border-color: #ee0979;
+        background: rgba(238,9,121,.08);
+        color: #ee0979;
+    }
+
+    /* Screenshot */
+    .mineai-screen-wrap {
+        position: relative;
+        padding: 4px;
+        border-radius: 24px;
+    }
+    .mineai-screen-glow {
+        position: absolute; inset: -20px;
+        background: radial-gradient(ellipse at center, rgba(238,9,121,.25) 0%, transparent 70%);
+        border-radius: 40px;
+        pointer-events: none;
+        animation: mineOrbFloat 7s ease-in-out infinite;
+    }
+    .mineai-screenshot {
+        width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(255,106,0,.2), 0 4px 20px rgba(238,9,121,.1), 0 0 0 1px rgba(255,106,0,.15);
+        display: block;
+        animation: mineScreenFloat 6s ease-in-out infinite;
+    }
+
+    @media (max-width: 991px) {
+        .mineai-section { padding: 60px 0; }
+        .mineai-headline { font-size: 1.9rem; }
+        .mineai-screenshot { animation: none; }
+    }
+</style>
+@endpush
+
+@section('content')
+    <main>
+        <header id="home" class="hero-section">
+            {{-- Soft orbs --}}
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+
+            <div class="container">
+                <div class="row align-items-center g-5">
+
+                    {{-- ═══ LEFT: Content ═══ --}}
+                    <div class="col-lg-6 order-2 order-lg-1 hero-content-col hero-reveal-col">
+
+                        <div class="hero-badge-wrap">
+                            <div class="hero-badge-dot"></div>
+                            <span class="hero-badge-text">APLIKASI POS AI TERBAIK DI INDONESIA</span>
+                        </div>
+
+                        <h1 class="hero-title">
+                            <span class="w">Bukan</span> <span class="w">Sekadar</span> <span class="w">POS</span> <span class="w">Biasa.</span>
+                            <span id="hero-rotating-line" class="d-block"></span>
+                        </h1>
+
+                        <p class="hero-subtitle">
+                            <strong>Aplikasi kasir all-in-one</strong> untuk mencatat pesanan dan mengelola operasional dengan mudah, yang kini dilengkapi asisten kecerdasan buatan (AI) untuk memberikan saran strategi bisnis berdasarkan data penjualan Anda.
+                        </p>
+
+                        <div class="hero-trust-row">
+                            <div class="hero-trust-chip">
+                                <i class="bi bi-wifi-off"></i>
+                                <span>Works Offline</span>
+                            </div>
+                            <div class="hero-trust-chip">
+                                <i class="bi bi-robot"></i>
+                                <span>AI Powered</span>
+                            </div>
+                            <div class="hero-trust-chip">
+                                <i class="bi bi-shield-check-fill"></i>
+                                <span>Aman & Terpercaya</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3 hero-cta">
+                            <a href="{{ route('register') ?? '#' }}" class="btn btn-orange btn-lg px-4 fw-bold shadow-sm">
+                                <i class="bi bi-rocket-takeoff-fill me-2"></i> Coba Gratis Sekarang
+                            </a>
+                            <a href="{{ route('panduan.daftar') }}" class="btn btn-outline-orange btn-lg px-4 fw-bold">
+                                <i class="bi bi-play-circle me-1"></i> Lihat Cara Kerjanya
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- ═══ RIGHT: 3D Visual ═══ --}}
+                    <div class="col-lg-6 order-1 order-lg-2 hero-visual-col">
+                        <div class="hero-3d-wrapper">
+
+                            {{-- Baris atas: cards di ATAS gambar --}}
+                            <div class="hero-cards-top">
+                                <div class="hero-float-card fcard-revenue">
+                                    <div class="hero-float-card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                    <div class="hero-float-card-label">Omzet Hari Ini</div>
+                                    <div class="hero-float-card-value">Rp 12,8 Jt</div>
+                                    <div class="hero-float-card-trend"><i class="bi bi-arrow-up"></i> +32%</div>
+                                </div>
+                                <div class="hero-float-card fcard-ai">
+                                    <div class="hero-float-card-icon">
+                                        {{-- Logo M MineAI --}}
+                                        <svg width="18" height="18" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <defs>
+                                                <linearGradient id="hero_mineai_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" style="stop-color:#ff6a00;" />
+                                                    <stop offset="100%" style="stop-color:#ee0979;" />
+                                                </linearGradient>
+                                            </defs>
+                                            <path d="M 20,85 L 20,25 L 60,65 L 100,25 L 100,85"
+                                                  stroke="url(#hero_mineai_grad)"
+                                                  stroke-width="26"
+                                                  stroke-linecap="round"
+                                                  stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div class="hero-float-card-label">MineAI</div>
+                                    <div class="hero-float-card-value">95%</div>
+                                    <div class="hero-float-card-sub">Akurasi prediksi</div>
+                                </div>
+                            </div>
+
+                            {{-- Gambar/GIF — BERSIH, tidak ada overlay apapun --}}
+                            <div class="hero-main-card">
+                                <img src="{{asset('assets/hero.png')}}"
+                                     onerror="this.src='https://placehold.co/700x470/fff4ec/ff6a00?text=Dashboard+Flavory.id'"
+                                     alt="Tampilan Dashboard Manajemen Bisnis Restoran Flavory.id">
+                                <div class="hero-card-glow"></div>
+                            </div>
+
+                            {{-- Baris bawah: cards di BAWAH gambar --}}
+                            <div class="hero-cards-bottom">
+                                <div class="hero-float-card fcard-orders">
+                                    <div class="hero-float-card-icon"><i class="bi bi-receipt"></i></div>
+                                    <div class="hero-float-card-label">Total Order</div>
+                                    <div class="hero-float-card-value">247</div>
+                                    <div class="hero-float-card-sub">Pesanan hari ini</div>
+                                </div>
+                                <div class="hero-float-card fcard-stok">
+                                    <div class="hero-float-card-icon"><i class="bi bi-boxes"></i></div>
+                                    <div class="hero-float-card-label">Manajemen Stok</div>
+                                    <div class="hero-float-card-value">Real-time</div>
+                                    <div class="hero-float-card-sub">Update Otomatis</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <section class="py-4 border-bottom bg-white animate-slide-up">
+            <div class="container text-center">
+                <p class="mb-0 fw-bold text-muted" style="letter-spacing: 1px; text-transform: uppercase; font-size: 0.9rem;">
+                    <i class="bi bi-shield-check text-success me-2"></i> Dipercaya Ratusan Pemilik Usaha Kuliner di Seluruh Indonesia
+                </p>
+            </div>
+        </section>
+
+        <section id="keuntungan" class="py-5 bg-white">
+            <div class="container py-5">
+                <div class="text-center mb-5 mx-auto animate-slide-up" style="max-width: 700px;">
+                    <h2 class="fw-bold">Mengapa Aplikasi Kasir Kuliner Kami Berbeda?</h2>
+                    <p class="text-muted">Kami mendesain Flavory.id agar mudah dipahami oleh pemula, namun memiliki fitur canggih layaknya restoran profesional kelas atas.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3 animate-slide-up" style="transition-delay: 0.1s;">
+                        <article class="feature-card text-center">
+                            <div class="feature-icon-box mx-auto"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <h3 class="h5 fw-bold">Sangat Mudah Dipakai</h3>
+                            <p class="text-muted small mb-0">Tampilan kasir bersih dan tidak ribet. Siapapun bisa langsung menggunakannya dalam 5 menit pertama.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-lg-3 animate-slide-up" style="transition-delay: 0.2s;">
+                        <article class="feature-card text-center">
+                            <div class="feature-icon-box mx-auto"><i class="bi bi-robot"></i></div>
+                            <h3 class="h5 fw-bold">Ditenagai MineAI</h3>
+                            <p class="text-muted small mb-0">Satu-satunya sistem yang memberikan pandangan objektif dan saran bisnis dari hasil analisa laporan outlet Anda.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-lg-3 animate-slide-up" style="transition-delay: 0.3s;">
+                        <article class="feature-card text-center">
+                            <div class="feature-icon-box mx-auto"><i class="bi bi-graph-up-arrow"></i></div>
+                            <h3 class="h5 fw-bold">Bisnis Terpantau Penuh</h3>
+                            <p class="text-muted small mb-0">Tinggalkan buku manual. Pantau penjualan, stok dapur, hingga rugi-laba secara real-time dari HP Anda.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-lg-3 animate-slide-up" style="transition-delay: 0.4s;">
+                        <article class="feature-card text-center">
+                            <div class="feature-icon-box mx-auto"><i class="bi bi-wifi-off"></i></div>
+                            <h3 class="h5 fw-bold">Anti Gagal Offline</h3>
+                            <p class="text-muted small mb-0">Internet mati? Tidak masalah. Aplikasi tetap berjalan normal dan otomatis sinkronisasi saat online.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fitur" class="py-5" style="background-color: #f8fafc;">
+            <div class="container py-5">
+                <div class="text-center mb-5 animate-slide-up">
+                    <span class="text-orange fw-bold tracking-wider text-uppercase small"><i class="bi bi-stars"></i> Fitur Andalan Flavory.id</span>
+                    <h2 class="fw-bold mt-2">Semua yang Anda Butuhkan dalam Satu Aplikasi</h2>
+                    <div class="mx-auto mt-3 mb-4" style="width: 80px; height: 4px; background-color: var(--primary-orange); border-radius: 2px;"></div>
+                </div>
+
+                <div class="row align-items-center mb-5 pb-5 border-bottom">
+                    <div class="col-lg-6 mb-4 mb-lg-0 animate-slide-up">
+                        <h3 class="fw-bold mb-3"><i class="bi bi-bar-chart-line-fill text-orange me-2"></i> Performa, Prediksi & MineAI</h3>
+                        <p class="text-muted mb-4">Jangan menebak-nebak keputusan bisnis Anda. Biarkan data yang berbicara dan asisten AI kami membantu Anda meracik strategi terbaik.</p>
+                        
+                        <div class="d-flex flex-column gap-3">
+                            <div class="feature-highlight-card">
+                                <h4 class="h6 fw-bold mb-1"><i class="bi bi-clock-history text-orange me-2"></i> Analisa Performa Bisnis Otomatis</h4>
+                                <p class="small text-muted mb-0">Ketahui secara pasti di jam berapa atau hari apa outlet Anda paling ramai/sepi. Atur jadwal karyawan dan promo dengan lebih akurat.</p>
+                            </div>
+                            <div class="feature-highlight-card">
+                                <h4 class="h6 fw-bold mb-1"><i class="bi bi-calendar-check text-orange me-2"></i> Prediksi Penjualan Masa Depan</h4>
+                                <p class="small text-muted mb-0">Sistem pintar kami membaca tren usaha Anda dan memprediksi omzet hingga 1 bulan ke depan agar Anda bisa menyiapkan stok bahan baku dengan tepat.</p>
+                            </div>
+                            <div class="feature-highlight-card">
+                                <h4 class="h6 fw-bold mb-1"><i class="bi bi-robot text-orange me-2"></i> Asisten MineAI</h4>
+                                <p class="small text-muted mb-0">Dapatkan insight mendalam tentang laporan bisnis Anda. MineAI memberikan saran pengembangan usaha, analisa risiko, serta memproyeksikan dampak dari setiap keputusan bisnis yang akan Anda ambil.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 ps-lg-5 animate-fade-in">
+                        <img src="{{asset('assets/analisis.png')}}" onerror="this.src='https://placehold.co/620x420/fff4ec/ff6a00?text=Laporan+%26+Analisa'" class="img-fluid rounded-4 shadow-lg border" alt="Fitur Analisa Performa Bisnis dan Prediksi Flavory.id">
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-5 pb-5 border-bottom">
+                    <div class="col-lg-6 order-2 order-lg-1 pe-lg-5 animate-fade-in">
+                        <img src="{{asset('assets/order.png')}}" onerror="this.src='https://placehold.co/620x420/fff4ec/ff6a00?text=Sistem+Kasir+%26+Order'" class="img-fluid rounded-4 shadow-lg border" alt="Aplikasi Kasir Kuliner POS Flavory.id">
+                    </div>
+                    <div class="col-lg-6 order-1 order-lg-2 mb-4 mb-lg-0 animate-slide-up">
+                        <h3 class="fw-bold mb-3"><i class="bi bi-shop-window text-orange me-2"></i> Sistem Kasir & Manajemen Pesanan</h3>
+                        <p class="text-muted mb-4">Transaksi secepat kilat, baik untuk makan di tempat (dine-in), bungkus (take-away), atau order online secara mandiri melalui QR code.</p>
+                        
+                        <ul class="check-list mt-3">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <div><strong>Pencatatan Pesanan Fleksibel</strong><br><span class="small text-muted">Mendukung input varian menu, level pedas/topping (harga dinamis), hingga split bill dengan sangat mudah.</span></div>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <div><strong>Database Pelanggan & Struk Digital</strong><br><span class="small text-muted">Kirim struk langsung ke WhatsApp pelanggan beserta catatan kustom (Cth: Password WiFi/Promo).</span></div>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <div><strong>Multi-Printer Support</strong><br><span class="small text-muted">Cetak struk kasir, stiker minuman, dan tiket langsung ke dapur secara bersamaan untuk mempercepat operasional.</span></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0 animate-slide-up">
+                        <h3 class="fw-bold mb-3"><i class="bi bi-boxes text-orange me-2"></i> Kendali Finansial & Stok Dapur</h3>
+                        <p class="text-muted mb-4">Cegah kebocoran dana dan kehabisan bahan baku secara mendadak. Semua aktivitas stok dan keuangan outlet tercatat rapi.</p>
+                        
+                        <ul class="check-list">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <div><strong>Manajemen Stok Akurat</strong><br><span class="small text-muted">Kontrol penuh atas ketersediaan barang. Indikator pintar akan memberi warna merah saat bahan baku menipis atau habis.</span></div>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <div><strong>Laporan Arus Kas Otomatis</strong><br><span class="small text-muted">Sistem merekap pemasukan dan pengeluaran, serta menghitung keuntungan bersih harian langsung di dalam aplikasi.</span></div>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <div><strong>Hak Akses Karyawan yang Aman</strong><br><span class="small text-muted">Batasi apa yang bisa dilihat kasir, koki, dan admin. Keamanan data operasional usaha Anda terjamin penuh.</span></div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 ps-lg-5 animate-fade-in">
+                        <img src="{{asset('assets/stok.png')}}" onerror="this.src='https://placehold.co/620x420/fff4ec/ff6a00?text=Manajemen+Stok'" class="img-fluid rounded-4 shadow-lg border" alt="Fitur Manajemen Stok Barang Restoran Flavory.id">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ===== SECTION MINEAI SPOTLIGHT ===== --}}
+        <section id="mineai" class="py-0 overflow-hidden">
+            <div class="mineai-section">
+
+                {{-- Animated orb blobs --}}
+                <div class="mineai-orb mineai-orb1"></div>
+                <div class="mineai-orb mineai-orb2"></div>
+                <div class="mineai-orb mineai-orb3"></div>
+
+                <div class="container py-5 position-relative" style="z-index:2;">
+                    <div class="row align-items-center g-5">
+
+                        {{-- Kiri: teks --}}
+                        <div class="col-lg-5 text-center text-lg-start animate-slide-up">
+
+                            {{-- Logo + badge --}}
+                            <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-3 mb-4">
+                                <img src="{{ asset('assets/logo-mineai.jpg') }}"
+                                     alt="MineAI"
+                                     class="mineai-logo-badge"
+                                     onerror="this.style.display='none'">
+                                <div>
+                                    <span class="mineai-tag">Fitur Eksklusif</span>
+                                    <h2 class="mineai-name-text mb-0">Mine<span>AI</span></h2>
+                                </div>
+                            </div>
+
+                            <h3 class="mineai-headline">
+                                Konsultan Bisnis<br>
+                                <span class="mineai-grad-text">Berbasis AI</span><br>
+                                Pertama di POS Kuliner
+                            </h3>
+
+                            <p class="mineai-desc">
+                                MineAI membaca data transaksi nyata outlet kamu, memberikan insight otomatis, dan bisa diajak ngobrol layaknya konsultan bisnis pribadi, kapan saja, langsung dari dashboard kasir.
+                            </p>
+
+                            <ul class="mineai-features list-unstyled">
+                                <li><i class="bi bi-check-circle-fill"></i> Analisis omzet & tren 30 hari otomatis</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Saran strategi berbasis data real outlet</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Chat AI yang ingat konteks bisnis kamu</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Deteksi stok tipis & peringatan dini</li>
+                            </ul>
+
+                            <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start mt-4">
+                                <a href="{{ route('register') }}" class="btn-mineai-cta">
+                                    <i class="bi bi-stars me-2"></i> Coba MineAI Gratis
+                                </a>
+                                <a href="{{ route('panduan.mineai') }}" class="btn-mineai-ghost">
+                                    Pelajari Lebih Lanjut <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Kanan: screenshot --}}
+                        <div class="col-lg-7 animate-fade-in">
+                            <div class="mineai-screen-wrap">
+                                <div class="mineai-screen-glow"></div>
+                                <img src="{{ asset('assets/ss-mineai.jpg') }}"
+                                     alt="Tampilan MineAI, Konsultan Bisnis AI Flavory.id"
+                                     class="mineai-screenshot"
+                                     onerror="this.src='https://placehold.co/900x560/1e1e2e/ff6a00?text=MineAI+Preview'">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        {{-- ===== END SECTION MINEAI ===== --}}
+
+        <section id="paket" class="py-5 bg-white">
+            <div class="container py-5">
+                <div class="text-center mb-5 mx-auto animate-slide-up" style="max-width: 700px;">
+                    <h2 class="fw-bold">Investasi Terbaik untuk Masa Depan Bisnis Anda</h2>
+                    <p class="text-muted">Akses <strong class="text-dark">SEMUA FITUR LENGKAP</strong> (termasuk Prediksi & MineAI) tanpa ada biaya tersembunyi. Dapatkan harga promo hari ini!</p>
+                </div>
+
+                <div class="row justify-content-center align-items-stretch g-4">
+                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.1s;">
+                        <article class="pricing-card text-center">
+                            <h3 class="h4 fw-bold text-dark mb-1">Masa Percobaan</h3>
+                            <p class="text-muted small">Buktikan sendiri kemudahan aplikasi kami</p>
+                            
+                            <div class="my-4">
+                                <span class="fw-bold text-dark mb-0 display-6">Rp 0<span class="fs-6 text-muted fw-normal"> / 30 Hari</span></span>
+                            </div>
+                            
+                            <ul class="check-list text-start mb-4 border-top pt-4">
+                                <li><i class="bi bi-check2"></i> Kasir POS lengkap (dine-in, take away, QR)</li>
+                                <li><i class="bi bi-check2"></i> Manajemen menu, stok & pengeluaran</li>
+                                <li><i class="bi bi-check2"></i> Laporan bisnis & analisa performa</li>
+                                <li><i class="bi bi-check2"></i> <strong>MineAI</strong> &ndash; insight &amp; chat AI bisnis</li>
+                                <li><i class="bi bi-check2"></i> Sistem kasir offline/online</li>
+                                <li><i class="bi bi-check2"></i> Cetak struk & kitchen ticket</li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="{{ route('register') }}" class="btn btn-outline-dark w-100 fw-bold py-2">Mulai Gratis Sekarang</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.2s;">
+                        <article class="pricing-card popular text-center shadow-lg">
+                            <span class="badge-popular">PALING DIMINATI</span>
+                            <h3 class="h4 fw-bold text-dark mb-1">Paket Berlangganan</h3>
+                            <p class="text-muted small mb-3">Solusi cerdas dengan harga sangat terjangkau</p>
+                            
+                            <div class="mb-2">
+                                <span class="promo-tag mb-2 d-inline-block shadow-sm">🔥 PROMO TERBATAS: DISKON 30%</span>
+                            </div>
+                            <div class="mb-4">
+                                <span class="price-strike">Rp 100.000</span>
+                                <span class="fw-bolder text-orange mb-0 display-5 d-block" style="letter-spacing: -1px;">Rp 70.000</span>
+                                <span class="text-muted fw-medium">/ Bulan</span>
+                            </div>
+                            
+                            <ul class="check-list text-start mb-4 border-top pt-4">
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> Kasir POS lengkap (dine-in, take away, QR)</li>
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen menu, stok & pengeluaran</li>
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan bisnis & analisa performa</li>
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> <strong class="text-dark">MineAI</strong> &ndash; insight &amp; chat AI bisnis</li>
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> Sistem kasir offline/online</li>
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> Cetak struk & kitchen ticket</li>
+                                <li><i class="bi bi-check-circle-fill text-orange"></i> Pembaruan sistem otomatis</li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="{{ route('register') ?? '#' }}" class="btn btn-orange w-100 py-3 fs-5 shadow-sm fw-bold">Ambil Promo Bulanan</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.3s;">
+                        <article class="pricing-card text-center">
+                            <h3 class="h4 fw-bold text-dark mb-1">Paket Pebisnis Sukses</h3>
+                            <p class="text-muted small mb-3">Lebih hemat untuk jangka panjang</p>
+                            <div class="mb-4">
+                                <span class="fw-bold text-dark mb-0 display-6 d-block">Rp 840.000</span>
+                                <span class="text-muted">/ 1 Tahun <span class="badge bg-success-subtle text-success fw-bold ms-1" style="font-size:.65rem;">Hemat 2 Bulan</span></span>
+                            </div>
+                            
+                            <ul class="check-list text-start mb-4 border-top pt-4">
+                                <li><i class="bi bi-check2 text-success"></i> Kasir POS lengkap (dine-in, take away, QR)</li>
+                                <li><i class="bi bi-check2 text-success"></i> Manajemen menu, stok & pengeluaran</li>
+                                <li><i class="bi bi-check2 text-success"></i> Laporan bisnis & analisa performa</li>
+                                <li><i class="bi bi-check2 text-success"></i> <strong>MineAI</strong> &ndash; insight &amp; chat AI bisnis</li>
+                                <li><i class="bi bi-check2 text-success"></i> Sistem kasir offline/online</li>
+                                <li><i class="bi bi-check2 text-success"></i> Cetak struk & kitchen ticket</li>
+                                <li><i class="bi bi-check2 text-success"></i> Pembaruan sistem otomatis</li>
+                                <li><i class="bi bi-check2 text-success"></i> Prioritas dukungan teknis CS</li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="{{ route('register') ?? '#' }}" class="btn btn-outline-success w-100 fw-bold py-2">Pilih Paket Tahunan</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ===== SECTION BLOG FLAVORY ===== --}}
+        @php
+            // Gunakan data dummy sementara jika blog belum live
+            $blogDisplay = !empty($blogPosts) ? $blogPosts : [
+                [
+                    'title'        => 'Tips Meningkatkan Omzet Kafe di Era Digital',
+                    'excerpt'      => 'Pelajari strategi jitu yang digunakan ratusan pemilik kafe sukses untuk menggandakan pendapatan mereka menggunakan teknologi POS modern.',
+                    'category'     => 'Bisnis',
+                    'published_at' => '25 Jun 2026',
+                    'cover_image'  => 'https://placehold.co/640x360/fff4ec/ff6a00?text=Flavory+Blog',
+                    'url'          => 'https://blog.flavory.id',
+                ],
+                [
+                    'title'        => 'Cara Kelola Stok Dapur agar Tidak Boros & Rugi',
+                    'excerpt'      => 'Manajemen stok yang buruk adalah penyebab utama kebocoran dana di restoran kecil. Simak panduan praktis ini untuk mulai kontrol stok dengan benar.',
+                    'category'     => 'Operasional',
+                    'published_at' => '20 Jun 2026',
+                    'cover_image'  => 'https://placehold.co/640x360/fff4ec/ff6a00?text=Kelola+Stok',
+                    'url'          => 'https://blog.flavory.id',
+                ],
+                [
+                    'title'        => 'Kenapa Bisnis Kuliner Anda Butuh Aplikasi Kasir Digital?',
+                    'excerpt'      => 'Masih pakai buku manual? Saatnya beralih ke sistem kasir digital. Temukan keuntungan nyata yang langsung bisa Anda rasakan sejak hari pertama.',
+                    'category'     => 'Teknologi',
+                    'published_at' => '15 Jun 2026',
+                    'cover_image'  => 'https://placehold.co/640x360/fff4ec/ff6a00?text=Kasir+Digital',
+                    'url'          => 'https://blog.flavory.id',
+                ],
+            ];
+        @endphp
+        @if(!empty($blogDisplay))
+        <section id="blog" class="py-5 bg-white">
+            <div class="container py-4">
+                <div class="text-center mb-5 animate-slide-up">
+                    <span class="text-orange fw-bold text-uppercase small tracking-wider">
+                        <i class="bi bi-journal-richtext me-1"></i> Blog Flavory
+                    </span>
+                    <h2 class="fw-bold mt-2">Tips & Insight untuk Bisnis Kuliner Anda</h2>
+                    <p class="text-muted">Artikel terbaru dari tim Flavory, khusus untuk pemilik usaha F&B Indonesia.</p>
+                </div>
+
+                <div class="row g-4 justify-content-center">
+                    @foreach($blogDisplay as $post)
+                    <div class="col-md-6 col-lg-4 animate-slide-up">
+                        <article class="blog-card">
+                            <a href="{{ $post['url'] }}" target="_blank" rel="noopener noreferrer" aria-label="Baca artikel: {{ $post['title'] }}">
+                                <img
+                                    src="{{ $post['cover_image'] }}"
+                                    alt="{{ $post['title'] }}"
+                                    class="blog-card-img"
+                                    loading="lazy"
+                                    onerror="this.src='https://placehold.co/640x360/fff4ec/ff6a00?text=Flavory+Blog'"
+                                >
+                            </a>
+                            <div class="blog-card-body">
+                                @if(!empty($post['category']))
+                                <span class="blog-category-badge">{{ $post['category'] }}</span>
+                                @endif
+                                <h3 class="blog-card-title">
+                                    <a href="{{ $post['url'] }}" target="_blank" rel="noopener noreferrer"
+                                       class="text-decoration-none text-dark stretched-link-off">
+                                        {{ $post['title'] }}
+                                    </a>
+                                </h3>
+                                <p class="blog-card-excerpt">{{ $post['excerpt'] }}</p>
+                                <div class="blog-card-footer">
+                                    <span class="blog-date">
+                                        <i class="bi bi-calendar3 me-1"></i>{{ $post['published_at'] }}
+                                    </span>
+                                    <a href="{{ $post['url'] }}" target="_blank" rel="noopener noreferrer"
+                                       class="blog-read-link">
+                                        Baca <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    @endforeach
+                </div>
+
+                <div class="text-center mt-5 animate-slide-up">
+                    <a href="https://blog.flavory.id" target="_blank" rel="noopener noreferrer"
+                       class="btn btn-outline-orange px-5 py-2 fw-bold rounded-pill">
+                        <i class="bi bi-journal-richtext me-2"></i> Lihat Semua Artikel
+                    </a>
+                </div>
+            </div>
+        </section>
+        @endif
+        {{-- ===== END SECTION BLOG ===== --}}
+
+        <section class="py-5" style="background-color: #f8fafc;">
+            <div class="container">
+                <div class="bonus-banner p-4 p-md-5 text-center shadow-lg animate-fade-in">
+                    <i class="bi bi-gift-fill display-4 mb-3 d-block opacity-75"></i>
+                    <h2 class="fw-bold text-white mb-3">BONUS SPESIAL: PANDUAN PENGGUNAAN GRATIS!</h2>
+                    <p class="fs-5 mb-4 opacity-100">Kami tidak akan membiarkan Anda kebingungan. Tim kami siap memastikan usaha kuliner Anda beroperasi maksimal dengan Flavory.id.</p>
+                    
+                    <div class="row justify-content-center g-4 mb-4">
+                        <div class="col-md-5">
+                            <article class="bg-white text-dark p-3 rounded-4 shadow-sm h-100 d-flex align-items-center justify-content-center transition-hover">
+                                <h3 class="h5 fw-bold m-0"><i class="bi bi-laptop text-orange me-2"></i> PENDAMPINGAN ONLINE<br><span class="small text-muted fw-normal fs-6">Praktis untuk seluruh area Indonesia</span></h3>
+                            </article>
+                        </div>
+                        <div class="col-md-5">
+                            <article class="bg-white text-dark p-3 rounded-4 shadow-sm h-100 d-flex align-items-center justify-content-center transition-hover">
+                                <h3 class="h5 fw-bold m-0"><i class="bi bi-people-fill text-orange me-2"></i> TRAINING TATAP MUKA<br><span class="small text-muted fw-normal fs-6">Layanan eksklusif untuk area Karawang</span></h3>
+                            </article>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('register') ?? '#' }}" class="btn btn-light btn-lg fw-bold text-orange rounded-pill px-5 mt-3 shadow-lg" style="transform: scale(1.05);" aria-label="Daftar Aplikasi Manajemen Restoran Flavory.id">Daftar Sekarang & Klaim Bonus</a>
+                </div>
+            </div>
+        </section>
+    </main>
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ═══════════════════════════════════════════════════════
+    //  WORD BLUR REVEAL  +  ROTATING PHRASES  — looping
+    // ═══════════════════════════════════════════════════════
+
+    const col      = document.querySelector('.hero-reveal-col');
+    const badge    = col && col.querySelector('.hero-badge-wrap');
+    const subtitle = col && col.querySelector('.hero-subtitle');
+    const ctaWrap  = col && col.querySelector('.hero-cta');
+    const rotLine  = col && col.querySelector('#hero-rotating-line');
+
+    if (!col) return;
+
+    // ── Daftar frasa yang akan bergiliran di rotating line ──
+    const PHRASES = [
+        'Bangun Bisnis Kuliner Bersama <span style="color:inherit">Flavory.id</span>',
+        'Kelola Pesanan Lebih Cepat &amp; Mudah',
+        'Pantau Keuangan Secara Real-Time',
+        '<span style="background:linear-gradient(135deg,#ff6a00,#ee0979);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">MineAI</span> &ndash; Konsultan Bisnis AI Kamu',
+    ];
+    let phraseIndex = 0;
+
+    // ── Render kata-kata rotating phrase ke dalam rotLine ──
+    function renderPhrase(html) {
+        rotLine.innerHTML = '';
+        // Buat dummy element untuk split kata dari HTML
+        const tmp = document.createElement('span');
+        tmp.innerHTML = html;
+
+        // Ambil semua node (text + element)
+        tmp.childNodes.forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                node.textContent.split(/(\s+)/).forEach(part => {
+                    if (/^\s+$/.test(part)) {
+                        rotLine.appendChild(document.createTextNode(' '));
+                    } else if (part.length) {
+                        const s = document.createElement('span');
+                        s.className = 'rot-word';
+                        s.textContent = part;
+                        rotLine.appendChild(s);
+                    }
+                });
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                // Misal <span> untuk warna — bungkus seluruh elemennya
+                node.textContent.split(/(\s+)/).forEach(part => {
+                    if (/^\s+$/.test(part)) {
+                        rotLine.appendChild(document.createTextNode(' '));
+                    } else if (part.length) {
+                        const s = document.createElement('span');
+                        s.className = 'rot-word';
+                        s.style.cssText = node.getAttribute('style') || '';
+                        s.textContent = part;
+                        rotLine.appendChild(s);
+                    }
+                });
+            }
+        });
+    }
+
+    function rotWordsIn() {
+        const words = rotLine.querySelectorAll('.rot-word');
+        words.forEach((w, i) => {
+            setTimeout(() => w.classList.add('rot-in'), i * 60);
+        });
+    }
+
+    function rotWordsOut(cb) {
+        const words = [...rotLine.querySelectorAll('.rot-word')].reverse();
+        words.forEach((w, i) => {
+            setTimeout(() => {
+                w.classList.remove('rot-in');
+                w.classList.add('rot-out');
+            }, i * 35);
+        });
+        const total = (words.length - 1) * 35 + 300;
+        setTimeout(cb, total);
+    }
+
+    // ── wrapWords: pecah text node biasa jadi <span class="w"> ──
+    // Tidak skip BR — cukup skip elemen yang sudah punya class .w atau #hero-rotating-line
+    function wrapWords(el) {
+        [...el.childNodes].forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const parts = node.textContent.split(/(\s+)/);
+                const frag  = document.createDocumentFragment();
+                parts.forEach(part => {
+                    if (/^\s+$/.test(part)) {
+                        frag.appendChild(document.createTextNode(part));
+                    } else if (part.length) {
+                        const s = document.createElement('span');
+                        s.className = 'w';
+                        s.textContent = part;
+                        frag.appendChild(s);
+                    }
+                });
+                node.replaceWith(frag);
+            } else if (
+                node.nodeType === Node.ELEMENT_NODE &&
+                node.tagName !== 'BR' &&
+                node.id !== 'hero-rotating-line'
+            ) {
+                wrapWords(node);
+            }
+        });
+    }
+
+    // Wrap subtitle
+    wrapWords(subtitle);
+
+    // CTA: tiap tombol = 1 unit .w
+    ctaWrap.querySelectorAll('a').forEach(a => a.classList.add('w'));
+
+    // Kumpulkan semua elemen untuk animasi masuk/keluar global
+    const staticWords = [
+        badge,
+        ...col.querySelectorAll('.hero-title > .w'),
+        ...col.querySelectorAll('.hero-subtitle .w'),
+        ...col.querySelectorAll('.hero-cta .w'),
+    ].filter(Boolean);
+
+    // ── Timing ──
+    const IN_STAG   = 55;
+    const IN_DUR    = 500;
+    const PAUSE     = 3500; // diam lebih lama agar teks terbaca
+
+    function totalEnterMs() { return (staticWords.length - 1) * IN_STAG + IN_DUR; }
+
+    // Static words hanya masuk SEKALI, tidak pernah keluar lagi
+    let staticEntered = false;
+    function enterStaticOnce() {
+        if (staticEntered) return;
+        staticEntered = true;
+        staticWords.forEach((el, i) => {
+            setTimeout(() => {
+                el.classList.remove('hidden');
+                el.classList.add('visible');
+            }, i * IN_STAG);
+        });
+    }
+
+    function resetStatic() {
+        // Tidak reset static words — hanya rotating line yang berubah
+    }
+
+    // ── Loop utama — hanya rotating line yang berganti ──
+    function runLoop() {
+        // Render phrase berikutnya
+        renderPhrase(PHRASES[phraseIndex]);
+        phraseIndex = (phraseIndex + 1) % PHRASES.length;
+
+        setTimeout(() => {
+            // Static words masuk sekali di awal
+            enterStaticOnce();
+            // Rotating phrase masuk
+            rotWordsIn();
+
+            // Setelah pause → hanya rotating line yang keluar dan berganti
+            setTimeout(() => {
+                rotWordsOut(() => {
+                    setTimeout(runLoop, 80);
+                });
+            }, totalEnterMs() + PAUSE);
+
+        }, 100);
+    }
+
+    runLoop();
+
+
+    // ═══════════════════════════════════════════════════════
+    //  SCROLL ANIMATION — section di bawah hero
+    // ═══════════════════════════════════════════════════════
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(el => {
+        observer.observe(el);
+    });
+});
+</script>
+@endpush
