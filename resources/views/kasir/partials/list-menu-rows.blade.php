@@ -5,7 +5,7 @@
     <td class="py-3 px-3">
         <div class="d-flex align-items-center gap-3">
             @if($menu->gambar)
-                <img src="{{ asset('storage/' . $menu->gambar) }}" class="rounded-3 object-fit-cover border border-warning-subtle" style="width: 45px; height: 45px;">
+                <img src="{{ asset('assets/menus/' . $menu->gambar) }}" class="rounded-3 object-fit-cover border border-warning-subtle" style="width: 45px; height: 45px;">
             @else
                 <div class="rounded-3 bg-warning-subtle d-flex align-items-center justify-content-center text-warning" style="width: 45px; height: 45px;">
                     <i class="bi bi-egg-fried fs-5"></i>

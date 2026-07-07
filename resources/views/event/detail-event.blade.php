@@ -202,7 +202,7 @@
 
                 {{-- Cover --}}
                 @if($event->image)
-                    <img src="{{ asset('storage/' . $event->image) }}"
+                    <img src="{{ asset('assets/event/' . $event->image) }}"
                          alt="{{ $event->event_name }}"
                          class="event-cover mb-4"
                          onerror="this.src='https://placehold.co/800x420/fff4ec/ff6a00?text=Event+Flavory'">

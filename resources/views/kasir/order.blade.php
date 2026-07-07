@@ -431,7 +431,7 @@
                         <div class="img-container">
                             <span class="stok-badge"><i class="bi bi-box me-1"></i>{{ $menu->stok_menu ?? '∞' }}</span>
                             @if($menu->gambar)
-                                <img src="{{ asset('storage/' . $menu->gambar) }}" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'bi bi-image\'></i></div>'">\
+                                <img src="{{ asset('assets/menus/' . $menu->gambar) }}" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'bi bi-image\'></i></div>'">\
                             @else
                                 <div class="no-image"><i class="bi bi-image"></i></div>
                             @endif

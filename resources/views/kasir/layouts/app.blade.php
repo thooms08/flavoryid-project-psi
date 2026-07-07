@@ -279,7 +279,7 @@
         <div class="profile-container-nav">
             <a href="{{ route('kasir.profile-outlet.edit') }}" class="profile-outlet-nav">
                 @if($outletInfo && $outletInfo->logo)
-                    <img src="{{ asset('storage/logo/' . $outletInfo->logo) }}" class="logo-outlet-nav">
+                    <img src="{{ asset('assets/logo/' . $outletInfo->logo) }}" class="logo-outlet-nav">
                 @else
                     <div class="logo-outlet-nav d-flex align-items-center justify-content-center bg-white">
                         <i class="bi bi-shop text-orange" style="font-size: 1.2rem; color: var(--primary-orange);"></i>

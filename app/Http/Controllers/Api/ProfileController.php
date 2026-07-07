@@ -8,9 +8,8 @@ use App\Models\InformasiOutlet;
 use App\Models\MediaQr; 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -48,14 +47,13 @@ class ProfileController extends Controller
         $informasi = InformasiOutlet::where('partner_id', $partner_id)->first();
         $informasiId = $informasi ? $informasi->id : 'NULL';
 
-        // Validasi Data
         $validator = Validator::make($request->all(), [
-            'logo'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
+            'logo'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'nama_outlet'    => 'required|string|max:255',
             'jenis_outlet'   => 'required|in:cafe,restoran,lainnya',
             'jenis_lainnya'  => 'required_if:jenis_outlet,lainnya|nullable|string|max:255',
             'page_name'      => 'nullable|string|max:255|unique:informasi_outlet,page_name,' . $informasiId,
-            'foto_outlet'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
+            'foto_outlet'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'deskripsi'      => 'nullable|string',
             'alamat_lengkap' => 'nullable|string',
             'kota'           => 'nullable|string|max:255',
@@ -81,37 +79,26 @@ class ProfileController extends Controller
 
         // --- PROSES UPLOAD & KOMPRES LOGO ---
         if ($request->hasFile('logo')) {
-            // Hapus logo lama jika ada
             if ($informasi->logo) {
-                Storage::disk('public')->delete('logo/' . $informasi->logo);
+                $oldPath = public_path('assets/logo/' . $informasi->logo);
+                if (File::exists($oldPath)) File::delete($oldPath);
             }
-            
             $logoName = time() . '_logo.' . $request->logo->extension();
-            // Disk 'public' root-nya storage/app/public — simpan ke subfolder logo/
-            $destination = storage_path('app/public/logo/' . $logoName);
-            
-            // Kompres gambar 60%
-            $this->compressImage($request->file('logo'), $destination, 60);
+            $this->compressAndStore($request->file('logo'), 'logo', $logoName, 60);
             $informasi->logo = $logoName;
         }
 
         // --- PROSES UPLOAD & KOMPRES FOTO OUTLET ---
         if ($request->hasFile('foto_outlet')) {
-            // Hapus foto lama jika ada
             if ($informasi->foto_outlet) {
-                Storage::disk('public')->delete('outlet/' . $informasi->foto_outlet);
+                $oldPath = public_path('assets/outlet/' . $informasi->foto_outlet);
+                if (File::exists($oldPath)) File::delete($oldPath);
             }
-            
             $fotoName = time() . '_foto.' . $request->foto_outlet->extension();
-            // Disk 'public' root-nya storage/app/public — simpan ke subfolder outlet/
-            $destination = storage_path('app/public/outlet/' . $fotoName);
-            
-            // Kompres gambar 60%
-            $this->compressImage($request->file('foto_outlet'), $destination, 60);
+            $this->compressAndStore($request->file('foto_outlet'), 'outlet', $fotoName, 60);
             $informasi->foto_outlet = $fotoName;
         }
 
-        // Update Field Text
         $informasi->nama_outlet    = $validatedData['nama_outlet'];
         $informasi->jenis_outlet   = $validatedData['jenis_outlet'];
         $informasi->jenis_lainnya  = $validatedData['jenis_outlet'] === 'lainnya' ? ($validatedData['jenis_lainnya'] ?? null) : null;
@@ -125,7 +112,6 @@ class ProfileController extends Controller
         $informasi->maps           = $validatedData['maps'] ?? null;
         $informasi->save();
 
-        // Simpan Data Media Sosial (MediaQr)
         $media = MediaQr::where('informasi_id', $informasi->id)->first();
         if (!$media) {
             $media = new MediaQr();
@@ -147,7 +133,6 @@ class ProfileController extends Controller
 
     public function downloadQr(Request $request)
     {
-        // Mendukung request melalui Query string (Untuk token yang dilempar dari Flutter URL Download)
         $user = $request->user();
         if (!$user && $request->has('token')) {
             $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->token);
@@ -172,31 +157,5 @@ class ProfileController extends Controller
         return response($qrCode)
             ->header('Content-type', 'image/png')
             ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
-    }
-
-    // Fungsi Helper PHP GD (Sama Persis)
-    private function compressImage($file, $destination, $quality = 60)
-    {
-        $info = getimagesize($file->getRealPath());
-        $mime = $info['mime'];
-
-        switch ($mime) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $image = imagecreatefromjpeg($file->getRealPath());
-                imagejpeg($image, $destination, $quality);
-                break;
-            case 'image/png':
-                $image = imagecreatefrompng($file->getRealPath());
-                imagealphablending($image, false);
-                imagesavealpha($image, true);
-                $compression = 9 - round(($quality / 100) * 9);
-                imagepng($image, $destination, $compression);
-                break;
-            default:
-                move_uploaded_file($file->getRealPath(), $destination);
-                return;
-        }
-        imagedestroy($image);
     }
 }

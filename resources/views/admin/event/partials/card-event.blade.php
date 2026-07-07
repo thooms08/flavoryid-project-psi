@@ -2,7 +2,7 @@
     <div class="card h-100 border-0 text-white position-relative" style="background: rgba(19, 32, 64, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(0, 229, 255, 0.15) !important; border-radius: 16px; transition: all 0.3s ease; overflow: hidden;">
         <!-- Banner Image -->
         <div style="position: relative; height: 160px; overflow: hidden; border-bottom: 1px solid rgba(0, 229, 255, 0.1);">
-            <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->event_name }}" class="w-100 h-100" style="object-fit: cover;">
+            <img src="{{ asset('assets/event/' . $event->image) }}" alt="{{ $event->event_name }}" class="w-100 h-100" style="object-fit: cover;">
             <div style="position: absolute; top: 12px; right: 12px;">
                 <span class="badge {{ $event->status === 'active' ? 'bg-success text-white' : 'bg-secondary text-white' }} font-monospace text-uppercase" style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
                     {{ $event->status }}

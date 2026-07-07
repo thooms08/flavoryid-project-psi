@@ -176,7 +176,7 @@
                                 {{-- Header outlet --}}
                                 <div class="text-center mb-3">
                                     @if($outlet && $outlet->logo)
-                                        <img src="{{ asset('storage/logo/' . $outlet->logo) }}"
+                                        <img src="{{ asset('assets/logo/' . $outlet->logo) }}"
                                              style="height: 50px; margin-bottom: 6px;" class="d-block mx-auto">
                                     @endif
                                     <div class="outlet-name">{{ $outlet->nama_outlet ?? 'Nama Outlet' }}</div>

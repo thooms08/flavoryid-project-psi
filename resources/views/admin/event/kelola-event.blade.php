@@ -110,7 +110,7 @@
                     @forelse($events as $event)
                         <tr>
                             <td>
-                                <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->event_name }}" class="rounded" style="width: 80px; height: 50px; object-fit: cover; border: 1px solid rgba(0, 229, 255, 0.2);">
+                                <img src="{{ asset('assets/event/' . $event->image) }}" alt="{{ $event->event_name }}" class="rounded" style="width: 80px; height: 50px; object-fit: cover; border: 1px solid rgba(0, 229, 255, 0.2);">
                             </td>
                             <td>
                                 <div class="fw-bold text-white fs-6">{{ $event->event_name }}</div>

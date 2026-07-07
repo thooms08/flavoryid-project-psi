@@ -112,7 +112,7 @@
         <div class="col-lg-6">
             <div class="img-outlet-wrapper">
                 @if($outlet->foto_outlet)
-                   <img src="{{ asset('storage/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
+                   <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
                 @else
                     <div class="d-flex justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 350px;"><i class="bi bi-images text-secondary" style="font-size: 5rem; opacity: 0.5;"></i></div>
                 @endif
@@ -162,7 +162,7 @@
                         @elseif($menu->tipe_menu == 'best_seller')
                             <span class="badge badge-menu badge-best-seller"><i class="bi bi-fire me-1 text-warning"></i>Best Seller</span>
                         @endif
-                        <img src="{{ $menu->gambar ? asset('storage/' . $menu->gambar) : 'https://placehold.co/400x300?text=No+Image' }}" class="card-img-top menu-img" alt="{{ $menu->nama_menu }}">
+                        <img src="{{ $menu->gambar ? asset('assets/menus/' . $menu->gambar) : 'https://placehold.co/400x300?text=No+Image' }}" class="card-img-top menu-img" alt="{{ $menu->nama_menu }}">
                     </div>
                     <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="card-title fw-bold text-truncate mb-1" style="color: #1e293b; font-size: 1.05rem;" title="{{ $menu->nama_menu }}">{{ $menu->nama_menu }}</h6>
@@ -573,7 +573,7 @@
                     }
 
                     data.forEach(menu => {
-                        let imgSrc = menu.gambar ? (assetUrl + menu.gambar) : 'https://placehold.co/400x300?text=No+Image';
+                        let imgSrc = menu.gambar ? (assetUrl + 'assets/menus/' + menu.gambar) : 'https://placehold.co/400x300?text=No+Image';
                         let overlayHabis = menu.status_menu === 'habis' ? `<div class="menu-overlay-habis"><span class="label-habis">HABIS</span></div>` : '';
                         let badgeTipe = '';
                         if (menu.tipe_menu === 'utama') badgeTipe = `<span class="badge bg-primary badge-menu shadow-sm">Menu Utama</span>`;

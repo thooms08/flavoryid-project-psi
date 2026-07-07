@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class AdminEventController extends Controller
@@ -28,14 +28,14 @@ class AdminEventController extends Controller
         ]);
 
         $data = $request->except('image');
-        
-        // Generate slug unik dari nama event
         $data['url']  = Str::slug($request->event_name);
         $data['slug'] = Event::generateUniqueSlug($request->event_name);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('event', 'public');
-            $data['image'] = $path;
+            $file = $request->file('image');
+            $fileName = time() . '_' . Str::slug($request->event_name) . '.' . $file->extension();
+            $this->compressAndStore($file, 'event', $fileName, 75);
+            $data['image'] = $fileName;
         }
 
         Event::create($data);
@@ -59,17 +59,20 @@ class AdminEventController extends Controller
 
         $data = $request->except('image');
         $data['url']  = Str::slug($request->event_name);
-        // Regenerate slug hanya jika nama event berubah
         if ($event->event_name !== $request->event_name) {
             $data['slug'] = Event::generateUniqueSlug($request->event_name, $event->id);
         }
 
         if ($request->hasFile('image')) {
+            // Hapus gambar lama
             if ($event->image) {
-                Storage::disk('public')->delete($event->image);
+                $oldPath = public_path('assets/event/' . $event->image);
+                if (File::exists($oldPath)) File::delete($oldPath);
             }
-            $path = $request->file('image')->store('event', 'public');
-            $data['image'] = $path;
+            $file = $request->file('image');
+            $fileName = time() . '_' . Str::slug($request->event_name) . '.' . $file->extension();
+            $this->compressAndStore($file, 'event', $fileName, 75);
+            $data['image'] = $fileName;
         }
 
         $event->update($data);
@@ -91,7 +94,8 @@ class AdminEventController extends Controller
         $event = Event::where('uuid', $uuid)->firstOrFail();
         
         if ($event->image) {
-            Storage::disk('public')->delete($event->image);
+            $oldPath = public_path('assets/event/' . $event->image);
+            if (File::exists($oldPath)) File::delete($oldPath);
         }
 
         $event->delete();

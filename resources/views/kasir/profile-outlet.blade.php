@@ -229,7 +229,7 @@
                             
                             <div class="upload-area @error('logo') error @enderror" onclick="document.getElementById('logo').click()">
                                 <div class="modern-preview-wrapper" id="logo-preview-wrapper" style="{{ isset($informasi->logo) && $informasi->logo ? '' : 'display: none;' }}">
-                                    <img src="{{ isset($informasi->logo) && $informasi->logo ? asset('storage/logo/' . $informasi->logo) : '#' }}" alt="Logo" id="logo-preview">
+                                    <img src="{{ isset($informasi->logo) && $informasi->logo ? asset('assets/logo/' . $informasi->logo) : '#' }}" alt="Logo" id="logo-preview">
                                     <div class="change-image-btn"><i class="bi bi-arrow-repeat me-1"></i> Ganti Logo</div>
                                 </div>
 
@@ -284,7 +284,7 @@
                             <div class="upload-area @error('foto_outlet') error @enderror" style="max-width: 100%;" onclick="document.getElementById('foto_outlet').click()">
                                 
                                 <div class="modern-preview-wrapper" id="foto-preview-wrapper" style="{{ !empty($informasi->foto_outlet) ? '' : 'display: none;' }}">
-                                    <img src="{{ !empty($informasi->foto_outlet) ? asset('storage/outlet/' . $informasi->foto_outlet) : '#' }}" alt="Foto Outlet" id="foto-preview">
+                                    <img src="{{ !empty($informasi->foto_outlet) ? asset('assets/outlet/' . $informasi->foto_outlet) : '#' }}" alt="Foto Outlet" id="foto-preview">
                                     <div class="d-block">
                                         <div class="change-image-btn"><i class="bi bi-arrow-repeat me-1"></i> Ganti Foto Suasana</div>
                                     </div>

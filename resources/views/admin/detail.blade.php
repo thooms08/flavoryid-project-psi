@@ -182,7 +182,7 @@
                                 <div>
                                     <span class="data-label">Logo Outlet</span>
                                     @if($partner->outlet->logo)
-                                        <img src="{{ asset('storage/logo/' . $partner->outlet->logo) }}" alt="Logo" class="img-preview-box">
+                                        <img src="{{ asset('assets/logo/' . $partner->outlet->logo) }}" alt="Logo" class="img-preview-box">
                                     @else
                                         <div class="img-preview-box d-flex align-items-center justify-content-center text-secondary">No Logo</div>
                                     @endif
@@ -190,7 +190,7 @@
                                 <div>
                                     <span class="data-label">Foto Outlet</span>
                                     @if($partner->outlet->foto_outlet)
-                                        <img src="{{ asset('storage/outlet/' . $partner->outlet->foto_outlet) }}" alt="Foto" class="img-preview-box" style="max-width: 250px;">
+                                        <img src="{{ asset('assets/outlet/' . $partner->outlet->foto_outlet) }}" alt="Foto" class="img-preview-box" style="max-width: 250px;">
                                     @else
                                         <div class="img-preview-box d-flex align-items-center justify-content-center text-secondary" style="max-width: 250px;">No Photo</div>
                                     @endif

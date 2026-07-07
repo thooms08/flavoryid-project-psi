@@ -301,8 +301,7 @@ function openEditModal(btnElement) {
         // 4. Handle Preview Image
         const imgPreview = document.getElementById('edit_preview_img');
         if(menu.gambar) {
-            // Gambar disimpan di storage/app/public/menus → akses via /storage/menus/...
-            imgPreview.src = menu.gambar.startsWith('http') ? menu.gambar : `/storage/${menu.gambar}`;
+            imgPreview.src = menu.gambar.startsWith('http') ? menu.gambar : `/assets/menus/${menu.gambar}`;
             imgPreview.classList.remove('d-none');
         } else {
             imgPreview.src = '';

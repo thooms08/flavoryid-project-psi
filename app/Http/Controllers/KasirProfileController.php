@@ -9,7 +9,6 @@ use App\Models\MediaQr;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class KasirProfileController extends Controller
@@ -87,11 +86,12 @@ class KasirProfileController extends Controller
         if ($request->hasFile('logo')) {
             // Hapus logo lama jika ada
             if ($informasi->logo) {
-                Storage::disk('public')->delete('logo/' . $informasi->logo);
+                $oldPath = public_path('assets/logo/' . $informasi->logo);
+                if (File::exists($oldPath)) File::delete($oldPath);
             }
             
             $logoName = time() . '_logo.' . $request->logo->extension();
-            $this->compressAndStore($request->file('logo'), storage_path('app/public/logo'), $logoName, 60);
+            $this->compressAndStore($request->file('logo'), 'logo', $logoName, 60);
             $informasi->logo = $logoName;
         }
 
@@ -99,11 +99,12 @@ class KasirProfileController extends Controller
         if ($request->hasFile('foto_outlet')) {
             // Hapus foto lama jika ada
             if ($informasi->foto_outlet) {
-                Storage::disk('public')->delete('outlet/' . $informasi->foto_outlet);
+                $oldPath = public_path('assets/outlet/' . $informasi->foto_outlet);
+                if (File::exists($oldPath)) File::delete($oldPath);
             }
             
             $fotoName = time() . '_foto.' . $request->foto_outlet->extension();
-            $this->compressAndStore($request->file('foto_outlet'), storage_path('app/public/outlet'), $fotoName, 60);
+            $this->compressAndStore($request->file('foto_outlet'), 'outlet', $fotoName, 60);
             $informasi->foto_outlet = $fotoName;
         }
 

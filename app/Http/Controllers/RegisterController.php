@@ -55,7 +55,7 @@ class RegisterController extends Controller {
             if ($request->hasFile('foto_outlet')) {
                 $file = $request->file('foto_outlet');
                 $fileName = time() . '_' . Str::slug($request->nama_outlet) . '.' . $file->extension();
-                $this->compressAndStore($file, storage_path('app/public/outlet'), $fileName, 60);
+                $this->compressAndStore($file, 'outlet', $fileName, 60);
                 $fotoPath = $fileName;
             }
             
@@ -82,7 +82,7 @@ class RegisterController extends Controller {
             // Setup Harga & Invoice
             $invoiceNumber = 'FLY-' . time() . '-' . strtoupper(Str::random(4));
             $amount = 0;
-            if ($request->paket === 'eksklusif') $amount = 500;
+            if ($request->paket === 'eksklusif') $amount = 70000;
             if ($request->paket === 'super') $amount = 880000;
 
             $mediaQr = MediaQr::create([

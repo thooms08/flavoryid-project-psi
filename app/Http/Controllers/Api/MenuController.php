@@ -82,9 +82,6 @@ class MenuController extends Controller
             DB::beginTransaction();
             $kategori = $request->kategori ?? 'F&B';
 
-            // Pastikan folder storage/app/public/menus exists
-            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('menus');
-
             foreach ($request->menus as $item) {
                 $path = null;
                 
@@ -92,11 +89,8 @@ class MenuController extends Controller
                 if (isset($item['gambar']) && $item['gambar'] instanceof \Illuminate\Http\UploadedFile) {
                     $file = $item['gambar'];
                     $name = time() . '_' . Str::random(5) . '_' . Str::slug($item['nama_menu']) . '.' . $file->extension();
-                    $destination = storage_path('app/public/menus/' . $name);
-                    
-                    // Panggil fungsi kompresi dengan target maksimal 100 KB
-                    $this->compressImage($file, $destination, 100);
-                    $path = 'menus/' . $name;
+                    $this->compressAndStore($file, 'menus', $name, 60);
+                    $path = $name;
                 }
 
                 $menu = Menu::create([
@@ -160,21 +154,14 @@ class MenuController extends Controller
 
             // Proses Update Gambar
             if ($request->hasFile('gambar')) {
-                // Hapus gambar lama
                 if ($menu->gambar) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($menu->gambar);
+                    $oldPath = public_path('assets/menus/' . $menu->gambar);
+                    if (\Illuminate\Support\Facades\File::exists($oldPath)) \Illuminate\Support\Facades\File::delete($oldPath);
                 }
-
-                \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('menus');
-
                 $file = $request->file('gambar');
                 $name = time() . '_' . Str::random(5) . '_' . Str::slug($request->nama_menu ?? $menu->nama_menu) . '.' . $file->extension();
-                $destination = storage_path('app/public/menus/' . $name);
-                
-                // Panggil fungsi kompresi dengan target maksimal 100 KB
-                $this->compressImage($file, $destination, 100);
-                
-                $validated['gambar'] = 'menus/' . $name;
+                $this->compressAndStore($file, 'menus', $name, 60);
+                $validated['gambar'] = $name;
             }
 
             $menu->update($validated);
@@ -207,7 +194,8 @@ class MenuController extends Controller
             $menu = Menu::where('partner_id', $request->user()->partner->id)->findOrFail($id);
             
             if ($menu->gambar) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($menu->gambar);
+                $oldPath = public_path('assets/menus/' . $menu->gambar);
+                if (\Illuminate\Support\Facades\File::exists($oldPath)) \Illuminate\Support\Facades\File::delete($oldPath);
             }
             
             $menu->variants()->delete();
@@ -218,77 +206,5 @@ class MenuController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal hapus menu'], 500);
         }
-    }
-
-    /**
-     * Algoritma Kompresi Gambar Cerdas (< 100KB)
-     */
-    private function compressImage($file, $destination, $targetKb = 100)
-    {
-        $info = getimagesize($file->getRealPath());
-        $mime = $info['mime'];
-
-        // Load Original Image Resource
-        switch ($mime) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $image = imagecreatefromjpeg($file->getRealPath());
-                break;
-            case 'image/png':
-                $image = imagecreatefrompng($file->getRealPath());
-                break;
-            default:
-                move_uploaded_file($file->getRealPath(), $destination);
-                return;
-        }
-
-        // 1. RESIZE JIKA TERLALU BESAR (Sangat penting agar size bisa kecil)
-        // Maksimal lebar 800px. Jika dari HP, biasanya di atas 2000px+.
-        $width = imagesx($image);
-        $height = imagesy($image);
-        $maxWidth = 800;
-
-        if ($width > $maxWidth) {
-            $newWidth = $maxWidth;
-            $newHeight = floor($height * ($maxWidth / $width));
-            $newImage = imagecreatetruecolor($newWidth, $newHeight);
-
-            // Pelihara background transparan jika PNG
-            if ($mime == 'image/png') {
-                imagealphablending($newImage, false);
-                imagesavealpha($newImage, true);
-                $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
-            }
-
-            imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-            imagedestroy($image);
-            $image = $newImage; // Ganti resource gambar utama menjadi yang sudah di resize
-        }
-
-        // 2. KOMPRESI ITERATIF (< 100KB)
-        $quality = 90;
-        $targetBytes = $targetKb * 1024; // 100KB dalam Bytes
-        $tempFile = tempnam(sys_get_temp_dir(), 'img_compress');
-
-        do {
-            if ($mime == 'image/jpeg' || $mime == 'image/jpg') {
-                imagejpeg($image, $tempFile, $quality);
-            } elseif ($mime == 'image/png') {
-                // Untuk PNG, rasio kompresi GD dari 0 (tanpa kompresi) s/d 9 (kompresi maksimum)
-                $compression = round(9 - ($quality * 9 / 100));
-                imagepng($image, $tempFile, $compression);
-            }
-            
-            clearstatcache();
-            $fileSize = filesize($tempFile);
-            $quality -= 10; // Kurangi kualitas secara bertahap jika masih di atas batas
-            
-        } while ($fileSize > $targetBytes && $quality >= 20); // Stop jika sudah dibawah batas ukuran atau batas terbawah kualitas (20)
-
-        // 3. PINDAHKAN FILE FINAL
-        copy($tempFile, $destination);
-        unlink($tempFile);
-        imagedestroy($image);
     }
 }

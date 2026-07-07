@@ -90,7 +90,7 @@
         <div class="text-center">
         @if($outlet && $outlet->logo)
             <div class="logo-container mb-3">
-                <img src="{{ asset('storage/logo/' . basename($outlet->logo)) }}" 
+                <img src="{{ asset('assets/logo/' . basename($outlet->logo)) }}" 
                      alt="Logo" 
                      class="outlet-logo">
             </div>

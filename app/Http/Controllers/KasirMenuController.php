@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 
@@ -66,9 +65,6 @@ class KasirMenuController extends Controller {
             DB::beginTransaction();
             $kategori = $request->kategori ?? 'F&B';
 
-            // Pastikan folder storage/app/public/menus exists
-            Storage::disk('public')->makeDirectory('menus');
-
             foreach ($request->menus as $item) {
                 $path = null;
                 
@@ -76,12 +72,8 @@ class KasirMenuController extends Controller {
                 if (isset($item['gambar'])) {
                     $file = $item['gambar'];
                     $name = time() . '_' . Str::random(5) . '_' . Str::slug($item['nama_menu']) . '.' . $file->extension();
-                    $destination = storage_path('app/public/menus/' . $name);
-                    
-                    // Gunakan kompresi dengan kualitas 60%
-                    $this->compressImage($file, $destination, 60);
-                    
-                    $path = 'menus/' . $name;
+                    $this->compressAndStore($file, 'menus', $name, 60);
+                    $path = $name;
                 }
 
                 $menu = Menu::create([
@@ -169,20 +161,14 @@ class KasirMenuController extends Controller {
             if ($request->hasFile('gambar')) {
                 // Hapus file lama jika ada
                 if ($menu->gambar) {
-                    Storage::disk('public')->delete($menu->gambar);
+                    $oldPath = public_path('assets/menus/' . $menu->gambar);
+                    if (File::exists($oldPath)) File::delete($oldPath);
                 }
-
-                // Pastikan folder ada
-                Storage::disk('public')->makeDirectory('menus');
 
                 $file = $request->file('gambar');
                 $name = time() . '_' . Str::slug($request->nama_menu ?? $menu->nama_menu) . '.' . $file->extension();
-                $destination = storage_path('app/public/menus/' . $name);
-                
-                // Gunakan kompresi dengan kualitas 60%
-                $this->compressImage($file, $destination, 60);
-                
-                $validated['gambar'] = 'menus/' . $name;
+                $this->compressAndStore($file, 'menus', $name, 60);
+                $validated['gambar'] = $name;
             }
 
             $menu->update($validated);
@@ -216,7 +202,8 @@ class KasirMenuController extends Controller {
         try {
             $menu = Menu::findOrFail($id);
             if ($menu->gambar) {
-                Storage::disk('public')->delete($menu->gambar);
+                $oldPath = public_path('assets/menus/' . $menu->gambar);
+                if (File::exists($oldPath)) File::delete($oldPath);
             }
             $menu->variants()->delete();
             $menu->delete();
@@ -231,34 +218,4 @@ class KasirMenuController extends Controller {
         }
     }
 
-    /**
-     * Fungsi Helper untuk mengompres gambar menggunakan PHP GD Library
-     */
-    private function compressImage($file, $destination, $quality = 60)
-    {
-        $info = getimagesize($file->getRealPath());
-        $mime = $info['mime'];
-
-        switch ($mime) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $image = imagecreatefromjpeg($file->getRealPath());
-                imagejpeg($image, $destination, $quality);
-                break;
-                
-            case 'image/png':
-                $image = imagecreatefrompng($file->getRealPath());
-                imagealphablending($image, false);
-                imagesavealpha($image, true);
-                $compression = 9 - round(($quality / 100) * 9);
-                imagepng($image, $destination, $compression);
-                break;
-                
-            default:
-                move_uploaded_file($file->getRealPath(), $destination);
-                return;
-        }
-
-        imagedestroy($image);
     }
-}

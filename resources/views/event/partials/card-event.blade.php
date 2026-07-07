@@ -17,7 +17,7 @@
     {{-- Gambar Event --}}
     <div class="event-card-img-wrap">
         @if($event->image)
-            <img src="{{ asset('storage/' . $event->image) }}"
+            <img src="{{ asset('assets/event/' . $event->image) }}"
                  alt="{{ $event->event_name }}"
                  class="event-card-img"
                  loading="lazy"
