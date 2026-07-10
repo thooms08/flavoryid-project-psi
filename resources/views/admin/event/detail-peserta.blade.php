@@ -104,6 +104,9 @@
                         <th>Nama Peserta</th>
                         <th>No. WhatsApp</th>
                         <th>Kategori</th>
+                        <th>Nama Usaha</th>
+                        <th>Instansi</th>
+                        <th>Informasi</th>
                         <th class="text-center">Sertifikat</th>
                         <th class="text-end">Aksi</th>
                     </tr>
@@ -139,6 +142,26 @@
                                     ][$participant->participant_category] ?? $participant->participant_category;
                                 @endphp
                                 <span class="badge {{ $categoryBadge }}">{{ $categoryLabel }}</span>
+                            </td>
+                            {{-- Nama Usaha --}}
+                            <td>
+                                <span class="{{ $participant->nama_usaha ? 'text-white fw-semibold' : 'text-secondary' }}">
+                                    {{ $participant->nama_usaha ?? '-' }}
+                                </span>
+                            </td>
+
+                            {{-- Instansi --}}
+                            <td>
+                                <span class="{{ $participant->nama_instansi ? 'text-white fw-semibold' : 'text-secondary' }}">
+                                    {{ $participant->nama_instansi ?? '-' }}
+                                </span>
+                            </td>
+
+                            {{-- Informasi --}}
+                            <td>
+                                <span class="{{ $participant->info ? 'text-white ' : 'text-secondary' }}">
+                                    {{ $participant->info ?? '-' }}
+                                </span>
                             </td>
                             <td class="text-center font-monospace">
                                 @if($participant->certificat)
@@ -209,7 +232,7 @@
                         </div>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="9" class="text-center py-5">
                                 <i class="fa-solid fa-users-slash fs-2 mb-3 d-block text-secondary"></i>
                                 <span class="text-secondary">Belum ada peserta yang mendaftar pada event ini.</span>
                             </td>

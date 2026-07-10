@@ -19,6 +19,21 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    /**
+     * Halaman login dengan akun demo — hanya bisa diakses via token yang valid.
+     * Token = 16 karakter pertama dari SHA-256(APP_KEY + 'demo-access').
+     */
+    public function showDemoLogin(string $token)
+    {
+        $expected = substr(hash('sha256', config('app.key') . 'demo-access'), 0, 16);
+
+        if (!hash_equals($expected, $token)) {
+            abort(404);
+        }
+
+        return view('auth.login', ['demoMode' => true]);
+    }
+
     public function login(Request $request): RedirectResponse
     {
         // 1. Validasi Input Dasar

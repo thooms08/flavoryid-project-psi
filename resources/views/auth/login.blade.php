@@ -79,6 +79,31 @@
         <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-5">
             @csrf
 
+            {{-- Banner akun demo (tampil jika ada ?demo=1) --}}
+            <div id="demoBanner" class="{{ ($demoMode ?? false) ? '' : 'hidden' }} mb-1 p-4 rounded-2xl border border-orange-200 bg-orange-50">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="bi bi-person-badge-fill text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black text-orange-700 uppercase tracking-wide mb-1">Akun Demo Gratis</p>
+                        <p class="text-[11px] text-orange-600 leading-relaxed mb-2">
+                            Gunakan kredensial berikut untuk menjelajahi fitur Flavory.id tanpa daftar.
+                        </p>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase w-16">Username</span>
+                                <code class="text-xs font-black text-orange-700 bg-white border border-orange-200 px-2 py-0.5 rounded-lg">contoh-kasir</code>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase w-16">Password</span>
+                                <code class="text-xs font-black text-orange-700 bg-white border border-orange-200 px-2 py-0.5 rounded-lg">password123</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Username --}}
             <div class="space-y-1.5">
                 <label class="block text-xs font-black text-slate-700 uppercase tracking-widest ml-1">Username</label>
@@ -143,6 +168,18 @@
         </div>
     </div>
 </div>
+
+<script>
+// ── Auto-fill akun demo jika demoMode aktif ──
+(function() {
+    @if($demoMode ?? false)
+        const uEl = document.getElementById('inputUsername');
+        const pEl = document.getElementById('inputPassword');
+        if (uEl) uEl.value = 'contoh-kasir';
+        if (pEl) pEl.value = 'password123';
+    @endif
+})();
+</script>
 
 <script src="{{ asset('pwa-auth.js') }}"></script>
 <script>

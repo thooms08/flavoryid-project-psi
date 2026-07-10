@@ -314,17 +314,72 @@
                                 <label class="form-label-custom" for="participant_category">
                                     Kategori Peserta <span class="text-danger">*</span>
                                 </label>
-                                <select id="participant_category"
-                                        name="participant_category"
-                                        class="form-select form-control-custom @error('participant_category') is-invalid @enderror"
-                                        required>
-                                    <option value="" disabled {{ old('participant_category') ? '' : 'selected' }}>-- Pilih kategori --</option>
-                                    <option value="pengusaha_kuliner"     {{ old('participant_category') === 'pengusaha_kuliner'     ? 'selected' : '' }}>Pengusaha Kuliner</option>
-                                    <option value="pengusaha_non_kuliner" {{ old('participant_category') === 'pengusaha_non_kuliner' ? 'selected' : '' }}>Pengusaha Non-Kuliner</option>
-                                    <option value="pelajar"               {{ old('participant_category') === 'pelajar'               ? 'selected' : '' }}>Pelajar / Mahasiswa</option>
-                                    <option value="umum"                  {{ old('participant_category') === 'umum'                  ? 'selected' : '' }}>Umum</option>
-                                </select>
+                                <div class="position-relative">
+                                    <select id="participant_category"
+                                            name="participant_category"
+                                            class="form-select form-control-custom @error('participant_category') is-invalid @enderror"
+                                            style="background-image: none !important; padding-right: 40px;"
+                                            required>
+                                        <option value="" disabled {{ old('participant_category') ? '' : 'selected' }}>-- Pilih kategori --</option>
+                                        <option value="pengusaha_kuliner"     {{ old('participant_category') === 'pengusaha_kuliner'     ? 'selected' : '' }}>Pengusaha Kuliner</option>
+                                        <option value="pengusaha_non_kuliner" {{ old('participant_category') === 'pengusaha_non_kuliner' ? 'selected' : '' }}>Pengusaha Non-Kuliner</option>
+                                        <option value="pelajar"               {{ old('participant_category') === 'pelajar'               ? 'selected' : '' }}>Pelajar / Mahasiswa</option>
+                                        <option value="umum"                  {{ old('participant_category') === 'umum'                  ? 'selected' : '' }}>Umum</option>
+                                    </select>
+                                    {{-- Icon Panah Kustom --}}
+                                    <i id="category_arrow" class="bi bi-chevron-down position-absolute" 
+                                       style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; transition: transform 0.2s; color: #475569; font-size: 0.85rem;"></i>
+                                </div>
                                 @error('participant_category')
+                                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Input Nama Usaha (Kondisional) --}}
+                            <div id="group_nama_usaha" class="mb-3" style="display: none;">
+                                <label class="form-label-custom" for="nama_usaha">
+                                    Nama Usaha <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       id="nama_usaha"
+                                       name="nama_usaha"
+                                       value="{{ old('nama_usaha') }}"
+                                       class="form-control form-control-custom @error('nama_usaha') is-invalid @enderror"
+                                       placeholder="Contoh: Kopi Nusantara">
+                                @error('nama_usaha')
+                                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Input Nama Instansi / Sekolah (Kondisional) --}}
+                            <div id="group_nama_instansi" class="mb-3" style="display: none;">
+                                <label class="form-label-custom" for="nama_instansi">
+                                    Nama Instansi / Sekolah / Universitas <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       id="nama_instansi"
+                                       name="nama_instansi"
+                                       value="{{ old('nama_instansi') }}"
+                                       class="form-control form-control-custom @error('nama_instansi') is-invalid @enderror"
+                                       placeholder="Contoh: SMA Negeri 1 Jakarta / Universitas Indonesia">
+                                @error('nama_instansi')
+                                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                             {{-- Informasi Event--}}
+                            <div class="mb-3">
+                                <label class="form-label-custom" for="info">
+                                    Informasi Event<span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       id="info"
+                                       name="info"
+                                       value="{{ old('info') }}"
+                                       class="form-control form-control-custom @error('info') is-invalid @enderror"
+                                       placeholder="Medsos, Blog Flavory.id,.."
+                                       required>
+                                @error('info')
                                     <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -356,6 +411,60 @@
 
 @push('scripts')
 <script>
+    // Logic Togel Form Kondisional Kategori Peserta
+const categorySelect = document.getElementById('participant_category');
+const groupNamaUsaha = document.getElementById('group_nama_usaha');
+const groupNamaInstansi = document.getElementById('group_nama_instansi');
+const inputNamaUsaha = document.getElementById('nama_usaha');
+const inputNamaInstansi = document.getElementById('nama_instansi');
+
+function toggleFields() {
+    const val = categorySelect.value;
+    
+    if (val === 'pengusaha_kuliner' || val === 'pengusaha_non_kuliner') {
+        groupNamaUsaha.style.display = 'block';
+        inputNamaUsaha.required = true;
+        
+        groupNamaInstansi.style.display = 'none';
+        inputNamaInstansi.required = false;
+    } else if (val === 'pelajar') {
+        groupNamaUsaha.style.display = 'none';
+        inputNamaUsaha.required = false;
+        
+        groupNamaInstansi.style.display = 'block';
+        inputNamaInstansi.required = true;
+    } else {
+        groupNamaUsaha.style.display = 'none';
+        inputNamaUsaha.required = false;
+        
+        groupNamaInstansi.style.display = 'none';
+        inputNamaInstansi.required = false;
+    }
+}
+
+if (categorySelect) {
+    categorySelect.addEventListener('change', toggleFields);
+    toggleFields(); // Jalankan sekali saat page load untuk cek 'old value'
+}
+
+// Logic Animasi Panah Dropdown Kategori
+const selectEl = document.getElementById('participant_category');
+const arrowEl = document.getElementById('category_arrow');
+
+if (selectEl && arrowEl) {
+    selectEl.addEventListener('focus', () => {
+        arrowEl.style.transform = 'translateY(-50%) rotate(180deg)';
+    });
+    
+    selectEl.addEventListener('blur', () => {
+        arrowEl.style.transform = 'translateY(-50%) rotate(0deg)';
+    });
+    
+    selectEl.addEventListener('change', () => {
+        selectEl.blur(); // Otomatis tutup focus dan kembalikan panah ke bawah setelah memilih
+    });
+}
+
 document.getElementById('formDaftar')?.addEventListener('submit', function () {
     const btn = document.getElementById('btnDaftar');
     btn.disabled = true;

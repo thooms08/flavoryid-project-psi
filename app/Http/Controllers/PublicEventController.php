@@ -61,11 +61,17 @@ class PublicEventController extends Controller
             'name'                 => 'required|string|max:255',
             'wa'                   => 'required|string|max:20',
             'participant_category' => 'required|in:umum,pelajar,pengusaha_kuliner,pengusaha_non_kuliner',
+            'nama_usaha'           => 'required_if:participant_category,pengusaha_kuliner,pengusaha_non_kuliner|nullable|string|max:255',
+            'nama_instansi'        => 'required_if:participant_category,pelajar|nullable|string|max:255',
+            'info'                 => 'required|string|max:255',
         ], [
             'name.required'                 => 'Nama lengkap wajib diisi.',
             'wa.required'                   => 'Nomor WhatsApp wajib diisi.',
             'participant_category.required' => 'Kategori peserta wajib dipilih.',
             'participant_category.in'       => 'Kategori peserta tidak valid.',
+            'nama_usaha.required_if'        => 'Nama usaha wajib diisi untuk kategori pengusaha.',
+            'nama_instansi.required_if'     => 'Nama instansi/sekolah wajib diisi untuk kategori pelajar.',
+            'info.required'                 => 'Informasi Event wajib di isi',
         ]);
 
         // Cek duplikat: nomor WA yang sama di event yang sama
@@ -84,6 +90,9 @@ class PublicEventController extends Controller
             'name'                 => $request->name,
             'wa'                   => $request->wa,
             'participant_category' => $request->participant_category,
+            'nama_usaha'           => $request->nama_usaha,
+            'nama_instansi'        => $request->nama_instansi,
+            'info'                 => $request->info,
         ]);
 
         // Redirect ke grup WA jika tersedia, fallback ke halaman event

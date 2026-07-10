@@ -380,8 +380,8 @@
             }
             #sidebar.collapsed{ transform:translateX(-100%); width:var(--sidebar-w); }
             #sidebarOverlay{
-                position:fixed; inset:0; background:rgba(0,0,0,.3);
-                z-index:199; display:none; backdrop-filter:blur(2px);
+                position:fixed; inset:0; background:rgba(0,0,0,.45);
+                z-index:199; display:none;
             }
             #sidebarOverlay.show{ display:block; }
             .topbar{ padding:10px 14px; }

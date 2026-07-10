@@ -62,6 +62,7 @@ Route::post('/verifikasi-password', [AuthController::class, 'verifikasiKode'])->
 
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/coba-demo/{token}', [AuthController::class, 'showDemoLogin'])->name('demo.login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh-captcha', [AuthController::class, 'refreshCaptcha'])->name('captcha.refresh');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

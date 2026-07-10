@@ -14,6 +14,9 @@ class Participant extends Model
         'name',
         'wa',
         'participant_category',
+        'nama_usaha',
+        'nama_instansi',
+        'info',
         'certificat',
     ];
 

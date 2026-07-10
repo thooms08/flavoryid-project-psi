@@ -686,9 +686,11 @@
                         </div>
 
                         <div class="d-flex flex-wrap gap-3 hero-cta">
-                            <a href="{{ route('register') ?? '#' }}" class="btn btn-orange btn-lg px-4 fw-bold shadow-sm">
+                            <button type="button"
+                                onclick="document.getElementById('modalCobaGratis').showModal()"
+                                class="btn btn-orange btn-lg px-4 fw-bold shadow-sm">
                                 <i class="bi bi-rocket-takeoff-fill me-2"></i> Coba Gratis Sekarang
-                            </a>
+                            </button>
                             <a href="{{ route('panduan.daftar') }}" class="btn btn-outline-orange btn-lg px-4 fw-bold">
                                 <i class="bi bi-play-circle me-1"></i> Lihat Cara Kerjanya
                             </a>
@@ -1169,6 +1171,107 @@
             </div>
         </section>
     </main>
+
+{{-- ═══ MODAL: COBA GRATIS ═══ --}}
+<dialog id="modalCobaGratis" style="
+    border: none;
+    border-radius: 24px;
+    padding: 0;
+    max-width: 460px;
+    width: calc(100% - 32px);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 20px rgba(255,106,0,0.12);
+    background: #fff;
+    overflow: hidden;
+">
+    <div style="background: linear-gradient(135deg, #fff4ec 0%, #fdf0f8 100%); padding: 28px 28px 20px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+            <div style="
+                width:44px; height:44px; border-radius:12px;
+                background: linear-gradient(135deg, #ff6a00, #ee0979);
+                display:flex; align-items:center; justify-content:center;
+                box-shadow: 0 6px 16px rgba(255,106,0,0.3); flex-shrink:0;
+            ">
+                <i class="bi bi-rocket-takeoff-fill" style="color:#fff; font-size:1.1rem;"></i>
+            </div>
+            <div>
+                <p style="font-size:0.68rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#ff6a00; margin:0 0 2px;">Mulai Sekarang</p>
+                <h2 style="font-size:1.15rem; font-weight:900; color:#1e293b; margin:0; line-height:1.2;">Pilih cara terbaik<br>untuk Anda!</h2>
+            </div>
+        </div>
+        <p style="font-size:0.82rem; color:#64748b; line-height:1.65; margin:0;">
+            Anda bisa langsung <strong style="color:#1e293b;">mendaftar akun baru</strong> dengan paket gratis, atau <strong style="color:#1e293b;">coba dulu</strong> aplikasinya lewat akun demo tanpa perlu daftar.
+        </p>
+    </div>
+
+    <div style="padding: 20px 28px 28px; display:flex; flex-direction:column; gap:12px;">
+
+        {{-- Pilihan 1: Daftar gratis --}}
+        <a href="{{ route('register') }}"
+           style="
+               display:flex; align-items:center; gap:14px;
+               padding:16px 18px; border-radius:16px;
+               background: linear-gradient(135deg, #ff6a00, #ff8c33);
+               box-shadow: 0 6px 20px rgba(255,106,0,0.28);
+               text-decoration:none; transition: transform .2s, box-shadow .2s;
+           "
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(255,106,0,0.38)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 6px 20px rgba(255,106,0,0.28)';">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="bi bi-person-plus-fill" style="color:#fff; font-size:1.1rem;"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:0.9rem; font-weight:800; color:#fff; margin-bottom:2px;">Daftar Akun Gratis</div>
+                <div style="font-size:0.73rem; color:rgba(255,255,255,0.8);">Buat akun baru dengan paket gratis, mulai dalam 2 menit</div>
+            </div>
+            <i class="bi bi-arrow-right" style="color:rgba(255,255,255,0.7); font-size:1rem;"></i>
+        </a>
+
+        {{-- Pilihan 2: Login demo --}}
+        <a href="{{ route('demo.login', substr(hash('sha256', config('app.key') . 'demo-access'), 0, 16)) }}"
+           style="
+               display:flex; align-items:center; gap:14px;
+               padding:16px 18px; border-radius:16px;
+               background: #fff; border: 1.5px solid rgba(255,106,0,0.2);
+               box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+               text-decoration:none; transition: transform .2s, box-shadow .2s, border-color .2s;
+           "
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 22px rgba(255,106,0,0.12)'; this.style.borderColor='rgba(255,106,0,0.45)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(0,0,0,0.05)'; this.style.borderColor='rgba(255,106,0,0.2)';">
+            <div style="width:40px; height:40px; border-radius:10px; background:#fff4ec; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="bi bi-play-circle-fill" style="color:#ff6a00; font-size:1.1rem;"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:0.9rem; font-weight:800; color:#1e293b; margin-bottom:2px;">Coba Akun Demo Gratis</div>
+                <div style="font-size:0.73rem; color:#64748b;">Login otomatis ke akun demo, tanpa perlu daftar</div>
+            </div>
+            <i class="bi bi-arrow-right" style="color:#ff6a00; font-size:1rem;"></i>
+        </a>
+
+        {{-- Tutup --}}
+        <button onclick="document.getElementById('modalCobaGratis').close()"
+            style="
+                background:none; border:none; padding:8px;
+                font-size:0.78rem; font-weight:600; color:#94a3b8;
+                cursor:pointer; transition:color .2s;
+            "
+            onmouseover="this.style.color='#1e293b';"
+            onmouseout="this.style.color='#94a3b8';">
+            Nanti saja
+        </button>
+
+    </div>
+</dialog>
+
+<script>
+    // Tutup modal jika klik backdrop (luar dialog)
+    document.getElementById('modalCobaGratis').addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const inside = e.clientX >= rect.left && e.clientX <= rect.right
+                    && e.clientY >= rect.top  && e.clientY <= rect.bottom;
+        if (!inside) this.close();
+    });
+</script>
+
 @endsection
 
 @push('scripts')
