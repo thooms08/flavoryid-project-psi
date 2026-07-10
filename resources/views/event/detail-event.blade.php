@@ -5,7 +5,7 @@
 
 @section('meta_description', Str::limit(strip_tags($event->description), 155))
 
-@section('meta_image', asset('assets/event-preview.jpeg'))
+@section('meta_image', $event->image ? asset('assets/event/' . $event->image) : asset('assets/event-preview.jpeg'))
 
 @push('styles')
 {{-- Meta OG & Twitter khusus untuk halaman event ini (override meta di layouts/app.blade.php) --}}
@@ -13,7 +13,7 @@
 <meta property="og:url"         content="{{ route('event.show', $event->slug ?? $event->uuid) }}">
 <meta property="og:title"       content="{{ $event->event_name }} | Event Flavory.id">
 <meta property="og:description" content="{{ Str::limit(strip_tags($event->description), 155) }}">
-<meta property="og:image"       content="{{ asset('assets/event-preview.jpeg') }}">
+<meta property="og:image"       content="{{ $event->image ? asset('assets/event/' . $event->image) : asset('assets/event-preview.jpeg') }}">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name"   content="Aplikasi Flavory.id">
@@ -22,7 +22,7 @@
 <meta name="twitter:url"         content="{{ route('event.show', $event->slug ?? $event->uuid) }}">
 <meta name="twitter:title"       content="{{ $event->event_name }} | Event Flavory.id">
 <meta name="twitter:description" content="{{ Str::limit(strip_tags($event->description), 155) }}">
-<meta name="twitter:image"       content="{{ asset('assets/event-preview.jpeg') }}">
+<meta name="twitter:image"       content="{{ $event->image ? asset('assets/event/' . $event->image) : asset('assets/event-preview.jpeg') }}">
 <style>
     :root {
         --primary-orange: #ff6a00;
