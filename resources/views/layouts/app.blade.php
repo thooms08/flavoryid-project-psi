@@ -15,8 +15,8 @@
     <meta name="keywords" content="Aplikasi kasir, POS kuliner, software F&B, digitalisasi UMKM, kasir offline, kasir online, Aplikasi Flavory.id">
     <meta name="author" content="Aplikasi Flavory.id">
 
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="@yield('meta_og_type', 'website')">
+    <meta property="og:url" content="@yield('meta_og_url', url()->current())">
     <meta property="og:title" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner & Point of Sale (POS)')">
     <meta property="og:description" content="@yield('meta_description', 'Tinggalkan cara manual! Flavory.id hadir untuk mengelola bisnis kuliner Anda. Nikmati fitur kasir pintar, laporan otomatis, dan prediksi omzet.')">
     <meta property="og:image" content="@yield('meta_image', asset('assets/preview.jpg'))">
@@ -25,7 +25,7 @@
     <meta property="og:site_name" content="Aplikasi Flavory.id">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:url" content="@yield('meta_og_url', url()->current())">
     <meta name="twitter:title" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner')">
     <meta name="twitter:description" content="@yield('meta_description', 'Tinggalkan cara manual! Flavory.id hadir untuk mengelola bisnis kuliner Anda. Nikmati fitur kasir pintar dan laporan otomatis.')">
     <meta name="twitter:image" content="@yield('meta_image', asset('assets/preview.jpg'))">
