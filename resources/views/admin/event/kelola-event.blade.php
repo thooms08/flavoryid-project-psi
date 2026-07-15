@@ -190,6 +190,17 @@
                                 <input type="text" name="event_name" value="{{ $event->event_name }}" class="form-control" required>
                             </div>
                             <div class="col-12">
+                                <label class="form-label text-info fw-bold">
+                                    Slug URL
+                                    <span class="text-secondary fw-normal ms-1" style="font-size:0.78rem;">(hanya huruf kecil, angka, dan tanda hubung)</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text text-secondary" style="background:rgba(15,23,42,0.8);border:1px solid rgba(0,229,255,0.2);font-size:0.78rem;white-space:nowrap;">/event/</span>
+                                    <input type="text" name="slug" id="edit_slug_{{ $event->id }}" value="{{ $event->slug }}" class="form-control font-monospace" required>
+                                </div>
+                                <div class="form-text mt-1" id="edit_slug_preview_{{ $event->id }}" style="font-size:0.75rem;color:#64748b;"></div>
+                            </div>
+                            <div class="col-12">
                                 <label class="form-label text-info fw-bold">Deskripsi Event</label>
                                 <textarea name="description" rows="4" class="form-control" required>{{ $event->description }}</textarea>
                             </div>
@@ -247,7 +258,18 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label text-info fw-bold">Nama Event</label>
-                            <input type="text" name="event_name" placeholder="Contoh: Festival Kuliner Karawang 2026" class="form-control" required>
+                            <input type="text" name="event_name" id="add_event_name" placeholder="Contoh: Festival Kuliner Karawang 2026" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-info fw-bold">
+                                Slug URL
+                                <span class="text-secondary fw-normal ms-1" style="font-size:0.78rem;">(wajib diisi, hanya huruf kecil, angka, dan tanda hubung)</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text text-secondary" style="background:rgba(15,23,42,0.8);border:1px solid rgba(0,229,255,0.2);font-size:0.78rem;white-space:nowrap;">/event/</span>
+                                <input type="text" name="slug" id="add_slug" placeholder="contoh-slug-event-2026" class="form-control font-monospace" required>
+                            </div>
+                            <div class="form-text mt-1" id="add_slug_preview" style="font-size:0.75rem;color:#64748b;"></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-info fw-bold">Deskripsi Event</label>
@@ -288,3 +310,54 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Helper: ubah string jadi slug (huruf kecil, angka, tanda hubung)
+function toSlug(str) {
+    return str.toLowerCase()
+              .trim()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-');
+}
+
+// Helper: tampilkan preview URL di bawah input slug
+function updatePreview(inputEl, previewEl) {
+    const val = inputEl.value.trim();
+    if (val) {
+        previewEl.innerHTML = '<i class="fa-solid fa-link me-1"></i>Preview: <span class="text-info">/event/' + toSlug(val) + '</span>';
+    } else {
+        previewEl.innerHTML = '';
+    }
+}
+
+// --- Modal Tambah Event ---
+const addSlugInput   = document.getElementById('add_slug');
+const addSlugPreview = document.getElementById('add_slug_preview');
+
+if (addSlugInput) {
+    // Sanitasi input secara realtime (tolak karakter yang tidak valid)
+    addSlugInput.addEventListener('input', function () {
+        this.value = toSlug(this.value);
+        updatePreview(this, addSlugPreview);
+    });
+    updatePreview(addSlugInput, addSlugPreview);
+}
+
+// --- Modal Edit Event (bisa banyak, loop per id) ---
+document.querySelectorAll('[id^="edit_slug_"]').forEach(function (input) {
+    // Ambil suffix ID, misal "edit_slug_5" → "5"
+    const suffix  = input.id.replace('edit_slug_', '');
+    const preview = document.getElementById('edit_slug_preview_' + suffix);
+
+    if (!preview) return;
+
+    input.addEventListener('input', function () {
+        this.value = toSlug(this.value);
+        updatePreview(this, preview);
+    });
+    updatePreview(input, preview);
+});
+</script>
+@endpush

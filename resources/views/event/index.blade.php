@@ -50,6 +50,20 @@
         background: var(--primary-orange);
         color: #fff;
     }
+    /* Mobile: grid 2×2, setiap tab lebar sama dan proporsional */
+    @media (max-width: 575.98px) {
+        .filter-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .filter-tab {
+            text-align: center;
+            padding: 10px 8px;
+            font-size: .8rem;
+            border-radius: 12px;
+        }
+    }
 
     /* ── Event Card ── */
     .event-card {
@@ -205,7 +219,11 @@
                 @php
                     $isOngoing  = now()->between($event->event_start_date, $event->event_end_date);
                     $isUpcoming = now()->lt($event->event_start_date);
-                    $filterAttr = $isOngoing ? 'ongoing' : ($isUpcoming ? 'upcoming' : 'ended');
+                    $isClosed   = $event->status === 'inactive';
+                    // Event inactive (ditutup admin) masuk filter "ended" agar tidak muncul di tab aktif
+                    $filterAttr = ($isClosed && !now()->gt($event->event_end_date))
+                                    ? 'ended'
+                                    : ($isOngoing ? 'ongoing' : ($isUpcoming ? 'upcoming' : 'ended'));
                 @endphp
                 <div class="col-md-6 col-lg-4 event-item" data-status="{{ $filterAttr }}">
                     @include('event.partials.card-event', ['event' => $event])

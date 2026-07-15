@@ -36,10 +36,10 @@
     }
     .event-cover {
         width: 100%;
+        height: auto;           /* ikuti rasio asli gambar, portrait ya portrait, landscape ya landscape */
+        display: block;
         border-radius: 20px;
         box-shadow: 0 20px 60px rgba(0,0,0,.12);
-        object-fit: cover;
-        max-height: 420px;
     }
     .event-cover-placeholder {
         width: 100%;
@@ -177,13 +177,22 @@
     $isOngoing  = now()->between($event->event_start_date, $event->event_end_date);
     $isUpcoming = now()->lt($event->event_start_date);
     $isEnded    = now()->gt($event->event_end_date);
+    $isClosed   = $event->status === 'inactive'; // ditutup manual oleh admin
     $pesertaCount = $event->participants->count();
 
-    $badgeClass = $isOngoing  ? 'bg-success'   :
-                 ($isUpcoming ? 'bg-primary'    : 'bg-secondary');
-    $badgeText  = $isOngoing  ? 'Sedang Berlangsung' :
-                 ($isUpcoming ? 'Segera Hadir'  : 'Sudah Selesai');
-@endphp
+    if ($isClosed && !$isEnded) {
+        $badgeClass = 'bg-danger';
+        $badgeText  = 'Ditutup';
+    } elseif ($isOngoing) {
+        $badgeClass = 'bg-success';
+        $badgeText  = 'Sedang Berlangsung';
+    } elseif ($isUpcoming) {
+        $badgeClass = 'bg-primary';
+        $badgeText  = 'Segera Hadir';
+    } else {
+        $badgeClass = 'bg-secondary';
+        $badgeText  = 'Sudah Selesai';
+    }@endphp
 
 <div class="detail-hero pb-5">
     <div class="container">
@@ -193,7 +202,7 @@
             <ol class="breadcrumb small">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-orange text-decoration-none">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('event.index') }}" class="text-orange text-decoration-none">Event</a></li>
-                <li class="breadcrumb-item active text-muted" aria-current="page">{{ Str::limit($event->event_name, 40) }}</li>            </ol>
+                <!--<li class="breadcrumb-item active text-muted" aria-current="page">{{ Str::limit($event->event_name, 40) }}</li> -->           </ol>
         </nav>
 
         <div class="row g-5">
@@ -263,11 +272,18 @@
                     </div>
 
                     @if($isEnded)
-                        {{-- Event sudah selesai --}}
+                        {{-- Event sudah selesai berdasarkan tanggal --}}
                         <div class="closed-banner">
                             <i class="bi bi-lock-fill d-block mb-2" style="font-size:2rem;"></i>
                             <strong>Pendaftaran Ditutup</strong>
                             <p class="small mb-0 mt-1">Event ini sudah berakhir pada {{ \Carbon\Carbon::parse($event->event_end_date)->translatedFormat('d M Y') }}.</p>
+                        </div>
+                    @elseif($isClosed)
+                        {{-- Event ditutup manual oleh admin --}}
+                        <div class="closed-banner">
+                            <i class="bi bi-x-circle-fill d-block mb-2" style="font-size:2rem;"></i>
+                            <strong>Event Telah Ditutup</strong>
+                            <p class="small mb-0 mt-1">Pendaftaran untuk event ini telah ditutup oleh penyelenggara.</p>
                         </div>
                     @else
                         {{-- Form Aktif --}}

@@ -9,12 +9,11 @@ use Illuminate\Http\Request;
 class PublicEventController extends Controller
 {
     /**
-     * Halaman daftar semua event yang aktif (public)
+     * Halaman daftar semua event (public) — aktif maupun yang ditutup/selesai
      */
     public function index()
     {
-        $events = Event::where('status', 'active')
-            ->withCount('participants')
+        $events = Event::withCount('participants')
             ->orderBy('event_start_date', 'asc')
             ->get();
 
@@ -27,9 +26,8 @@ class PublicEventController extends Controller
      */
     public function show(string $identifier)
     {
-        // Coba cari by slug dulu, jika tidak ketemu coba UUID (backward-compatible)
-        $event = Event::where('status', 'active')
-            ->where(function ($q) use ($identifier) {
+        // Cari by slug atau UUID, tanpa filter status agar event inactive tetap bisa diakses
+        $event = Event::where(function ($q) use ($identifier) {
                 $q->where('slug', $identifier)
                   ->orWhere('uuid', $identifier);
             })
@@ -50,6 +48,7 @@ class PublicEventController extends Controller
      */
     public function daftar(Request $request, string $identifier)
     {
+        // Hanya event active yang bisa menerima pendaftaran
         $event = Event::where('status', 'active')
             ->where(function ($q) use ($identifier) {
                 $q->where('slug', $identifier)

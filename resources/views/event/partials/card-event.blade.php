@@ -3,13 +3,29 @@
     $isOngoing  = now()->between($event->event_start_date, $event->event_end_date);
     $isUpcoming = now()->lt($event->event_start_date);
     $isEnded    = now()->gt($event->event_end_date);
+    $isClosed   = $event->status === 'inactive'; // ditutup manual oleh admin
 
-    $badgeClass = $isOngoing  ? 'bg-success'   :
-                 ($isUpcoming ? 'bg-primary'    : 'bg-secondary');
-    $badgeText  = $isOngoing  ? 'Sedang Berlangsung' :
-                 ($isUpcoming ? 'Segera Hadir'  : 'Sudah Selesai');
+    // Badge: "Ditutup" prioritas tertinggi jika admin nonaktifkan,
+    // lalu cek tanggal untuk Sedang Berlangsung / Segera Hadir / Sudah Selesai
+    if ($isClosed && !$isEnded) {
+        $badgeClass = 'bg-danger';
+        $badgeText  = 'Ditutup';
+    } elseif ($isOngoing) {
+        $badgeClass = 'bg-success';
+        $badgeText  = 'Sedang Berlangsung';
+    } elseif ($isUpcoming) {
+        $badgeClass = 'bg-primary';
+        $badgeText  = 'Segera Hadir';
+    } else {
+        // $isEnded — tanggal memang sudah lewat
+        $badgeClass = 'bg-secondary';
+        $badgeText  = 'Sudah Selesai';
+    }
 
     $peserta = $event->participants_count ?? $event->participants->count();
+
+    // Tombol daftar: nonaktif jika event ditutup ATAU tanggal sudah selesai
+    $canRegister = !$isClosed && !$isEnded;
 @endphp
 
 <article class="event-card h-100 d-flex flex-column">
@@ -58,11 +74,15 @@
             </li>
         </ul>
 
-        @if(!$isEnded)
+        @if($canRegister)
             <a href="{{ route('event.show', $event->slug ?? $event->uuid) }}"
                class="btn btn-orange-event w-100">
                 <i class="bi bi-pencil-square me-1"></i> Daftar Sekarang
             </a>
+        @elseif($isClosed && !$isEnded)
+            <button class="btn btn-secondary-event w-100" disabled>
+                <i class="bi bi-x-circle me-1"></i> Event Telah Ditutup
+            </button>
         @else
             <button class="btn btn-secondary-event w-100" disabled>
                 <i class="bi bi-lock-fill me-1"></i> Pendaftaran Ditutup

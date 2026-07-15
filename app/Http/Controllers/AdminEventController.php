@@ -18,18 +18,19 @@ class AdminEventController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'event_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_name'       => 'required|string|max:255',
+            'slug'             => 'required|string|max:255|alpha_dash|unique:events,slug',
+            'description'      => 'required|string',
+            'image'            => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'event_start_date' => 'required|date',
-            'event_end_date' => 'required|date|after_or_equal:event_start_date',
-            'status' => 'required|in:active,inactive',
-            'wa_group_link' => 'nullable|url|max:255',
+            'event_end_date'   => 'required|date|after_or_equal:event_start_date',
+            'status'           => 'required|in:active,inactive',
+            'wa_group_link'    => 'nullable|url|max:255',
         ]);
 
         $data = $request->except('image');
-        $data['url']  = Str::slug($request->event_name);
-        $data['slug'] = Event::generateUniqueSlug($request->event_name);
+        $data['slug'] = Str::slug($request->slug);
+        $data['url']  = $data['slug'];
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -48,20 +49,19 @@ class AdminEventController extends Controller
         $event = Event::where('uuid', $uuid)->firstOrFail();
 
         $request->validate([
-            'event_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_name'       => 'required|string|max:255',
+            'slug'             => 'required|string|max:255|alpha_dash|unique:events,slug,' . $event->id,
+            'description'      => 'required|string',
+            'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'event_start_date' => 'required|date',
-            'event_end_date' => 'required|date|after_or_equal:event_start_date',
-            'status' => 'required|in:active,inactive',
-            'wa_group_link' => 'nullable|url|max:255',
+            'event_end_date'   => 'required|date|after_or_equal:event_start_date',
+            'status'           => 'required|in:active,inactive',
+            'wa_group_link'    => 'nullable|url|max:255',
         ]);
 
-        $data = $request->except('image');
-        $data['url']  = Str::slug($request->event_name);
-        if ($event->event_name !== $request->event_name) {
-            $data['slug'] = Event::generateUniqueSlug($request->event_name, $event->id);
-        }
+        $data         = $request->except('image');
+        $data['slug'] = Str::slug($request->slug);
+        $data['url']  = $data['slug'];
 
         if ($request->hasFile('image')) {
             // Hapus gambar lama

@@ -215,6 +215,45 @@
         .hamburger-icon { transition: transform 0.4s ease-in-out; display: inline-block; }
         .navbar-toggler[aria-expanded="true"] .hamburger-icon { transform: rotate(180deg); }
 
+        /* ── Mobile navbar fix ── */
+        @media (max-width: 991.98px) {
+            /* Nav links: rata kiri, tidak di tengah */
+            .navbar-nav {
+                text-align: left !important;
+            }
+            .navbar-nav .nav-link {
+                padding: 10px 4px !important;
+                justify-content: flex-start !important;
+            }
+            /* Dropdown "Produk" chevron tetap inline */
+            .navbar-nav .nav-link.d-flex {
+                display: flex !important;
+                justify-content: flex-start !important;
+            }
+            /* Dropdown menu di mobile: full-width, tidak float */
+            .navbar .dropdown-menu {
+                width: 100%;
+                margin-top: 4px !important;
+                position: static !important;
+                box-shadow: none;
+                border: 1px solid rgba(0,0,0,.06);
+            }
+            /* Divider sebelum tombol CTA */
+            .navbar-cta-wrapper {
+                border-top: 1px solid rgba(0,0,0,.08);
+                padding-top: 14px;
+                margin-top: 6px;
+                padding-bottom: 8px;
+            }
+            /* Tombol CTA full-width dan teks rata tengah di mobile */
+            .navbar-cta-wrapper .btn {
+                width: 100% !important;
+                text-align: center !important;
+                border-radius: 10px !important;
+                justify-content: center !important;
+            }
+        }
+
         /* CSS Banner Install PWA */
         .pwa-install-banner {
             position: fixed;
@@ -286,7 +325,7 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 mt-3 mt-lg-0 text-center text-lg-start align-items-lg-center">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 mt-3 mt-lg-0 text-lg-start align-items-lg-center">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}"
                            href="{{ route('home') }}">
@@ -362,13 +401,13 @@
 
                 </ul>
                 
-                <div class="d-flex flex-column flex-lg-row align-items-center gap-2 gap-lg-3 mt-3 mt-lg-0">
+                <div class="navbar-cta-wrapper d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
                     @auth
                         <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
                             <i class="bi bi-speedometer2 me-1"></i> Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-orange w-100 w-lg-auto">Masuk</a>
+                        <a href="{{ route('login') }}" class="btn btn-outline-orange w-100 w-lg-auto ">Masuk</a>
                         <a href="{{ route('register') }}" class="btn btn-orange w-100 w-lg-auto">Coba Gratis</a>
                     @endauth
                 </div>

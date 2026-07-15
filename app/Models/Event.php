@@ -30,10 +30,7 @@ class Event extends Model
     {
         static::creating(function ($event) {
             $event->uuid = (string) Str::uuid();
-
-            if (empty($event->slug)) {
-                $event->slug = static::generateUniqueSlug($event->event_name);
-            }
+            // Slug tidak di-generate otomatis; admin wajib mengisi slug secara manual.
         });
     }
 
