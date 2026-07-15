@@ -168,6 +168,97 @@
         .form-card { position: static; margin-top: 40px; }
         .detail-hero { padding-top: 100px; }
     }
+
+    /* ── Floating CTA (mobile only) ── */
+    .floating-cta {
+        display: none; /* hidden di desktop */
+    }
+    @media (max-width: 991.98px) {
+        .floating-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);   /* HANYA untuk centering — tidak diubah lagi */
+            z-index: 999;
+            background: var(--primary-orange);
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 700;
+            padding: 13px 28px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(255,106,0,.45);
+            text-decoration: none;
+            white-space: nowrap;
+            /* transisi hanya opacity & bottom — transform tidak disentuh */
+            transition: opacity .3s ease, visibility .3s ease, bottom .35s ease;
+            opacity: 1;
+            visibility: visible;
+        }
+        .floating-cta:hover {
+            background: var(--dark-orange);
+            color: #fff;
+            box-shadow: 0 12px 28px rgba(255,106,0,.55);
+        }
+        /* hide: cukup opacity + visibility, transform TIDAK diubah agar centering tetap */
+        .floating-cta.hide {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none;
+        }
+        /* naik saat banner PWA aktif */
+        .floating-cta.push-up {
+            bottom: 110px;
+        }
+        /* animasi masuk pertama kali pakai keyframes pada opacity saja */
+        @keyframes floatIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .floating-cta:not(.hide) {
+            animation: floatIn .4s ease both;
+        }
+        /* beri ruang ekstra di bawah halaman agar konten tidak tertutup tombol */
+        .detail-hero { padding-bottom: 90px !important; }
+    }
+    .share-bar {
+        display: flex;
+        align-items: center;
+    }
+    .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 20px;
+        border-radius: 50px;
+        font-size: .85rem;
+        font-weight: 600;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1.5px solid #e2e8f0;
+        cursor: pointer;
+        transition: all .2s ease;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+    .share-btn i { font-size: 1rem; }
+    .share-btn:hover {
+        background: var(--primary-orange);
+        color: #fff;
+        border-color: var(--primary-orange);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255,106,0,.25);
+    }
+    .share-btn.copied {
+        background: #22c55e;
+        color: #fff;
+        border-color: #22c55e;
+    }
 </style>
 @endpush
 
@@ -239,10 +330,35 @@
                             &ndash; {{ \Carbon\Carbon::parse($event->event_end_date)->translatedFormat('d M Y') }}
                         @endif
                     </span>
+                    @if($event->event_start_time)
+                    <span class="info-badge">
+                        <i class="bi bi-clock"></i>
+                        {{ \Carbon\Carbon::parse($event->event_start_time)->format('H:i') }}
+                        @if($event->event_end_time)
+                            &ndash; {{ \Carbon\Carbon::parse($event->event_end_time)->format('H:i') }} WIB
+                        @else
+                            WIB
+                        @endif
+                    </span>
+                    @endif
+                    @if($event->location)
+                    <span class="info-badge">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ $event->location }}
+                    </span>
+                    @endif
                     <span class="info-badge">
                         <i class="bi bi-people-fill"></i>
                         {{ $pesertaCount }} Peserta
                     </span>
+                </div>
+
+                {{-- Share Button --}}
+                <div class="share-bar mb-4">
+                    <button type="button" id="btnShare" class="share-btn" aria-label="Bagikan event ini">
+                        <i class="bi bi-share-fill" id="shareIcon"></i>
+                        <span id="shareLabel">Bagikan Event</span>
+                    </button>
                 </div>
 
                 {{-- Deskripsi --}}
@@ -254,7 +370,7 @@
 
             {{-- Kanan: Form Pendaftaran --}}
             <div class="col-lg-5">
-                <div class="form-card">
+                <div class="form-card" id="formPendaftaran">
 
                     <p class="form-card-title">
                         <i class="bi bi-pencil-square text-orange me-2"></i>
@@ -423,6 +539,13 @@
     </div>
 </div>
 
+{{-- Floating CTA — hanya tampil di mobile (<992px), hilang otomatis saat form terlihat --}}
+@if(!$isEnded && !$isClosed)
+<a href="#formPendaftaran" id="floatingCta" class="floating-cta" aria-label="Scroll ke formulir pendaftaran">
+    <i class="bi bi-pencil-square"></i> Daftar Sekarang
+</a>
+@endif
+
 @endsection
 
 @push('scripts')
@@ -486,5 +609,89 @@ document.getElementById('formDaftar')?.addEventListener('submit', function () {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mendaftarkan...';
 });
+
+// ── Floating CTA: hilang saat form sudah terlihat di layar ──
+const floatingCta   = document.getElementById('floatingCta');
+const formTarget    = document.getElementById('formPendaftaran');
+
+if (floatingCta && formTarget) {
+
+    function checkFormVisibility() {
+        const rect = formTarget.getBoundingClientRect();
+        // Form dianggap "terlihat" jika bagian atasnya sudah masuk viewport
+        const isVisible = rect.top < window.innerHeight * 0.85;
+        floatingCta.classList.toggle('hide', isVisible);
+    }
+
+    // Cek saat scroll (paling reliable di semua mobile browser)
+    window.addEventListener('scroll', checkFormVisibility, { passive: true });
+
+    // Cek sekali saat load (kalau halaman dibuka langsung di posisi bawah)
+    checkFormVisibility();
+
+    // Smooth scroll ke form saat diklik
+    floatingCta.addEventListener('click', function (e) {
+        e.preventDefault();
+        formTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Naik saat banner PWA muncul, turun saat banner PWA hilang
+    const pwaBanner = document.getElementById('installPwaBanner');
+    if (pwaBanner) {
+        const pwaMutationObserver = new MutationObserver(() => {
+            const pwaVisible = pwaBanner.classList.contains('show');
+            floatingCta.classList.toggle('push-up', pwaVisible);
+        });
+        pwaMutationObserver.observe(pwaBanner, { attributes: true, attributeFilter: ['class'] });
+    }
+}
+
+// ── Web Share API ──
+const btnShare   = document.getElementById('btnShare');
+const shareIcon  = document.getElementById('shareIcon');
+const shareLabel = document.getElementById('shareLabel');
+
+if (btnShare) {
+    const shareData = {
+        title: '{{ addslashes($event->event_name) }} | Event Flavory.id',
+        text:  'Yuk ikuti event ini! {{ addslashes(Str::limit(strip_tags($event->description), 100)) }}',
+        url:   '{{ route('event.show', $event->slug ?? $event->uuid) }}',
+    };
+
+    btnShare.addEventListener('click', async function () {
+        // Gunakan native Web Share API jika browser mendukung
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                // User membatalkan share — tidak perlu handling khusus
+            }
+        } else {
+            // Fallback: salin link ke clipboard
+            try {
+                await navigator.clipboard.writeText(shareData.url);
+            } catch {
+                // Fallback lama untuk browser tanpa Clipboard API
+                const el = document.createElement('textarea');
+                el.value = shareData.url;
+                el.style.position = 'fixed';
+                el.style.opacity  = '0';
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
+            // Feedback visual "Tersalin"
+            btnShare.classList.add('copied');
+            shareIcon.className  = 'bi bi-check-lg';
+            shareLabel.textContent = 'Link Tersalin!';
+            setTimeout(() => {
+                btnShare.classList.remove('copied');
+                shareIcon.className  = 'bi bi-share-fill';
+                shareLabel.textContent = 'Bagikan Event';
+            }, 2500);
+        }
+    });
+}
 </script>
 @endpush

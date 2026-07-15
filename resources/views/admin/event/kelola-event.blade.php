@@ -213,6 +213,18 @@
                                 <input type="date" name="event_end_date" value="{{ $event->event_end_date }}" class="form-control" required>
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label text-info fw-bold">Jam Mulai <span class="text-secondary fw-normal" style="font-size:0.78rem;">(opsional)</span></label>
+                                <input type="time" name="event_start_time" value="{{ $event->event_start_time ? \Carbon\Carbon::parse($event->event_start_time)->format('H:i') : '' }}" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-info fw-bold">Jam Selesai <span class="text-secondary fw-normal" style="font-size:0.78rem;">(opsional)</span></label>
+                                <input type="time" name="event_end_time" value="{{ $event->event_end_time ? \Carbon\Carbon::parse($event->event_end_time)->format('H:i') : '' }}" class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-info fw-bold">Lokasi Event <span class="text-secondary fw-normal" style="font-size:0.78rem;">(opsional)</span></label>
+                                <input type="text" name="location" value="{{ $event->location }}" placeholder="Contoh: Aula Gedung Serbaguna, Karawang / Online via Zoom" class="form-control">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label text-info fw-bold">Status</label>
                                 <select name="status" class="form-select" required>
                                     <option value="active" {{ $event->status === 'active' ? 'selected' : '' }}>Active</option>
@@ -282,6 +294,18 @@
                         <div class="col-md-6">
                             <label class="form-label text-info fw-bold">Tanggal Selesai</label>
                             <input type="date" name="event_end_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-info fw-bold">Jam Mulai <span class="text-secondary fw-normal" style="font-size:0.78rem;">(opsional)</span></label>
+                            <input type="time" name="event_start_time" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-info fw-bold">Jam Selesai <span class="text-secondary fw-normal" style="font-size:0.78rem;">(opsional)</span></label>
+                            <input type="time" name="event_end_time" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-info fw-bold">Lokasi Event <span class="text-secondary fw-normal" style="font-size:0.78rem;">(opsional)</span></label>
+                            <input type="text" name="location" placeholder="Contoh: Aula Gedung Serbaguna, Karawang / Online via Zoom" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-info fw-bold">Status</label>

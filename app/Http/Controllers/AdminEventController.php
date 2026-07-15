@@ -18,14 +18,17 @@ class AdminEventController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'event_name'       => 'required|string|max:255',
-            'slug'             => 'required|string|max:255|alpha_dash|unique:events,slug',
-            'description'      => 'required|string',
-            'image'            => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'event_start_date' => 'required|date',
-            'event_end_date'   => 'required|date|after_or_equal:event_start_date',
-            'status'           => 'required|in:active,inactive',
-            'wa_group_link'    => 'nullable|url|max:255',
+            'event_name'        => 'required|string|max:255',
+            'slug'              => 'required|string|max:255|alpha_dash|unique:events,slug',
+            'description'       => 'required|string',
+            'image'             => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_start_date'  => 'required|date',
+            'event_start_time'  => 'nullable|date_format:H:i',
+            'event_end_date'    => 'required|date|after_or_equal:event_start_date',
+            'event_end_time'    => 'nullable|date_format:H:i',
+            'location'          => 'nullable|string|max:500',
+            'status'            => 'required|in:active,inactive',
+            'wa_group_link'     => 'nullable|url|max:255',
         ]);
 
         $data = $request->except('image');
@@ -49,14 +52,17 @@ class AdminEventController extends Controller
         $event = Event::where('uuid', $uuid)->firstOrFail();
 
         $request->validate([
-            'event_name'       => 'required|string|max:255',
-            'slug'             => 'required|string|max:255|alpha_dash|unique:events,slug,' . $event->id,
-            'description'      => 'required|string',
-            'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'event_start_date' => 'required|date',
-            'event_end_date'   => 'required|date|after_or_equal:event_start_date',
-            'status'           => 'required|in:active,inactive',
-            'wa_group_link'    => 'nullable|url|max:255',
+            'event_name'        => 'required|string|max:255',
+            'slug'              => 'required|string|max:255|alpha_dash|unique:events,slug,' . $event->id,
+            'description'       => 'required|string',
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_start_date'  => 'required|date',
+            'event_start_time'  => 'nullable|date_format:H:i',
+            'event_end_date'    => 'required|date|after_or_equal:event_start_date',
+            'event_end_time'    => 'nullable|date_format:H:i',
+            'location'          => 'nullable|string|max:500',
+            'status'            => 'required|in:active,inactive',
+            'wa_group_link'     => 'nullable|url|max:255',
         ]);
 
         $data         = $request->except('image');
