@@ -2,9 +2,12 @@
 @extends('layouts.app')
 
 @section('title', 'Event & Workshop Flavory.id | Tingkatkan Skill Bisnis Kuliner Anda')
+@section('meta_description', 'Ikuti event dan workshop eksklusif Flavory.id. Pelajari strategi bisnis kuliner, manajemen restoran, dan teknologi POS bersama para ahlinya.')
+@section('meta_og_type', 'website')
+@section('meta_og_url', route('event.index'))
+@section('meta_image', secure_url('assets/event-preview.jpeg'))
 
 @push('styles')
-<meta name="description" content="Ikuti event dan workshop eksklusif Flavory.id. Pelajari strategi bisnis kuliner, manajemen restoran, dan teknologi POS bersama para ahlinya.">
 <style>
     :root {
         --primary-orange: #ff6a00;

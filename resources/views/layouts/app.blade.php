@@ -19,16 +19,20 @@
     <meta property="og:url" content="@yield('meta_og_url', url()->current())">
     <meta property="og:title" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner & Point of Sale (POS)')">
     <meta property="og:description" content="@yield('meta_description', 'Tinggalkan cara manual! Flavory.id hadir untuk mengelola bisnis kuliner Anda. Nikmati fitur kasir pintar, laporan otomatis, dan prediksi omzet.')">
-    <meta property="og:image" content="@yield('meta_image', asset('assets/preview.jpg'))">
+    <meta property="og:image" content="@yield('meta_image', secure_url('assets/preview.jpg'))">
+    <meta property="og:image:secure_url" content="@yield('meta_image', secure_url('assets/preview.jpg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:site_name" content="Aplikasi Flavory.id">
+    <meta property="og:locale" content="id_ID">
 
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@flavoryid">
     <meta name="twitter:url" content="@yield('meta_og_url', url()->current())">
     <meta name="twitter:title" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner')">
     <meta name="twitter:description" content="@yield('meta_description', 'Tinggalkan cara manual! Flavory.id hadir untuk mengelola bisnis kuliner Anda. Nikmati fitur kasir pintar dan laporan otomatis.')">
-    <meta name="twitter:image" content="@yield('meta_image', asset('assets/preview.jpg'))">
+    <meta name="twitter:image" content="@yield('meta_image', secure_url('assets/preview.jpg'))">
 
     @include('layouts.favicon')
 

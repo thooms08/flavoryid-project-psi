@@ -20,7 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+        // Force HTTPS jika request dari proxy (Cloudflare, Nginx reverse proxy, dsb)
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            URL::forceScheme('https');
+        }
+
+        // Force HTTPS di production (pastikan semua URL absolut menggunakan https://)
+        if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
     }

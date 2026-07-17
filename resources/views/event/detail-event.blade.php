@@ -3,7 +3,7 @@
 
 @section('title', $event->event_name . ' | Event Flavory.id')
 @section('meta_description', Str::limit(strip_tags($event->description), 155))
-@section('meta_image', $event->image ? asset('assets/event/' . $event->image) : asset('assets/event-preview.jpeg'))
+@section('meta_image', $event->image ? secure_url('assets/event/' . $event->image) : secure_url('assets/event-preview.jpeg'))
 @section('meta_og_type', 'article')
 @section('meta_og_url', route('event.show', $event->slug ?? $event->uuid))
 
