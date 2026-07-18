@@ -2,10 +2,12 @@
 @extends('layouts.app')
 
 @section('title', 'Tentang Flavory.id - Aplikasi Kasir All-in-One & Manajemen Bisnis Kuliner')
+@section('meta_description', 'Mengenal Flavory.id, lebih dari sekadar aplikasi POS terbaik. Kami adalah solusi All-in-One untuk manajemen bisnis restoran yang dilengkapi dengan prediksi performa dan MineAI.')
+@section('meta_og_type', 'website')
+@section('meta_og_url', route('tentang'))
+@section('meta_image', secure_url('assets/preview.jpg'))
 
 @push('styles')
-<meta name="description" content="Mengenal Flavory.id, lebih dari sekadar aplikasi POS terbaik. Kami adalah solusi All-in-One untuk manajemen bisnis restoran yang dilengkapi dengan prediksi performa dan MineAI.">
-<meta name="keywords" content="tentang flavory, aplikasi POS terbaik, aplikasi kasir kuliner, manajemen bisnis restoran, aplikasi kasir all in one, software restoran digital">
 <meta name="author" content="Flavory.id">
 
 <style>

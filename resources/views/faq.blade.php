@@ -2,10 +2,12 @@
 @extends('layouts.app')
 
 @section('title', 'FAQ & Pusat Bantuan - Aplikasi Flavory.id')
+@section('meta_description', 'Punya pertanyaan seputar Flavory.id? Temukan jawaban lengkap mengenai fitur kasir, harga paket, cara penggunaan, hingga dukungan teknis di sini.')
+@section('meta_og_type', 'website')
+@section('meta_og_url', route('faq'))
+@section('meta_image', secure_url('assets/preview.jpg'))
 
 @push('styles')
-<meta name="description" content="Punya pertanyaan seputar Flavory.id? Temukan jawaban lengkap mengenai fitur kasir, harga paket, cara penggunaan, hingga dukungan teknis di sini.">
-<meta name="keywords" content="FAQ Flavory, bantuan kasir, pusat bantuan aplikasi kasir, pertanyaan Flavory.id, panduan kasir online, masalah kasir digital">
 <meta name="author" content="Aplikasi Flavory.id">
 
 <style>

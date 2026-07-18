@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('title', 'Kebijakan Privasi - Flavory.id')
+@section('meta_description', 'Kebijakan Privasi Flavory.id. Kami berkomitmen untuk melindungi data pribadi dan privasi Anda saat menggunakan layanan platform kasir digital kami.')
+@section('meta_og_type', 'website')
+@section('meta_og_url', route('kebijakan.privasi'))
+@section('meta_image', secure_url('assets/preview.jpg'))
 
 @push('styles')
-<meta name="description" content="Kebijakan Privasi Flavory.id. Kami berkomitmen untuk melindungi data pribadi dan privasi Anda saat menggunakan layanan platform kasir digital kami.">
-
-<style>
     .privacy-header {
         padding: 120px 0 60px;
         background: linear-gradient(135deg, var(--light-orange) 0%, #ffffff 100%);

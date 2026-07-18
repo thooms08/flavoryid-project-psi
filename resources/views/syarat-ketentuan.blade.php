@@ -2,12 +2,12 @@
 @extends('layouts.app')
 
 @section('title', 'Syarat & Ketentuan Layanan - Flavory.id')
+@section('meta_description', 'Baca Syarat dan Ketentuan penggunaan Aplikasi Flavory.id. Dengan menggunakan layanan kasir digital dan POS kami, Anda menyetujui kebijakan dan ketentuan operasional yang berlaku.')
+@section('meta_og_type', 'website')
+@section('meta_og_url', route('syarat.ketentuan'))
+@section('meta_image', secure_url('assets/preview.jpg'))
 
 @push('styles')
-<meta name="description" content="Baca Syarat dan Ketentuan penggunaan Aplikasi Flavory.id. Dengan menggunakan layanan kasir digital dan POS kami, Anda menyetujui kebijakan dan ketentuan operasional yang berlaku.">
-<meta name="keywords" content="syarat dan ketentuan Flavory.id, terms of service, layanan kasir digital, aturan penggunaan POS, kebijakan pengguna, Flavory.id">
-<meta name="author" content="Aplikasi Flavory.id">
-
 
 <style>
     :root {

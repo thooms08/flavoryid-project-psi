@@ -24,6 +24,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:alt" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner')">
     <meta property="og:site_name" content="Aplikasi Flavory.id">
     <meta property="og:locale" content="id_ID">
 
@@ -33,6 +34,7 @@
     <meta name="twitter:title" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner')">
     <meta name="twitter:description" content="@yield('meta_description', 'Tinggalkan cara manual! Flavory.id hadir untuk mengelola bisnis kuliner Anda. Nikmati fitur kasir pintar dan laporan otomatis.')">
     <meta name="twitter:image" content="@yield('meta_image', secure_url('assets/preview.jpg'))">
+    <meta name="twitter:image:alt" content="@yield('title', 'Flavory.id - Solusi Digitalisasi Usaha Kuliner')">
 
     @include('layouts.favicon')
 
