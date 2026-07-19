@@ -1272,6 +1272,101 @@
     });
 </script>
 
+{{-- ══ POPUP EVENT DINAMIS ══ --}}
+@if(isset($popupEvent) && $popupEvent)
+<div id="eventPopupOverlay"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:99990;
+            align-items:center; justify-content:center; padding:16px;">
+    <div id="eventPopupCard"
+         style="position:relative; max-width:420px; width:100%; background:#fff;
+                border-radius:20px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.22);
+                animation: popupIn .4s cubic-bezier(.34,1.56,.64,1) both;">
+
+        {{-- Tombol tutup --}}
+        <button id="eventPopupClose"
+                aria-label="Tutup popup"
+                style="position:absolute; top:10px; right:10px; z-index:10;
+                       width:32px; height:32px; border-radius:50%; border:none;
+                       background:rgba(0,0,0,.45); color:#fff; font-size:1rem;
+                       display:flex; align-items:center; justify-content:center;
+                       cursor:pointer; transition:background .2s; backdrop-filter:blur(4px);"
+                onmouseover="this.style.background='rgba(0,0,0,.7)'"
+                onmouseout="this.style.background='rgba(0,0,0,.45)'">
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+        {{-- Poster / gambar event --}}
+        @if($popupEvent->image)
+            <div style="position:relative; aspect-ratio:16/9; background:#f8f9fa; overflow:hidden;">
+                <img src="{{ asset('assets/event/' . $popupEvent->image) }}"
+                     alt="{{ $popupEvent->event_name }}"
+                     style="width:100%; height:100%; object-fit:cover; display:block;"
+                     onerror="this.parentElement.style.display='none'">
+                {{-- Label "Segera Hadir" di atas poster --}}
+                <span style="position:absolute; top:12px; left:12px; background:#ff6a00; color:#fff;
+                             font-size:.7rem; font-weight:800; padding:5px 12px; border-radius:20px;
+                             letter-spacing:.4px; box-shadow:0 4px 12px rgba(255,106,0,.4);">
+                    <i class="bi bi-calendar-event-fill me-1"></i> Segera Hadir
+                </span>
+            </div>
+        @endif
+
+        {{-- Konten --}}
+        <div style="padding:20px 22px 22px;">
+            <p style="font-size:.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+                      color:#ff6a00; margin-bottom:4px;">Event Flavory.id</p>
+            <h3 style="font-size:1.05rem; font-weight:800; color:#1e293b; line-height:1.35; margin-bottom:10px;">
+                {{ $popupEvent->event_name }}
+            </h3>
+
+            {{-- Meta: tanggal & lokasi --}}
+            <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:16px;">
+                <div style="font-size:.78rem; color:#64748b; display:flex; align-items:center; gap:7px;">
+                    <i class="bi bi-calendar3" style="color:#ff6a00; flex-shrink:0;"></i>
+                    <span>
+                        {{ \Carbon\Carbon::parse($popupEvent->event_start_date)->translatedFormat('d M Y') }}
+                        @if($popupEvent->event_start_date !== $popupEvent->event_end_date)
+                            &ndash; {{ \Carbon\Carbon::parse($popupEvent->event_end_date)->translatedFormat('d M Y') }}
+                        @endif
+                        @if($popupEvent->event_start_time)
+                            &bull; {{ \Carbon\Carbon::parse($popupEvent->event_start_time)->format('H:i') }} WIB
+                        @endif
+                    </span>
+                </div>
+                @if($popupEvent->location)
+                    <div style="font-size:.78rem; color:#64748b; display:flex; align-items:center; gap:7px;">
+                        <i class="bi bi-geo-alt-fill" style="color:#ff6a00; flex-shrink:0;"></i>
+                        <span>{{ $popupEvent->location }}</span>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Tombol CTA --}}
+            <a href="{{ route('event.show', $popupEvent->slug ?? $popupEvent->uuid) }}"
+               style="display:flex; align-items:center; justify-content:center; gap:8px;
+                      background:linear-gradient(135deg,#ff6a00,#ff8c33); color:#fff;
+                      border-radius:50px; padding:11px 20px; font-size:.88rem; font-weight:700;
+                      text-decoration:none; box-shadow:0 6px 20px rgba(255,106,0,.35);
+                      transition:all .25s; width:100%;"
+               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(255,106,0,.45)'"
+               onmouseout="this.style.transform=''; this.style.boxShadow='0 6px 20px rgba(255,106,0,.35)'">
+                <i class="bi bi-pencil-square"></i> Daftar Sekarang
+            </a>
+            <p style="font-size:.7rem; color:#94a3b8; text-align:center; margin-top:10px; margin-bottom:0;">
+                Klik × untuk menutup. Popup tidak muncul lagi hari ini.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes popupIn {
+    from { opacity: 0; transform: scale(.88) translateY(24px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+</style>
+@endif
+
 @endsection
 
 @push('scripts')
@@ -1461,6 +1556,48 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(el => {
         observer.observe(el);
     });
+
+    // ══════════════════════════════════════════════════════════
+    //  POPUP EVENT DINAMIS — tampil 1.2 detik setelah halaman siap
+    //  Disimpan di sessionStorage: tidak muncul lagi 1 hari penuh
+    // ══════════════════════════════════════════════════════════
+    (function () {
+        const overlay = document.getElementById('eventPopupOverlay');
+        if (!overlay) return; // tidak ada popup event
+
+        const STORAGE_KEY = 'flavory_popup_dismissed';
+        const now         = Date.now();
+        const dismissed   = localStorage.getItem(STORAGE_KEY);
+
+        // Cek apakah sudah ditutup dalam 24 jam terakhir
+        if (dismissed && (now - parseInt(dismissed, 10)) < 86400000) return;
+
+        // Tampilkan setelah 1.2 detik agar halaman sudah render sempurna
+        const showTimer = setTimeout(() => {
+            overlay.style.display = 'flex';
+        }, 1200);
+
+        // Tombol tutup
+        const closeBtn = document.getElementById('eventPopupClose');
+        function closePopup() {
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity .25s';
+            setTimeout(() => { overlay.style.display = 'none'; }, 250);
+            localStorage.setItem(STORAGE_KEY, now.toString());
+        }
+
+        if (closeBtn) closeBtn.addEventListener('click', closePopup);
+
+        // Klik overlay (di luar card) juga menutup
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) closePopup();
+        });
+
+        // ESC menutup
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.style.display !== 'none') closePopup();
+        });
+    })();
 });
 </script>
 @endpush

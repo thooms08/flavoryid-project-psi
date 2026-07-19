@@ -35,7 +35,15 @@ class PublicController extends Controller
             return [];
         });
 
-        return view('index', compact('blogPosts'));
+        // Popup event: ambil 1 event aktif yang AKAN DATANG (belum mulai),
+        // prioritas event dengan tanggal mulai paling dekat.
+        // Syarat: status=active, event_start_date > sekarang (belum mulai sama sekali)
+        $popupEvent = \App\Models\Event::where('status', 'active')
+            ->whereDate('event_start_date', '>', now()->toDateString())
+            ->orderBy('event_start_date', 'asc')
+            ->first();
+
+        return view('index', compact('blogPosts', 'popupEvent'));
     }
     
     public function faq()
