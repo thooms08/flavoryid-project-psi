@@ -84,9 +84,11 @@
                 <i class="bi bi-x-circle me-1"></i> Event Telah Ditutup
             </button>
         @else
-            <button class="btn btn-secondary-event w-100" disabled>
-                <i class="bi bi-lock-fill me-1"></i> Pendaftaran Ditutup
-            </button>
+            {{-- Event benar-benar sudah selesai (tanggal lewat) --}}
+            <a href="{{ route('event.peserta', $event->slug ?? $event->uuid) }}"
+               class="btn btn-orange-event w-100">
+                <i class="bi bi-award-fill me-1"></i> Download Sertifikat
+            </a>
         @endif
     </div>
 </article>

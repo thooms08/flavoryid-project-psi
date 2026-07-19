@@ -233,16 +233,24 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-info fw-bold">Poster / Banner Event</label>
-                                <input type="file" name="image" class="form-control">
+                                <input type="file" name="image" id="edit_image_input_{{ $event->id }}" class="form-control" accept="image/*">
                                 <div class="form-text text-secondary" style="font-size: 0.75rem;">Biarkan kosong jika tidak ingin mengganti gambar.</div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label text-info fw-bold">Tautan Grup WA (WhatsApp Group Link)</label>
                                 <input type="url" name="wa_group_link" value="{{ $event->wa_group_link }}" placeholder="Contoh: https://chat.whatsapp.com/..." class="form-control">
                             </div>
-                            <div class="col-12 text-center mt-3">
+                            <!-- Preview / Poster saat ini + preview baru -->
+                            <div class="col-12 text-center mt-1">
                                 <div class="text-secondary mb-2" style="font-size: 0.8rem;">Poster saat ini:</div>
-                                <img src="{{ asset('storage/' . $event->image) }}" alt="Current Poster" class="rounded border" style="max-height: 150px; object-fit: cover; border-color: rgba(0, 229, 255, 0.2) !important;">
+                                <img id="edit_image_preview_{{ $event->id }}" 
+                                     src="{{ asset('assets/event/' . $event->image) }}" 
+                                     alt="Poster Event" 
+                                     class="rounded border" 
+                                     style="max-height: 180px; max-width: 100%; object-fit: cover; border-color: rgba(0, 229, 255, 0.3) !important; box-shadow: 0 0 12px rgba(0,229,255,0.15);">
+                                <div id="edit_image_new_label_{{ $event->id }}" class="text-info mt-1" style="font-size:0.75rem; display:none;">
+                                    <i class="fa-solid fa-check-circle me-1"></i>Gambar baru dipilih (preview di atas)
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -315,16 +323,21 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                                                            <label class="form-label text-info fw-bold">Poster / Banner Event</label>
-                                                            <input type="file" name="image" class="form-control" required>
-                                                            <div class="form-text text-secondary" style="font-size: 0.75rem;">Maksimal file 2MB dengan tipe jpeg, png, jpg, gif.</div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <label class="form-label text-info fw-bold">Tautan Grup WA (WhatsApp Group Link)</label>
-                                                            <input type="url" name="wa_group_link" placeholder="Contoh: https://chat.whatsapp.com/..." class="form-control">
-                                                        </div>
-                                                    </div>
-                                                </div>
+                            <label class="form-label text-info fw-bold">Poster / Banner Event</label>
+                            <input type="file" name="image" id="add_image_input" class="form-control" accept="image/*" required>
+                            <div class="form-text text-secondary" style="font-size: 0.75rem;">Maksimal file 2MB dengan tipe jpeg, png, jpg, gif.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-info fw-bold">Tautan Grup WA (WhatsApp Group Link)</label>
+                            <input type="url" name="wa_group_link" placeholder="Contoh: https://chat.whatsapp.com/..." class="form-control">
+                        </div>
+                        <!-- Preview Poster Tambah -->
+                        <div class="col-12" id="add_image_preview_wrapper" style="display:none;">
+                            <div class="text-secondary mb-2" style="font-size: 0.8rem;">Preview poster:</div>
+                            <img id="add_image_preview" src="#" alt="Preview Poster" class="rounded border" style="max-height: 180px; max-width: 100%; object-fit: cover; border-color: rgba(0, 229, 255, 0.3) !important; box-shadow: 0 0 12px rgba(0,229,255,0.15);">
+                        </div>
+                    </div>
+                </div>
                 <div class="modal-footer" style="border-top: 1px solid rgba(0, 229, 255, 0.1);">
                     <button type="button" class="btn btn-cyber-outline" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-cyber-info px-4 fw-bold">Tambah Event</button>
@@ -382,6 +395,46 @@ document.querySelectorAll('[id^="edit_slug_"]').forEach(function (input) {
         updatePreview(this, preview);
     });
     updatePreview(input, preview);
+});
+
+// --- Preview Gambar: Modal Tambah Event ---
+const addImageInput = document.getElementById('add_image_input');
+if (addImageInput) {
+    addImageInput.addEventListener('change', function () {
+        const wrapper = document.getElementById('add_image_preview_wrapper');
+        const preview = document.getElementById('add_image_preview');
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                wrapper.style.display = 'block';
+            };
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            wrapper.style.display = 'none';
+            preview.src = '#';
+        }
+    });
+}
+
+// --- Preview Gambar: Modal Edit Event (loop per event id) ---
+document.querySelectorAll('[id^="edit_image_input_"]').forEach(function (input) {
+    const suffix  = input.id.replace('edit_image_input_', '');
+    const preview = document.getElementById('edit_image_preview_' + suffix);
+    const newLabel = document.getElementById('edit_image_new_label_' + suffix);
+
+    if (!preview) return;
+
+    input.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                if (newLabel) newLabel.style.display = 'block';
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
 });
 </script>
 @endpush

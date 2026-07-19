@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Participant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class AdminPesertaController extends Controller
 {
@@ -29,18 +30,30 @@ class AdminPesertaController extends Controller
         $participant = Participant::where('uuid', $uuid)->firstOrFail();
 
         $request->validate([
-            'certificat' => 'required|image|mimes:jpeg,png,jpg,pdf|max:4096',
+            'certificat' => 'required|file|mimes:jpeg,png,jpg,pdf|max:4096',
         ]);
 
         if ($request->hasFile('certificat')) {
-            // Delete old certificate if exists
+            // Hapus sertifikat lama jika ada
             if ($participant->certificat) {
-                Storage::disk('public')->delete($participant->certificat);
+                $oldPath = public_path('assets/sertifikat/' . $participant->certificat);
+                if (\Illuminate\Support\Facades\File::exists($oldPath)) {
+                    \Illuminate\Support\Facades\File::delete($oldPath);
+                }
             }
 
-            // Store new certificate in storage/app/public/certificat/...
-            $path = $request->file('certificat')->store('certificat', 'public');
-            $participant->certificat = $path;
+            // Simpan sertifikat baru ke public/assets/sertifikat/
+            $file     = $request->file('certificat');
+            $fileName = time() . '_' . \Illuminate\Support\Str::slug($participant->name) . '.' . $file->getClientOriginalExtension();
+            $destDir  = public_path('assets/sertifikat');
+
+            if (! \Illuminate\Support\Facades\File::isDirectory($destDir)) {
+                \Illuminate\Support\Facades\File::makeDirectory($destDir, 0755, true);
+            }
+
+            $file->move($destDir, $fileName);
+
+            $participant->certificat = $fileName;
             $participant->save();
         }
 

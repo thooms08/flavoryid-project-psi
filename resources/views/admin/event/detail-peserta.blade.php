@@ -37,7 +37,7 @@
         border-collapse: separate;
         border-spacing: 0 8px;
     }
-    
+
     .table-cyber th {
         background: transparent; color: #94A3B8; font-size: 0.8rem;
         letter-spacing: 1px; border: none; text-transform: uppercase;
@@ -70,6 +70,10 @@
     .form-control:focus {
         border-color: var(--accent-cyan) !important;
         box-shadow: 0 0 10px rgba(0, 229, 255, 0.3) !important;
+    }
+
+    .hover-underline:hover {
+        text-decoration: underline !important;
     }
 </style>
 
@@ -108,7 +112,6 @@
                         <th>Instansi</th>
                         <th>Informasi</th>
                         <th class="text-center">Sertifikat</th>
-                        <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,63 +123,65 @@
                                 <div class="text-secondary small">ID: {{ $participant->uuid }}</div>
                             </td>
                             <td>
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $participant->wa) }}" target="_blank" class="text-decoration-none text-success hover-underline d-inline-flex align-items-center gap-2 fw-bold">
-                                    <i class="fa-brands fa-whatsapp fs-5"></i> 
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $participant->wa) }}" target="_blank"
+                                   class="text-decoration-none hover-underline d-inline-flex align-items-center gap-2 fw-bold">
+                                    <i class="fa-brands fa-whatsapp fs-5 text-success"></i>
                                     <span class="text-white">{{ $participant->wa }}</span>
                                 </a>
                             </td>
                             <td>
                                 @php
                                     $categoryBadge = [
-                                        'umum' => 'bg-secondary',
-                                        'pelajar' => 'bg-primary',
-                                        'pengusaha_kuliner' => 'bg-warning text-dark',
-                                        'pengusaha_non_kuliner' => 'bg-info text-dark'
+                                        'umum'                  => 'bg-secondary',
+                                        'pelajar'               => 'bg-primary',
+                                        'pengusaha_kuliner'     => 'bg-warning text-dark',
+                                        'pengusaha_non_kuliner' => 'bg-info text-dark',
                                     ][$participant->participant_category] ?? 'bg-light text-dark';
 
                                     $categoryLabel = [
-                                        'umum' => 'Umum',
-                                        'pelajar' => 'Pelajar/Mahasiswa',
-                                        'pengusaha_kuliner' => 'Pengusaha Kuliner',
-                                        'pengusaha_non_kuliner' => 'Pengusaha Non-Kuliner'
+                                        'umum'                  => 'Umum',
+                                        'pelajar'               => 'Pelajar/Mahasiswa',
+                                        'pengusaha_kuliner'     => 'Pengusaha Kuliner',
+                                        'pengusaha_non_kuliner' => 'Pengusaha Non-Kuliner',
                                     ][$participant->participant_category] ?? $participant->participant_category;
                                 @endphp
                                 <span class="badge {{ $categoryBadge }}">{{ $categoryLabel }}</span>
                             </td>
-                            {{-- Nama Usaha --}}
                             <td>
                                 <span class="{{ $participant->nama_usaha ? 'text-white fw-semibold' : 'text-secondary' }}">
                                     {{ $participant->nama_usaha ?? '-' }}
                                 </span>
                             </td>
-
-                            {{-- Instansi --}}
                             <td>
                                 <span class="{{ $participant->nama_instansi ? 'text-white fw-semibold' : 'text-secondary' }}">
                                     {{ $participant->nama_instansi ?? '-' }}
                                 </span>
                             </td>
-
-                            {{-- Informasi --}}
                             <td>
-                                <span class="{{ $participant->info ? 'text-white ' : 'text-secondary' }}">
+                                <span class="{{ $participant->info ? 'text-white' : 'text-secondary' }}">
                                     {{ $participant->info ?? '-' }}
                                 </span>
                             </td>
+                            {{-- Kolom Sertifikat --}}
                             <td class="text-center font-monospace">
                                 @if($participant->certificat)
-                                    <div class="d-flex align-items-center justify-content-center gap-3">
-                                        <a href="{{ asset('storage/' . $participant->certificat) }}" target="_blank" class="text-info d-inline-flex align-items-center gap-1 text-decoration-none fw-bold" title="Lihat Sertifikat">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <a href="{{ asset('assets/sertifikat/' . $participant->certificat) }}" target="_blank"
+                                           class="text-info d-inline-flex align-items-center gap-1 text-decoration-none fw-bold"
+                                           title="Lihat Sertifikat">
                                             <i class="fa-regular fa-file-image fs-4"></i>
                                             <span style="font-size: 0.8rem;">Lihat</span>
                                         </a>
-                                        <button class="btn btn-sm btn-cyber-warning border-0 p-1" data-bs-toggle="modal" data-bs-target="#uploadCertificateModal{{ $participant->id }}" title="Ganti Sertifikat">
+                                        <button class="btn btn-sm btn-cyber-warning border-0 p-1"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadCertificateModal{{ $participant->id }}"
+                                                title="Ganti Sertifikat">
                                             <i class="fa-solid fa-arrows-rotate"></i>
                                         </button>
                                     </div>
                                 @else
-                                    <button class="btn btn-sm btn-cyber-info rounded-circle p-1" 
-                                            data-bs-toggle="modal" 
+                                    <button class="btn btn-sm btn-cyber-info rounded-circle p-1"
+                                            data-bs-toggle="modal"
                                             data-bs-target="#uploadCertificateModal{{ $participant->id }}"
                                             title="Upload Sertifikat"
                                             style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
@@ -184,55 +189,10 @@
                                     </button>
                                 @endif
                             </td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-cyber-outline py-1 px-3" data-bs-toggle="modal" data-bs-target="#uploadCertificateModal{{ $participant->id }}">
-                                    {{ $participant->certificat ? 'Ganti Sertifikat' : 'Upload' }}
-                                </button>
-                            </td>
                         </tr>
-
-                        <!-- Certificate Upload Modal -->
-                        <div class="modal fade" id="uploadCertificateModal{{ $participant->id }}" tabindex="-1" aria-labelledby="uploadCertificateModalLabel{{ $participant->id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content text-white" style="background: var(--bg-dark); border: 1px solid var(--accent-cyan); border-radius: 16px;">
-                                    <div class="modal-header" style="border-bottom: 1px solid rgba(0, 229, 255, 0.1);">
-                                        <h5 class="modal-title fw-bold" id="uploadCertificateModalLabel{{ $participant->id }}" style="color: var(--accent-cyan);">
-                                            <i class="fa-solid fa-file-signature me-2"></i> Upload Sertifikat
-                                        </h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="{{ route('admin.event.upload-sertifikat', $participant->uuid) }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="modal-body p-4">
-                                            <div class="mb-3 text-center">
-                                                <h6 class="fw-bold mb-1 text-white">{{ $participant->name }}</h6>
-                                                <span class="text-secondary small font-monospace">{{ $participant->wa }}</span>
-                                            </div>
-
-                                            @if($participant->certificat)
-                                                <div class="mb-4 text-center">
-                                                    <div class="text-secondary mb-2 small">Sertifikat saat ini:</div>
-                                                    <img src="{{ asset('storage/' . $participant->certificat) }}" alt="Sertifikat" class="rounded border shadow-sm" style="max-width: 100%; max-height: 150px; object-fit: cover; border-color: rgba(0, 229, 255, 0.2) !important;">
-                                                </div>
-                                            @endif
-
-                                            <div class="mb-3">
-                                                <label class="form-label text-info fw-bold">Pilih File Sertifikat</label>
-                                                <input type="file" name="certificat" class="form-control" required>
-                                                <div class="form-text text-secondary small mt-2">Dukung format gambar (JPEG, PNG, JPG) atau PDF. Maksimal 4MB.</div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer" style="border-top: 1px solid rgba(0, 229, 255, 0.1);">
-                                            <button type="button" class="btn btn-cyber-outline" data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-cyber-info px-4 fw-bold">Upload Sertifikat</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center py-5">
+                            <td colspan="8" class="text-center py-5">
                                 <i class="fa-solid fa-users-slash fs-2 mb-3 d-block text-secondary"></i>
                                 <span class="text-secondary">Belum ada peserta yang mendaftar pada event ini.</span>
                             </td>
@@ -244,9 +204,68 @@
     </div>
 </div>
 
-<style>
-    .hover-underline:hover {
-        text-decoration: underline !important;
-    }
-</style>
+{{-- ============================================================
+     Modal Upload/Ganti Sertifikat
+     Diletakkan di LUAR tabel dan container agar tidak terkubur
+     oleh stacking context CSS (overflow, transform, dll.)
+     ============================================================ --}}
+@foreach($participants as $participant)
+<div class="modal fade" id="uploadCertificateModal{{ $participant->id }}"
+     tabindex="-1"
+     aria-labelledby="uploadCertificateModalLabel{{ $participant->id }}"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white"
+             style="background: var(--bg-dark); border: 1px solid var(--accent-cyan); border-radius: 16px;">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(0, 229, 255, 0.1);">
+                <h5 class="modal-title fw-bold"
+                    id="uploadCertificateModalLabel{{ $participant->id }}"
+                    style="color: var(--accent-cyan);">
+                    <i class="fa-solid fa-file-signature me-2"></i>
+                    {{ $participant->certificat ? 'Ganti Sertifikat' : 'Upload Sertifikat' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.event.upload-sertifikat', $participant->uuid) }}"
+                  method="POST"
+                  enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body p-4">
+                    {{-- Info peserta --}}
+                    <div class="mb-3 text-center">
+                        <h6 class="fw-bold mb-1 text-white">{{ $participant->name }}</h6>
+                        <span class="text-secondary small font-monospace">{{ $participant->wa }}</span>
+                    </div>
+
+                    {{-- Preview sertifikat saat ini --}}
+                    @if($participant->certificat)
+                        <div class="mb-4 text-center">
+                            <div class="text-secondary mb-2 small">Sertifikat saat ini:</div>
+                            <img src="{{ asset('assets/sertifikat/' . $participant->certificat) }}"
+                                 alt="Sertifikat {{ $participant->name }}"
+                                 class="rounded border shadow-sm"
+                                 style="max-width: 100%; max-height: 160px; object-fit: cover; border-color: rgba(0, 229, 255, 0.3) !important;">
+                        </div>
+                    @endif
+
+                    <div class="mb-2">
+                        <label class="form-label text-info fw-bold">Pilih File Sertifikat</label>
+                        <input type="file" name="certificat" class="form-control" accept="image/*,.pdf" required>
+                        <div class="form-text text-secondary small mt-2">
+                            Format: JPEG, PNG, JPG, atau PDF. Maksimal 4MB.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(0, 229, 255, 0.1);">
+                    <button type="button" class="btn btn-cyber-outline" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-cyber-info px-4 fw-bold">
+                        <i class="fa-solid fa-upload me-1"></i> Upload Sertifikat
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
 @endsection

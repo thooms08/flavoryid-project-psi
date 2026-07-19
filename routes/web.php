@@ -33,9 +33,11 @@ Route::get('/syarat-ketentuan', [PublicController::class, 'SyaratKetentuan'])->n
 
 // Public Event Routes (tanpa login)
 Route::prefix('event')->name('event.')->group(function () {
-    Route::get('/',                    [PublicEventController::class, 'index'])->name('index');
-    Route::get('/{identifier}',        [PublicEventController::class, 'show'])->name('show');
-    Route::post('/{identifier}/daftar',[PublicEventController::class, 'daftar'])->name('daftar');
+    Route::get('/',                              [PublicEventController::class, 'index'])->name('index');
+    Route::get('/{identifier}/peserta',          [\App\Http\Controllers\PublicPesertaController::class, 'show'])->name('peserta');
+    Route::get('/{identifier}/peserta/search',   [\App\Http\Controllers\PublicPesertaController::class, 'search'])->name('peserta.search');
+    Route::get('/{identifier}',                  [PublicEventController::class, 'show'])->name('show');
+    Route::post('/{identifier}/daftar',          [PublicEventController::class, 'daftar'])->name('daftar');
 });
 
 Route::get('/verifikasi/{id}', [VerifikasiController::class, 'show'])->name('verifikasi.show');
