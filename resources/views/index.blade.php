@@ -1278,8 +1278,8 @@
      style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:99990;
             align-items:center; justify-content:center; padding:16px;">
     <div id="eventPopupCard"
-         style="position:relative; max-width:420px; width:100%; background:#fff;
-                border-radius:20px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.22);
+         style="position:relative; max-width:340px; width:100%; background:#fff;
+                border-radius:18px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.22);
                 animation: popupIn .4s cubic-bezier(.34,1.56,.64,1) both;">
 
         {{-- Tombol tutup --}}
@@ -1297,10 +1297,10 @@
 
         {{-- Poster / gambar event --}}
         @if($popupEvent->image)
-            <div style="position:relative; aspect-ratio:16/9; background:#f8f9fa; overflow:hidden;">
+            <div style="position:relative; background:#f8f9fa; overflow:hidden; max-height:52vh;">
                 <img src="{{ asset('assets/event/' . $popupEvent->image) }}"
                      alt="{{ $popupEvent->event_name }}"
-                     style="width:100%; height:100%; object-fit:cover; display:block;"
+                     style="width:100%; height:auto; display:block;"
                      onerror="this.parentElement.style.display='none'">
                 {{-- Label "Segera Hadir" di atas poster --}}
                 <span style="position:absolute; top:12px; left:12px; background:#ff6a00; color:#fff;
@@ -1312,16 +1312,16 @@
         @endif
 
         {{-- Konten --}}
-        <div style="padding:20px 22px 22px;">
-            <p style="font-size:.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
-                      color:#ff6a00; margin-bottom:4px;">Event Flavory.id</p>
-            <h3 style="font-size:1.05rem; font-weight:800; color:#1e293b; line-height:1.35; margin-bottom:10px;">
+        <div style="padding:14px 16px 16px;">
+            <p style="font-size:.62rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+                      color:#ff6a00; margin-bottom:3px;">Event Flavory.id</p>
+            <h3 style="font-size:.92rem; font-weight:800; color:#1e293b; line-height:1.35; margin-bottom:8px;">
                 {{ $popupEvent->event_name }}
             </h3>
 
             {{-- Meta: tanggal & lokasi --}}
-            <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:16px;">
-                <div style="font-size:.78rem; color:#64748b; display:flex; align-items:center; gap:7px;">
+            <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:13px;">
+                <div style="font-size:.72rem; color:#64748b; display:flex; align-items:center; gap:6px;">
                     <i class="bi bi-calendar3" style="color:#ff6a00; flex-shrink:0;"></i>
                     <span>
                         {{ \Carbon\Carbon::parse($popupEvent->event_start_date)->translatedFormat('d M Y') }}
@@ -1334,7 +1334,7 @@
                     </span>
                 </div>
                 @if($popupEvent->location)
-                    <div style="font-size:.78rem; color:#64748b; display:flex; align-items:center; gap:7px;">
+                    <div style="font-size:.72rem; color:#64748b; display:flex; align-items:center; gap:6px;">
                         <i class="bi bi-geo-alt-fill" style="color:#ff6a00; flex-shrink:0;"></i>
                         <span>{{ $popupEvent->location }}</span>
                     </div>
@@ -1343,16 +1343,16 @@
 
             {{-- Tombol CTA --}}
             <a href="{{ route('event.show', $popupEvent->slug ?? $popupEvent->uuid) }}"
-               style="display:flex; align-items:center; justify-content:center; gap:8px;
+               style="display:flex; align-items:center; justify-content:center; gap:7px;
                       background:linear-gradient(135deg,#ff6a00,#ff8c33); color:#fff;
-                      border-radius:50px; padding:11px 20px; font-size:.88rem; font-weight:700;
-                      text-decoration:none; box-shadow:0 6px 20px rgba(255,106,0,.35);
+                      border-radius:50px; padding:9px 16px; font-size:.8rem; font-weight:700;
+                      text-decoration:none; box-shadow:0 5px 16px rgba(255,106,0,.35);
                       transition:all .25s; width:100%;"
                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(255,106,0,.45)'"
-               onmouseout="this.style.transform=''; this.style.boxShadow='0 6px 20px rgba(255,106,0,.35)'">
+               onmouseout="this.style.transform=''; this.style.boxShadow='0 5px 16px rgba(255,106,0,.35)'">
                 <i class="bi bi-pencil-square"></i> Daftar Sekarang
             </a>
-            <p style="font-size:.7rem; color:#94a3b8; text-align:center; margin-top:10px; margin-bottom:0;">
+            <p style="font-size:.63rem; color:#94a3b8; text-align:center; margin-top:8px; margin-bottom:0;">
                 Klik × untuk menutup. Popup tidak muncul lagi hari ini.
             </p>
         </div>
