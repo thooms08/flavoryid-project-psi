@@ -145,6 +145,7 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::get('/kasir/performa-bisnis', [KasirPerformaController::class, 'index'])->name('kasir.performa');
     Route::get('/kasir/mineai',                    [\App\Http\Controllers\MineAIController::class, 'index'])->name('kasir.mineai');
     Route::get('/kasir/mineai/initial-insight',    [\App\Http\Controllers\MineAIController::class, 'getInitialInsight'])->name('kasir.mineai.insight');
+    Route::get('/kasir/mineai/daily-usage',        [\App\Http\Controllers\MineAIController::class, 'getDailyUsage'])->name('kasir.mineai.daily-usage');
     Route::post('/kasir/mineai/chat',              [\App\Http\Controllers\MineAIController::class, 'chatWithGroq'])->name('kasir.mineai.chat');
     Route::get('/kasir/mineai/session/{uuid}',     [\App\Http\Controllers\MineAIController::class, 'loadSession'])->name('kasir.mineai.session.load');
     Route::delete('/kasir/mineai/session/{uuid}',  [\App\Http\Controllers\MineAIController::class, 'deleteSession'])->name('kasir.mineai.session.delete');

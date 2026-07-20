@@ -20,7 +20,7 @@ class AdminPesertaController extends Controller
     public function detail($event_uuid)
     {
         $event = Event::where('uuid', $event_uuid)->firstOrFail();
-        $participants = Participant::where('event_id', $event->id)->orderBy('name', 'asc')->get();
+        $participants = Participant::where('event_id', $event->id)->orderBy('created_at', 'desc')->get();
 
         return view('admin.event.detail-peserta', compact('event', 'participants'));
     }

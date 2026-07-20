@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>MineAI — Konsultan Bisnis Kuliner | Flavory.id</title>
+    <title>MineAI - Konsultan Bisnis Kuliner | Flavory.id</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -366,7 +366,165 @@
         .btn-send:hover{ transform:scale(1.07); }
         .btn-send:disabled{ opacity:.45; cursor:not-allowed; transform:none; animation:none; }
 
-        /* ── Responsive ── */
+        /* ── Mic Button ── */
+        .btn-mic{
+            width:40px; height:40px; border-radius:10px; border:1px solid var(--border);
+            cursor:pointer; flex-shrink:0; background:var(--surface); color:var(--muted);
+            display:flex; align-items:center; justify-content:center;
+            font-size:.9rem; transition:all .2s;
+        }
+        .btn-mic:hover{ background:var(--light); color:var(--acc1); border-color:rgba(255,106,0,.3); }
+        .btn-mic.recording{
+            background:linear-gradient(135deg,var(--acc1),var(--acc2));
+            border-color:transparent; color:white;
+            animation:micPulse 1s ease-in-out infinite;
+            box-shadow:0 4px 16px rgba(255,106,0,.45);
+        }
+        @keyframes micPulse{
+            0%,100%{ transform:scale(1); box-shadow:0 4px 16px rgba(255,106,0,.4); }
+            50%    { transform:scale(1.1); box-shadow:0 6px 24px rgba(238,9,121,.6); }
+        }
+
+        /* ── Voice Overlay ── */
+        #voiceOverlay{
+            position:fixed; inset:0; z-index:999;
+            background:rgba(10,10,20,.75);
+            backdrop-filter:blur(8px);
+            display:none; align-items:center; justify-content:center;
+            flex-direction:column; gap:20px;
+        }
+        #voiceOverlay.active{ display:flex; }
+        .voice-card{
+            background:var(--surface); border-radius:28px; padding:36px 40px;
+            text-align:center; min-width:280px; max-width:340px;
+            box-shadow:0 24px 64px rgba(0,0,0,.3);
+            animation:voiceIn .35s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        @keyframes voiceIn{
+            from{ opacity:0; transform:scale(.82) translateY(20px); }
+            to  { opacity:1; transform:scale(1) translateY(0); }
+        }
+        .voice-rings{
+            position:relative; width:100px; height:100px;
+            margin:0 auto 20px; display:flex;
+            align-items:center; justify-content:center;
+        }
+        .ring{
+            position:absolute; border-radius:50%;
+            border:2px solid transparent; animation:none;
+        }
+        .ring1{ width:100px; height:100px; border-color:rgba(255,106,0,.2); }
+        .ring2{ width:76px;  height:76px;  border-color:rgba(238,9,121,.25); }
+        .ring3{ width:54px;  height:54px;  border-color:rgba(255,154,0,.3); }
+        .ring-center{
+            width:56px; height:56px; border-radius:50%; z-index:2;
+            background:linear-gradient(135deg,var(--acc1),var(--acc2));
+            display:flex; align-items:center; justify-content:center;
+            color:white; font-size:1.3rem;
+            box-shadow:0 8px 28px rgba(255,106,0,.4);
+        }
+        .voice-rings.listening .ring1{ animation:ringPulse 1.4s ease-in-out infinite; }
+        .voice-rings.listening .ring2{ animation:ringPulse 1.4s ease-in-out infinite .2s; }
+        .voice-rings.listening .ring3{ animation:ringPulse 1.4s ease-in-out infinite .4s; }
+        .voice-rings.listening .ring-center{ animation:centerPulse 1.4s ease-in-out infinite; }
+        @keyframes ringPulse{
+            0%,100%{ transform:scale(1); opacity:.5; }
+            50%    { transform:scale(1.12); opacity:1; }
+        }
+        @keyframes centerPulse{
+            0%,100%{ box-shadow:0 8px 28px rgba(255,106,0,.4); }
+            50%    { box-shadow:0 12px 40px rgba(238,9,121,.65); }
+        }
+        .equalizer{
+            display:flex; align-items:flex-end; gap:4px;
+            height:28px; justify-content:center; margin-bottom:4px;
+        }
+        .eq-bar{
+            width:4px; border-radius:3px;
+            background:linear-gradient(to top,var(--acc1),var(--acc2));
+            height:4px;
+        }
+        .equalizer.active .eq-bar:nth-child(1){ animation:eq 1s ease-in-out infinite 0s; }
+        .equalizer.active .eq-bar:nth-child(2){ animation:eq 1s ease-in-out infinite .1s; }
+        .equalizer.active .eq-bar:nth-child(3){ animation:eq 1s ease-in-out infinite .2s; }
+        .equalizer.active .eq-bar:nth-child(4){ animation:eq 1s ease-in-out infinite .3s; }
+        .equalizer.active .eq-bar:nth-child(5){ animation:eq 1s ease-in-out infinite .4s; }
+        .equalizer.active .eq-bar:nth-child(6){ animation:eq 1s ease-in-out infinite .2s; }
+        .equalizer.active .eq-bar:nth-child(7){ animation:eq 1s ease-in-out infinite .15s; }
+        @keyframes eq{
+            0%,100%{ height:4px; }
+            50%    { height:22px; }
+        }
+        .voice-label{ font-size:.88rem; font-weight:700; color:var(--text); margin-bottom:4px; }
+        .voice-sublabel{ font-size:.75rem; color:var(--muted); margin-bottom:18px; }
+        .voice-preview{
+            background:var(--light); border-radius:10px; padding:10px 14px;
+            font-size:.8rem; color:var(--text); min-height:40px;
+            margin-bottom:16px; text-align:left; line-height:1.5;
+            border:1px solid var(--border); display:none;
+        }
+        .voice-preview.show{ display:block; }
+        .btn-voice-confirm{
+            width:100%; padding:10px; border-radius:50px; border:none; cursor:pointer;
+            background:linear-gradient(135deg,var(--acc1),var(--acc2));
+            color:white; font-size:.85rem; font-weight:700;
+            box-shadow:0 6px 20px rgba(255,106,0,.35);
+            transition:transform .2s; display:none;
+        }
+        .btn-voice-confirm.show{ display:block; }
+        .btn-voice-confirm:hover{ transform:translateY(-1px); }
+        .btn-voice-stop{
+            width:100%; padding:10px; border-radius:50px; border:none; cursor:pointer;
+            background:var(--light); border:1px solid var(--border);
+            color:var(--text); font-size:.85rem; font-weight:600;
+            transition:transform .2s;
+        }
+        .btn-voice-stop:hover{ background:var(--border); }
+        .btn-voice-cancel{
+            background:none; border:none; font-size:.78rem;
+            color:var(--muted); cursor:pointer; margin-top:4px;
+            text-decoration:underline; text-underline-offset:3px;
+        }
+        .btn-voice-cancel:hover{ color:#e11d48; }
+
+        /* ── Quota Bar ── */
+        #quotaBar{
+            padding:8px 18px; border-bottom:1px solid var(--border);
+            background:var(--light); flex-shrink:0;
+            display:flex; align-items:center; gap:10px;
+        }
+        .quota-label{
+            font-size:.68rem; font-weight:700; color:var(--muted);
+            white-space:nowrap; text-transform:uppercase; letter-spacing:.5px;
+        }
+        .quota-track{
+            flex:1; height:6px; background:var(--border); border-radius:99px; overflow:hidden;
+        }
+        .quota-fill{
+            height:100%; border-radius:99px;
+            background:linear-gradient(90deg,var(--acc1),var(--acc2));
+            transition:width .5s ease, background .5s ease;
+            width:0%;
+        }
+        .quota-fill.warn  { background:linear-gradient(90deg,#f59e0b,#ef4444); }
+        .quota-fill.danger{ background:#ef4444; }
+        .quota-count{
+            font-size:.68rem; font-weight:800; color:var(--muted);
+            white-space:nowrap; min-width:56px; text-align:right;
+        }
+        .quota-count.warn  { color:#f59e0b; }
+        .quota-count.danger{ color:#ef4444; }
+
+        /* Limit reached banner */
+        #limitBanner{
+            display:none; padding:10px 18px;
+            background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(238,9,121,.08));
+            border-bottom:1px solid rgba(239,68,68,.2);
+            text-align:center; font-size:.78rem; font-weight:600; color:#e11d48;
+            flex-shrink:0;
+        }
+        #limitBanner.show{ display:block; }
+        #limitBanner i{ margin-right:5px; }
         @media(max-width:768px){
             :root{ --sidebar-w:260px; }
             #sidebar{
@@ -511,11 +669,26 @@
                         <i class="bi bi-plus-lg"></i> Chat Baru
                     </button>
                 </div>
+                {{-- Quota Bar --}}
+                <div id="quotaBar">
+                    <span class="quota-label"><i class="bi bi-lightning-charge-fill me-1"></i>Kuota</span>
+                    <div class="quota-track"><div class="quota-fill" id="quotaFill"></div></div>
+                    <span class="quota-count" id="quotaCount">— / 500</span>
+                </div>
+                {{-- Limit Banner --}}
+                <div id="limitBanner">
+                    <i class="bi bi-slash-circle-fill"></i>
+                    Kuota chat harian habis (500/500). Reset otomatis besok pukul 00:00.
+                    <span id="limitCountdown" class="ms-1 fw-bold"></span>
+                </div>
                 <div id="chatMessages"></div>
                 <div id="chatInputArea">
                     <textarea id="chatInput" rows="1"
                         placeholder="Tanya apa saja ke MineAI..."
                         maxlength="2000"></textarea>
+                    <button class="btn-mic" id="btnMic" type="button" title="Rekam suara">
+                        <i class="bi bi-mic-fill" id="micIcon"></i>
+                    </button>
                     <button class="btn-send" id="btnSend" onclick="sendMessage()">
                         <i class="bi bi-send-fill"></i>
                     </button>
@@ -526,10 +699,38 @@
     </div>{{-- /#bodyRow --}}
 </div>{{-- /#shell --}}
 
+{{-- ── Voice Overlay ── --}}
+<div id="voiceOverlay">
+    <div class="voice-card">
+        <div class="voice-rings" id="voiceRings">
+            <div class="ring ring1"></div>
+            <div class="ring ring2"></div>
+            <div class="ring ring3"></div>
+            <div class="ring-center"><i class="bi bi-mic-fill"></i></div>
+        </div>
+        <div class="equalizer" id="voiceEq">
+            <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+            <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+        </div>
+        <div class="voice-label" id="voiceLabel">Mendengarkan...</div>
+        <div class="voice-sublabel" id="voiceSub">Bicaralah sekarang</div>
+        <div class="voice-preview" id="voicePreview"></div>
+        <button class="btn-voice-confirm" id="btnVoiceConfirm" onclick="confirmVoice()">
+            <i class="bi bi-check-lg me-1"></i> Gunakan Teks Ini
+        </button>
+        <button class="btn-voice-stop" id="btnVoiceStop" onclick="stopVoice()">
+            <i class="bi bi-stop-circle me-1"></i> Selesai
+        </button>
+        <button class="btn-voice-cancel" onclick="cancelVoice()">Batalkan</button>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let chatHistory=[], businessContext={}, insightText='', currentSession=null;
+let dailyUsed=0; const DAILY_LIMIT=500;
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
 const md = t => t
@@ -538,6 +739,89 @@ const md = t => t
     .replace(/\n/g,'<br>');
 const nowStr = () => new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
 const scrollBottom = () => { const el=document.getElementById('chatMessages'); el.scrollTop=el.scrollHeight; };
+
+/* ── Quota ── */
+function updateQuotaUI(used){
+    dailyUsed = used;
+    const fill    = document.getElementById('quotaFill');
+    const count   = document.getElementById('quotaCount');
+    const banner  = document.getElementById('limitBanner');
+    const input   = document.getElementById('chatInput');
+    const btnSend = document.getElementById('btnSend');
+    const btnMic  = document.getElementById('btnMic');
+
+    const pct = Math.min(100, (used / DAILY_LIMIT) * 100);
+    fill.style.width = pct + '%';
+
+    // Warna & teks counter
+    fill.classList.remove('warn','danger');
+    count.classList.remove('warn','danger');
+    if(used >= DAILY_LIMIT){
+        fill.classList.add('danger'); count.classList.add('danger');
+    } else if(pct >= 80){
+        fill.classList.add('warn'); count.classList.add('warn');
+    }
+
+    count.textContent = used + ' / ' + DAILY_LIMIT;
+
+    // Limit tercapai — disable input
+    if(used >= DAILY_LIMIT){
+        banner.classList.add('show');
+        input.disabled = true;
+        input.placeholder = 'Kuota harian habis. Reset besok pukul 00:00.';
+        if(btnSend){ btnSend.disabled=true; }
+        if(btnMic)  { btnMic.disabled=true; }
+        startCountdown();
+    } else {
+        banner.classList.remove('show');
+        input.disabled = false;
+        input.placeholder = 'Tanya apa saja ke MineAI...';
+        if(btnSend){ btnSend.disabled=false; }
+        if(btnMic)  { btnMic.disabled=false; }
+    }
+
+    // Toast peringatan saat 80% dan 95%
+    if(used === Math.floor(DAILY_LIMIT * 0.8)){
+        showQuotaToast('⚠️ Kuota tersisa 20% (' + (DAILY_LIMIT - used) + ' chat)', 'warn');
+    } else if(used === Math.floor(DAILY_LIMIT * 0.95)){
+        showQuotaToast('🔴 Kuota hampir habis! Tersisa ' + (DAILY_LIMIT - used) + ' chat', 'danger');
+    }
+}
+
+function showQuotaToast(msg, type){
+    Swal.fire({
+        toast: true, position: 'top-end',
+        icon: type === 'danger' ? 'error' : 'warning',
+        title: msg,
+        showConfirmButton: false, timer: 3500, timerProgressBar: true,
+    });
+}
+
+async function fetchDailyUsage(){
+    try{
+        const res  = await fetch('{{ route("kasir.mineai.daily-usage") }}', {headers:{'Accept':'application/json'}});
+        const data = await res.json();
+        updateQuotaUI(data.used ?? 0);
+    } catch(e){ /* silent */ }
+}
+
+/* Countdown sampai reset (tengah malam) */
+function startCountdown(){
+    const el = document.getElementById('limitCountdown');
+    if(!el) return;
+    function tick(){
+        const now  = new Date();
+        const next = new Date(); next.setHours(24,0,0,0);
+        const diff = Math.max(0, next - now);
+        const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+        const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+        const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+        el.textContent = '(Reset dalam ' + h + ':' + m + ':' + s + ')';
+        if(diff > 0) setTimeout(tick, 1000);
+        else location.reload(); // auto reload saat reset
+    }
+    tick();
+}
 
 /* ── Sidebar ── */
 let sidebarOpen = window.innerWidth > 768;
@@ -552,11 +836,15 @@ function closeMobileSidebar(){
 }
 document.addEventListener('DOMContentLoaded',()=>{
     if(window.innerWidth<=768) document.getElementById('sidebar').classList.add('collapsed');
+    // Fetch quota awal saat halaman load
+    fetchDailyUsage();
 });
 
 /* ── New chat ── */
 function startNewChat(){
     currentSession=null; chatHistory=[]; businessContext={}; insightText='';
+    // ── PERBAIKAN: bersihkan seluruh isi chat messages ──
+    document.getElementById('chatMessages').innerHTML='';
     document.getElementById('chatBox').style.display='none';
     document.getElementById('insightCard').style.display='none';
     document.getElementById('heroStage').style.cssText='display:block;opacity:1';
@@ -604,6 +892,7 @@ function openChat(){
     chatHistory.push({role:'assistant',content:insightText});
     document.getElementById('chatInput').focus();
     scrollBottom();
+    fetchDailyUsage(); // load quota saat chat pertama dibuka
 }
 
 /* ── Bubble ── */
@@ -632,6 +921,13 @@ function appendBubble(role,content,isTyping=false){
 async function sendMessage(){
     const input=document.getElementById('chatInput'), btnSend=document.getElementById('btnSend');
     const msg=input.value.trim(); if(!msg) return;
+
+    // Cek limit di sisi client sebelum kirim
+    if(dailyUsed >= DAILY_LIMIT){
+        updateQuotaUI(dailyUsed);
+        return;
+    }
+
     input.value=''; input.style.height=''; btnSend.disabled=true;
     appendBubble('user',msg);
     chatHistory.push({role:'user',content:msg});
@@ -642,11 +938,25 @@ async function sendMessage(){
             headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF,'Accept':'application/json'},
             body:JSON.stringify({message:msg,chat_history:chatHistory.slice(0,-1),business_context:businessContext,session_uuid:currentSession}),
         });
+
+        // Handle limit reached dari server (429)
+        if(res.status === 429){
+            const errData = await res.json();
+            document.getElementById('typingBubble')?.remove();
+            appendBubble('ai', errData.message || 'Kuota harian habis Bos. Reset besok ya! 🙏');
+            updateQuotaUI(errData.used ?? DAILY_LIMIT);
+            return;
+        }
+
         const data=await res.json();
         const reply=data.reply||'Hmm, gak dapat jawaban.';
         document.getElementById('typingBubble')?.remove();
         appendBubble('ai',reply);
         chatHistory.push({role:'assistant',content:reply});
+
+        // Update quota dari response
+        if(typeof data.used !== 'undefined') updateQuotaUI(data.used);
+
         if(data.session_uuid){
             currentSession=data.session_uuid;
             upsertSidebarItem(data.session_uuid,data.session_title||msg.substring(0,40));
@@ -654,7 +964,11 @@ async function sendMessage(){
     }catch(e){
         document.getElementById('typingBubble')?.remove();
         appendBubble('ai','Bos, ada gangguan koneksi. Coba lagi! 🙏');
-    }finally{ btnSend.disabled=false; input.focus(); }
+    }finally{
+        // Hanya re-enable jika belum limit
+        if(dailyUsed < DAILY_LIMIT) btnSend.disabled=false;
+        input.focus();
+    }
 }
 
 /* ── Sidebar helpers ── */
@@ -698,6 +1012,7 @@ async function loadSession(uuid){
         document.getElementById('chatMessages').innerHTML='';
         chatHistory.forEach(m=>appendBubble(m.role,m.content));
         scrollBottom();
+        fetchDailyUsage(); // update quota saat load session
     }catch(e){ alert('Gagal memuat sesi. Coba lagi!'); }
 }
 
@@ -759,6 +1074,147 @@ document.getElementById('chatInput').addEventListener('input',function(){
     this.style.height='';
     this.style.height=Math.min(this.scrollHeight,120)+'px';
 });
+
+/* ════════════════════════════════════════════
+   VOICE TO TEXT — Web Speech API
+   ════════════════════════════════════════════ */
+(function(){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const btnMic    = document.getElementById('btnMic');
+    const overlay   = document.getElementById('voiceOverlay');
+    const rings     = document.getElementById('voiceRings');
+    const eq        = document.getElementById('voiceEq');
+    const labelEl   = document.getElementById('voiceLabel');
+    const subEl     = document.getElementById('voiceSub');
+    const previewEl = document.getElementById('voicePreview');
+    const btnStop   = document.getElementById('btnVoiceStop');
+    const btnConfirm= document.getElementById('btnVoiceConfirm');
+
+    if(!SpeechRecognition){
+        // Sembunyikan tombol mic jika browser tidak support
+        if(btnMic) btnMic.style.display='none';
+        return;
+    }
+
+    let recognition = null;
+    let finalTranscript = '';
+    let isRecognizing   = false;
+
+    function buildRecognition(){
+        const rec = new SpeechRecognition();
+        rec.lang='id-ID'; rec.interimResults=true; rec.continuous=true; rec.maxAlternatives=1;
+
+        rec.onstart = () => {
+            isRecognizing=true; finalTranscript='';
+            rings.classList.add('listening');
+            eq.classList.add('active');
+            labelEl.textContent='Mendengarkan...';
+            subEl.textContent='Bicaralah sekarang';
+            previewEl.textContent=''; previewEl.classList.remove('show');
+            btnStop.style.display='block';
+            btnConfirm.classList.remove('show');
+        };
+
+        rec.onresult = (e) => {
+            let interim='';
+            for(let i=e.resultIndex;i<e.results.length;i++){
+                if(e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+                else interim += e.results[i][0].transcript;
+            }
+            const display = finalTranscript + interim;
+            if(display.trim()){
+                previewEl.textContent = display.trim();
+                previewEl.classList.add('show');
+            }
+        };
+
+        rec.onerror = (e) => {
+            if(e.error==='no-speech') return; // abaikan no-speech, biarkan lanjut
+            stopRecognition();
+            labelEl.textContent='Gagal mendengar';
+            subEl.textContent='Periksa izin mikrofon';
+        };
+
+        rec.onend = () => {
+            isRecognizing=false;
+            rings.classList.remove('listening');
+            eq.classList.remove('active');
+            if(finalTranscript.trim()){
+                labelEl.textContent='Selesai merekam';
+                subEl.textContent='Cek teks di bawah';
+                previewEl.textContent = finalTranscript.trim();
+                previewEl.classList.add('show');
+                btnConfirm.classList.add('show');
+                btnStop.style.display='none';
+            } else {
+                labelEl.textContent='Tidak terdeteksi';
+                subEl.textContent='Coba bicara lebih jelas';
+                setTimeout(closeOverlay, 1600);
+            }
+        };
+
+        return rec;
+    }
+
+    function openOverlay(){
+        overlay.classList.add('active');
+        btnMic.classList.add('recording');
+        btnMic.querySelector('#micIcon').className='bi bi-stop-fill';
+    }
+
+    function closeOverlay(){
+        overlay.classList.remove('active');
+        btnMic.classList.remove('recording');
+        btnMic.querySelector('#micIcon').className='bi bi-mic-fill';
+    }
+
+    function stopRecognition(){
+        if(recognition && isRecognizing){ recognition.stop(); }
+        isRecognizing=false;
+    }
+
+    /* tombol mic diklik */
+    btnMic.addEventListener('click', () => {
+        if(isRecognizing){ stopRecognition(); return; }
+        recognition = buildRecognition();
+        openOverlay();
+        recognition.start();
+    });
+
+    /* Selesai — stop recognition, tunggu onend */
+    window.stopVoice = function(){
+        if(isRecognizing) recognition.stop();
+    };
+
+    /* Gunakan teks → masukkan ke input */
+    window.confirmVoice = function(){
+        const text = finalTranscript.trim();
+        if(text){
+            const input = document.getElementById('chatInput');
+            input.value = (input.value.trim() ? input.value.trim() + ' ' : '') + text;
+            input.style.height='';
+            input.style.height=Math.min(input.scrollHeight,120)+'px';
+            input.focus();
+        }
+        closeOverlay();
+    };
+
+    /* Batalkan */
+    window.cancelVoice = function(){
+        stopRecognition();
+        closeOverlay();
+    };
+
+    /* Tutup overlay dengan klik luar */
+    overlay.addEventListener('click', (e) => {
+        if(e.target === overlay){ cancelVoice(); }
+    });
+
+    /* ESC */
+    document.addEventListener('keydown', (e) => {
+        if(e.key==='Escape' && overlay.classList.contains('active')) cancelVoice();
+    });
+})();
 </script>
 </body>
 </html>

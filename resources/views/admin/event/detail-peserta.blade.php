@@ -111,6 +111,7 @@
                         <th>Nama Usaha</th>
                         <th>Instansi</th>
                         <th>Informasi</th>
+                        <th>Tgl. Daftar</th>
                         <th class="text-center">Sertifikat</th>
                     </tr>
                 </thead>
@@ -162,6 +163,18 @@
                                     {{ $participant->info ?? '-' }}
                                 </span>
                             </td>
+                            {{-- Tanggal Daftar --}}
+                            <td class="font-monospace" style="font-size: 0.78rem; white-space: nowrap;">
+                                <div class="text-white">
+                                    {{ \Carbon\Carbon::parse($participant->created_at)->translatedFormat('l') }}
+                                </div>
+                                <div class="text-info">
+                                    {{ \Carbon\Carbon::parse($participant->created_at)->translatedFormat('d M Y') }}
+                                </div>
+                                <div class="text-secondary" style="font-size: 0.72rem;">
+                                    {{ \Carbon\Carbon::parse($participant->created_at)->format('H:i') }} WIB
+                                </div>
+                            </td>
                             {{-- Kolom Sertifikat --}}
                             <td class="text-center font-monospace">
                                 @if($participant->certificat)
@@ -192,7 +205,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5">
+                            <td colspan="9" class="text-center py-5">
                                 <i class="fa-solid fa-users-slash fs-2 mb-3 d-block text-secondary"></i>
                                 <span class="text-secondary">Belum ada peserta yang mendaftar pada event ini.</span>
                             </td>

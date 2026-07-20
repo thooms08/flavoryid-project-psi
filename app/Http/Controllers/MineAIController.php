@@ -65,8 +65,35 @@ class MineAIController extends Controller
     }
 
     // ─────────────────────────────────────────────
-    //  GET INITIAL INSIGHT  (AJAX GET)
+    //  GET DAILY USAGE — sisa kuota chat hari ini
     // ─────────────────────────────────────────────
+    public function getDailyUsage()
+    {
+        $partnerId = Auth::user()->partner->id;
+        $used      = $this->countDailyMessages($partnerId);
+
+        return response()->json([
+            'used'      => $used,
+            'limit'     => 500,
+            'remaining' => max(0, 500 - $used),
+            'reset_at'  => now()->endOfDay()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Hitung total pesan user (gelembung) yang dikirim hari ini
+     */
+    private function countDailyMessages(int $partnerId): int
+    {
+        // Ambil semua session milik partner
+        $sessionIds = MineAiSession::where('partner_id', $partnerId)->pluck('id');
+
+        // Hitung pesan role=user hari ini
+        return MineAiMessage::whereIn('mine_ai_session_id', $sessionIds)
+            ->where('role', 'user')
+            ->whereDate('created_at', today())
+            ->count();
+    }
     public function getInitialInsight()
     {
         $tz        = 'Asia/Jakarta';
@@ -195,6 +222,18 @@ class MineAIController extends Controller
         $businessContext = $request->input('business_context', []);
         $sessionUuid     = $request->input('session_uuid');
 
+        // ── Cek limit harian: 500 pesan user per hari ──
+        $usedToday = $this->countDailyMessages($partnerId);
+        if ($usedToday >= 500) {
+            return response()->json([
+                'error'     => 'limit_reached',
+                'used'      => $usedToday,
+                'limit'     => 500,
+                'remaining' => 0,
+                'message'   => 'Bos, kuota chat harian kamu sudah habis (500/500). Kuota akan reset otomatis besok ya! 🙏',
+            ], 429);
+        }
+
         // ── Temukan atau buat sesi ──
         $session = null;
         if ($sessionUuid) {
@@ -283,6 +322,8 @@ class MineAIController extends Controller
             'reply'        => $reply,
             'session_uuid' => $session->uuid,
             'session_title'=> $session->title,
+            'used'         => $usedToday + 1,
+            'remaining'    => max(0, 500 - ($usedToday + 1)),
         ]);
     }
 
