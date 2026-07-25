@@ -155,50 +155,64 @@
     }
 
     /* ── Floating CTA (mobile only) — tombol kecil sebelum sheet dibuka ── */
+    /* ── Floating CTA & Container (mobile only) ── */
     .floating-cta {
         display: none;
     }
+    
     @media (max-width: 991.98px) {
+        /* Kontainer putih w-100 yang fixed di bawah */
+        .mobile-bottom-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            padding: 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 998;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* Tombol Daftar dibikin full-width */
         .floating-cta {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 998;
+            width: 100%;
             background: var(--primary-orange);
             color: #fff;
-            font-size: .9rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            padding: 13px 28px;
+            padding: 14px 28px;
             border-radius: 50px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(255,106,0,.45);
+            box-shadow: 0 4px 15px rgba(255,106,0,.45);
             text-decoration: none;
             white-space: nowrap;
-            transition: opacity .3s ease, visibility .3s ease;
-            opacity: 1;
-            visibility: visible;
         }
-        .floating-cta.hide {
+        
+        .floating-cta.hide, .mobile-bottom-container.hide {
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none;
         }
-        @keyframes floatIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        .floating-cta:not(.hide) {
-            animation: floatIn .4s ease both;
-        }
-        .detail-hero { padding-bottom: 100px !important; }
-    }
 
+        /* 
+         * PENTING: Ganti ".class-tombol-wa-kamu" dengan nama class 
+         * yang ada di dalam file layouts.wa milikmu. 
+         * Ini gunanya untuk menaikkan posisi WA biar nggak ketutupan bar putih.
+         */
+        .class-tombol-wa-kamu {
+            bottom: 100px !important; /* Disesuaikan agar pas di atas kontainer putih */
+            z-index: 999 !important;
+        }
+
+        /* Tambah ruang di bawah hero biar konten terbawah nggak ketutup bar putih */
+        .detail-hero { padding-bottom: 130px !important; }
+    }
     /* ── Bottom Sheet Form (mobile only) ── */
     .form-sheet-overlay {
         display: none;
@@ -597,11 +611,18 @@
     </div>
 </div>
 
-{{-- Floating CTA — hanya tampil di mobile (<992px), hilang otomatis saat form terlihat --}}
+{{-- Floating CTA & WhatsApp (mobile only) --}}
 @if(!$isEnded && !$isClosed)
-<button type="button" id="floatingCta" class="floating-cta" aria-label="Buka formulir pendaftaran">
-    <i class="bi bi-pencil-square"></i> Daftar Sekarang
-</button>
+    
+    {{-- Memanggil komponen tombol WA bawaan --}}
+    @include('layouts.wa')
+
+    {{-- Kontainer Putih (Fixed Bottom) --}}
+    <div class="mobile-bottom-container" id="mobileBottomContainer">
+        <button type="button" id="floatingCta" class="floating-cta" aria-label="Buka formulir pendaftaran">
+            <i class="bi bi-pencil-square"></i> Daftar Sekarang
+        </button>
+    </div>
 @endif
 
 {{-- ── Bottom Sheet Form (mobile only) ── --}}
