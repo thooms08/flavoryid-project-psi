@@ -543,14 +543,21 @@
         const btnInstall = document.getElementById('btnInstallPwa');
         const btnClose = document.getElementById('btnClosePwa');
 
+        // Daftar route yang menyembunyikan banner PWA
+        const hidePwaOnPaths = ['/event', '/event/'];
+        const currentPath = window.location.pathname;
+        const isEventPage = currentPath.startsWith('/event');
+
         // Menangkap event sebelum prompt install muncul
         window.addEventListener('beforeinstallprompt', (e) => {
             // Mencegah mini-infobar bawaan browser muncul (khusus mobile)
             e.preventDefault();
             // Simpan event agar bisa dipicu nanti
             deferredPrompt = e;
-            // Tampilkan custom banner kita
-            installBanner.classList.add('show');
+            // Jangan tampilkan banner di halaman event
+            if (!isEventPage) {
+                installBanner.classList.add('show');
+            }
         });
 
         // Saat tombol "Install" diklik

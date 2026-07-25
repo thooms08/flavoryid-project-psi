@@ -154,9 +154,9 @@
         .detail-hero { padding-top: 100px; }
     }
 
-    /* ── Floating CTA (mobile only) ── */
+    /* ── Floating CTA (mobile only) — tombol kecil sebelum sheet dibuka ── */
     .floating-cta {
-        display: none; /* hidden di desktop */
+        display: none;
     }
     @media (max-width: 991.98px) {
         .floating-cta {
@@ -167,8 +167,8 @@
             position: fixed;
             bottom: 24px;
             left: 50%;
-            transform: translateX(-50%);   /* HANYA untuk centering — tidak diubah lagi */
-            z-index: 999;
+            transform: translateX(-50%);
+            z-index: 998;
             background: var(--primary-orange);
             color: #fff;
             font-size: .9rem;
@@ -180,27 +180,15 @@
             box-shadow: 0 8px 24px rgba(255,106,0,.45);
             text-decoration: none;
             white-space: nowrap;
-            /* transisi hanya opacity & bottom — transform tidak disentuh */
-            transition: opacity .3s ease, visibility .3s ease, bottom .35s ease;
+            transition: opacity .3s ease, visibility .3s ease;
             opacity: 1;
             visibility: visible;
         }
-        .floating-cta:hover {
-            background: var(--dark-orange);
-            color: #fff;
-            box-shadow: 0 12px 28px rgba(255,106,0,.55);
-        }
-        /* hide: cukup opacity + visibility, transform TIDAK diubah agar centering tetap */
         .floating-cta.hide {
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none;
         }
-        /* naik saat banner PWA aktif */
-        .floating-cta.push-up {
-            bottom: 110px;
-        }
-        /* animasi masuk pertama kali pakai keyframes pada opacity saja */
         @keyframes floatIn {
             from { opacity: 0; }
             to   { opacity: 1; }
@@ -208,8 +196,93 @@
         .floating-cta:not(.hide) {
             animation: floatIn .4s ease both;
         }
-        /* beri ruang ekstra di bawah halaman agar konten tidak tertutup tombol */
-        .detail-hero { padding-bottom: 90px !important; }
+        .detail-hero { padding-bottom: 100px !important; }
+    }
+
+    /* ── Bottom Sheet Form (mobile only) ── */
+    .form-sheet-overlay {
+        display: none;
+    }
+    @media (max-width: 991.98px) {
+        /* Overlay gelap di belakang sheet */
+        .form-sheet-overlay {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 1040;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s ease, visibility .3s ease;
+        }
+        .form-sheet-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Container sheet yang naik dari bawah */
+        .form-bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            background: #fff;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -8px 40px rgba(0,0,0,.15);
+            max-height: 90dvh;          /* maksimal 90% tinggi viewport */
+            overflow-y: auto;
+            padding: 0 20px 32px;
+            transform: translateY(100%);
+            transition: transform .4s cubic-bezier(.32,.72,0,1);
+            -webkit-overflow-scrolling: touch;
+        }
+        .form-bottom-sheet.open {
+            transform: translateY(0);
+        }
+
+        /* Handle tarik atas */
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            margin: 14px auto 20px;
+        }
+
+        /* Header sheet */
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .sheet-header-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #1a202c;
+            margin: 0;
+        }
+        .sheet-close-btn {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #475569;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .sheet-close-btn:active { background: #e2e8f0; }
+
+        /* Sembunyikan form card asli di mobile agar tidak double */
+        .col-lg-5 .form-card {
+            display: none;
+        }
     }
     .share-bar {
         display: flex;
@@ -526,16 +599,161 @@
 
 {{-- Floating CTA — hanya tampil di mobile (<992px), hilang otomatis saat form terlihat --}}
 @if(!$isEnded && !$isClosed)
-<a href="#formPendaftaran" id="floatingCta" class="floating-cta" aria-label="Scroll ke formulir pendaftaran">
+<button type="button" id="floatingCta" class="floating-cta" aria-label="Buka formulir pendaftaran">
     <i class="bi bi-pencil-square"></i> Daftar Sekarang
-</a>
+</button>
 @endif
+
+{{-- ── Bottom Sheet Form (mobile only) ── --}}
+<div id="formSheetOverlay" class="form-sheet-overlay" aria-hidden="true"></div>
+
+<div id="formBottomSheet" class="form-bottom-sheet" role="dialog" aria-modal="true" aria-label="Formulir Pendaftaran">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-header">
+        <p class="sheet-header-title">
+            <i class="bi bi-pencil-square text-orange me-2"></i>Formulir Pendaftaran
+        </p>
+        <button type="button" class="sheet-close-btn" id="sheetCloseBtn" aria-label="Tutup formulir">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    {{-- Isi form identik dengan yang di desktop --}}
+    @if($isEnded)
+        <div class="closed-banner">
+            <i class="bi bi-lock-fill d-block mb-2" style="font-size:2rem;"></i>
+            <strong>Pendaftaran Ditutup</strong>
+            <p class="small mb-0 mt-1">Event ini sudah berakhir pada {{ \Carbon\Carbon::parse($event->event_end_date)->translatedFormat('d M Y') }}.</p>
+        </div>
+    @elseif($isClosed)
+        <div class="closed-banner">
+            <i class="bi bi-x-circle-fill d-block mb-2" style="font-size:2rem;"></i>
+            <strong>Event Telah Ditutup</strong>
+            <p class="small mb-0 mt-1">Pendaftaran untuk event ini telah ditutup oleh penyelenggara.</p>
+        </div>
+    @else
+        {{-- Jumlah peserta --}}
+        <div class="peserta-count">
+            <i class="bi bi-people-fill"></i>
+            <div>
+                <strong>{{ $pesertaCount }} orang sudah mendaftar</strong><br>
+                <span>Segera daftar sebelum tempat penuh!</span>
+            </div>
+        </div>
+
+        <form action="{{ route('event.daftar', $event->slug ?? $event->uuid) }}" method="POST" id="formDaftarSheet">
+            @csrf
+
+            {{-- Nama --}}
+            <div class="mb-3">
+                <label class="form-label-custom" for="sheet_name">
+                    Nama Lengkap <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="sheet_name" name="name"
+                       value="{{ old('name') }}"
+                       class="form-control form-control-custom @error('name') is-invalid @enderror"
+                       placeholder="Contoh: Budi Santoso" required>
+                @error('name')
+                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Nomor WhatsApp --}}
+            <div class="mb-3">
+                <label class="form-label-custom" for="sheet_wa">
+                    Nomor WhatsApp Aktif <span class="text-danger">*</span>
+                </label>
+                <input type="number" id="sheet_wa" name="wa"
+                       value="{{ old('wa') }}"
+                       class="form-control form-control-custom @error('wa') is-invalid @enderror"
+                       placeholder="Contoh: 08123456789" inputmode="numeric" required>
+                @error('wa')
+                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Kategori Peserta --}}
+            <div class="mb-4">
+                <label class="form-label-custom" for="sheet_participant_category">
+                    Kategori Peserta <span class="text-danger">*</span>
+                </label>
+                <div class="position-relative">
+                    <select id="sheet_participant_category" name="participant_category"
+                            class="form-select form-control-custom @error('participant_category') is-invalid @enderror"
+                            style="background-image:none !important; padding-right:40px;" required>
+                        <option value="" disabled {{ old('participant_category') ? '' : 'selected' }}>-- Pilih kategori --</option>
+                        <option value="pengusaha_kuliner"     {{ old('participant_category')==='pengusaha_kuliner'     ?'selected':'' }}>Pengusaha Kuliner</option>
+                        <option value="pengusaha_non_kuliner" {{ old('participant_category')==='pengusaha_non_kuliner' ?'selected':'' }}>Pengusaha Non-Kuliner</option>
+                        <option value="pelajar"               {{ old('participant_category')==='pelajar'               ?'selected':'' }}>Pelajar / Mahasiswa</option>
+                        <option value="umum"                  {{ old('participant_category')==='umum'                  ?'selected':'' }}>Umum</option>
+                    </select>
+                    <i id="sheet_category_arrow" class="bi bi-chevron-down position-absolute"
+                       style="right:15px; top:50%; transform:translateY(-50%); pointer-events:none; transition:transform .2s; color:#475569; font-size:.85rem;"></i>
+                </div>
+                @error('participant_category')
+                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Nama Usaha (kondisional) --}}
+            <div id="sheet_group_nama_usaha" class="mb-3" style="display:none;">
+                <label class="form-label-custom" for="sheet_nama_usaha">
+                    Nama Usaha <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="sheet_nama_usaha" name="nama_usaha"
+                       value="{{ old('nama_usaha') }}"
+                       class="form-control form-control-custom @error('nama_usaha') is-invalid @enderror"
+                       placeholder="Contoh: Kopi Nusantara">
+                @error('nama_usaha')
+                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Nama Instansi (kondisional) --}}
+            <div id="sheet_group_nama_instansi" class="mb-3" style="display:none;">
+                <label class="form-label-custom" for="sheet_nama_instansi">
+                    Nama Instansi / Sekolah / Universitas <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="sheet_nama_instansi" name="nama_instansi"
+                       value="{{ old('nama_instansi') }}"
+                       class="form-control form-control-custom @error('nama_instansi') is-invalid @enderror"
+                       placeholder="Contoh: Universitas Indonesia">
+                @error('nama_instansi')
+                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Informasi Event --}}
+            <div class="mb-3">
+                <label class="form-label-custom" for="sheet_info">
+                    Informasi Event <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="sheet_info" name="info"
+                       value="{{ old('info') }}"
+                       class="form-control form-control-custom @error('info') is-invalid @enderror"
+                       placeholder="Medsos, Blog Flavory.id,.." required>
+                @error('info')
+                    <div class="invalid-feedback d-block" style="font-size:.78rem;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn-daftar" id="btnDaftarSheet">
+                <i class="bi bi-send-fill me-2"></i> Daftar & Bergabung ke Grup WA
+            </button>
+
+            <p class="text-center text-muted mt-3 small">
+                <i class="bi bi-shield-check text-success me-1"></i>
+                Data Anda aman dan tidak akan disalahgunakan.
+            </p>
+        </form>
+    @endif
+</div>
 
 @endsection
 
 @push('scripts')
 <script>
-    // Logic Togel Form Kondisional Kategori Peserta
+    // ── Kondisional Field (Desktop form) ──
 const categorySelect = document.getElementById('participant_category');
 const groupNamaUsaha = document.getElementById('group_nama_usaha');
 const groupNamaInstansi = document.getElementById('group_nama_instansi');
@@ -543,92 +761,155 @@ const inputNamaUsaha = document.getElementById('nama_usaha');
 const inputNamaInstansi = document.getElementById('nama_instansi');
 
 function toggleFields() {
-    const val = categorySelect.value;
-    
+    const val = categorySelect?.value;
+    if (!val) return;
     if (val === 'pengusaha_kuliner' || val === 'pengusaha_non_kuliner') {
         groupNamaUsaha.style.display = 'block';
         inputNamaUsaha.required = true;
-        
         groupNamaInstansi.style.display = 'none';
         inputNamaInstansi.required = false;
     } else if (val === 'pelajar') {
         groupNamaUsaha.style.display = 'none';
         inputNamaUsaha.required = false;
-        
         groupNamaInstansi.style.display = 'block';
         inputNamaInstansi.required = true;
     } else {
         groupNamaUsaha.style.display = 'none';
         inputNamaUsaha.required = false;
-        
         groupNamaInstansi.style.display = 'none';
         inputNamaInstansi.required = false;
     }
 }
-
 if (categorySelect) {
     categorySelect.addEventListener('change', toggleFields);
-    toggleFields(); // Jalankan sekali saat page load untuk cek 'old value'
+    toggleFields();
 }
 
-// Logic Animasi Panah Dropdown Kategori
+// ── Kondisional Field (Sheet / Mobile form) ──
+const sheetCategorySelect  = document.getElementById('sheet_participant_category');
+const sheetGroupNamaUsaha  = document.getElementById('sheet_group_nama_usaha');
+const sheetGroupNamaInstansi = document.getElementById('sheet_group_nama_instansi');
+const sheetInputNamaUsaha   = document.getElementById('sheet_nama_usaha');
+const sheetInputNamaInstansi = document.getElementById('sheet_nama_instansi');
+
+function sheetToggleFields() {
+    const val = sheetCategorySelect?.value;
+    if (!val) return;
+    if (val === 'pengusaha_kuliner' || val === 'pengusaha_non_kuliner') {
+        sheetGroupNamaUsaha.style.display = 'block';
+        sheetInputNamaUsaha.required = true;
+        sheetGroupNamaInstansi.style.display = 'none';
+        sheetInputNamaInstansi.required = false;
+    } else if (val === 'pelajar') {
+        sheetGroupNamaUsaha.style.display = 'none';
+        sheetInputNamaUsaha.required = false;
+        sheetGroupNamaInstansi.style.display = 'block';
+        sheetInputNamaInstansi.required = true;
+    } else {
+        sheetGroupNamaUsaha.style.display = 'none';
+        sheetInputNamaUsaha.required = false;
+        sheetGroupNamaInstansi.style.display = 'none';
+        sheetInputNamaInstansi.required = false;
+    }
+}
+if (sheetCategorySelect) {
+    sheetCategorySelect.addEventListener('change', sheetToggleFields);
+    sheetToggleFields();
+}
+
+// ── Animasi Panah Dropdown (Desktop) ──
 const selectEl = document.getElementById('participant_category');
-const arrowEl = document.getElementById('category_arrow');
-
+const arrowEl  = document.getElementById('category_arrow');
 if (selectEl && arrowEl) {
-    selectEl.addEventListener('focus', () => {
-        arrowEl.style.transform = 'translateY(-50%) rotate(180deg)';
-    });
-    
-    selectEl.addEventListener('blur', () => {
-        arrowEl.style.transform = 'translateY(-50%) rotate(0deg)';
-    });
-    
-    selectEl.addEventListener('change', () => {
-        selectEl.blur(); // Otomatis tutup focus dan kembalikan panah ke bawah setelah memilih
-    });
+    selectEl.addEventListener('focus',  () => arrowEl.style.transform = 'translateY(-50%) rotate(180deg)');
+    selectEl.addEventListener('blur',   () => arrowEl.style.transform = 'translateY(-50%) rotate(0deg)');
+    selectEl.addEventListener('change', () => selectEl.blur());
 }
 
+// ── Animasi Panah Dropdown (Sheet) ──
+const sheetSelectEl = document.getElementById('sheet_participant_category');
+const sheetArrowEl  = document.getElementById('sheet_category_arrow');
+if (sheetSelectEl && sheetArrowEl) {
+    sheetSelectEl.addEventListener('focus',  () => sheetArrowEl.style.transform = 'translateY(-50%) rotate(180deg)');
+    sheetSelectEl.addEventListener('blur',   () => sheetArrowEl.style.transform = 'translateY(-50%) rotate(0deg)');
+    sheetSelectEl.addEventListener('change', () => sheetSelectEl.blur());
+}
+
+// ── Submit spinner (Desktop) ──
 document.getElementById('formDaftar')?.addEventListener('submit', function () {
     const btn = document.getElementById('btnDaftar');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mendaftarkan...';
 });
 
-// ── Floating CTA: hilang saat form sudah terlihat di layar ──
-const floatingCta   = document.getElementById('floatingCta');
-const formTarget    = document.getElementById('formPendaftaran');
+// ── Submit spinner (Sheet) ──
+document.getElementById('formDaftarSheet')?.addEventListener('submit', function () {
+    const btn = document.getElementById('btnDaftarSheet');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mendaftarkan...';
+});
 
-if (floatingCta && formTarget) {
+// ── Bottom Sheet Logic ──
+const floatingCta     = document.getElementById('floatingCta');
+const sheetOverlay    = document.getElementById('formSheetOverlay');
+const bottomSheet     = document.getElementById('formBottomSheet');
+const sheetCloseBtn   = document.getElementById('sheetCloseBtn');
 
-    function checkFormVisibility() {
-        const rect = formTarget.getBoundingClientRect();
-        // Form dianggap "terlihat" jika bagian atasnya sudah masuk viewport
-        const isVisible = rect.top < window.innerHeight * 0.85;
-        floatingCta.classList.toggle('hide', isVisible);
-    }
+function openSheet() {
+    bottomSheet?.classList.add('open');
+    sheetOverlay?.classList.add('open');
+    document.body.style.overflow = 'hidden';  // cegah scroll background
+    // Fokus ke input pertama agar keyboard muncul
+    setTimeout(() => document.getElementById('sheet_name')?.focus(), 350);
+}
 
-    // Cek saat scroll (paling reliable di semua mobile browser)
-    window.addEventListener('scroll', checkFormVisibility, { passive: true });
+function closeSheet() {
+    bottomSheet?.classList.remove('open');
+    sheetOverlay?.classList.remove('open');
+    document.body.style.overflow = '';
+}
 
-    // Cek sekali saat load (kalau halaman dibuka langsung di posisi bawah)
-    checkFormVisibility();
-
-    // Smooth scroll ke form saat diklik
+if (floatingCta) {
     floatingCta.addEventListener('click', function (e) {
         e.preventDefault();
-        formTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Di desktop (>991px), tidak ada sheet — scroll ke form saja
+        if (window.innerWidth > 991) {
+            document.getElementById('formPendaftaran')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            openSheet();
+        }
     });
+}
 
-    // Naik saat banner PWA muncul, turun saat banner PWA hilang
-    const pwaBanner = document.getElementById('installPwaBanner');
-    if (pwaBanner) {
-        const pwaMutationObserver = new MutationObserver(() => {
-            const pwaVisible = pwaBanner.classList.contains('show');
-            floatingCta.classList.toggle('push-up', pwaVisible);
-        });
-        pwaMutationObserver.observe(pwaBanner, { attributes: true, attributeFilter: ['class'] });
+sheetCloseBtn?.addEventListener('click', closeSheet);
+sheetOverlay?.addEventListener('click', closeSheet);
+
+// Tutup sheet dengan swipe ke bawah
+let sheetTouchStartY = 0;
+bottomSheet?.addEventListener('touchstart', e => { sheetTouchStartY = e.touches[0].clientY; }, { passive: true });
+bottomSheet?.addEventListener('touchend',   e => {
+    const deltaY = e.changedTouches[0].clientY - sheetTouchStartY;
+    if (deltaY > 80) closeSheet();
+}, { passive: true });
+
+// Tutup sheet dengan tombol Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+// ── Floating CTA: hilang saat form desktop sudah terlihat (hanya berlaku di desktop) ──
+const formTarget = document.getElementById('formPendaftaran');
+if (floatingCta && formTarget) {
+    function checkFormVisibility() {
+        if (window.innerWidth > 991) {
+            const rect = formTarget.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight * 0.85;
+            floatingCta.classList.toggle('hide', isVisible);
+        } else {
+            floatingCta.classList.remove('hide'); // selalu tampil di mobile
+        }
     }
+    window.addEventListener('scroll', checkFormVisibility, { passive: true });
+    window.addEventListener('resize', checkFormVisibility, { passive: true });
+    checkFormVisibility();
 }
 
 // ── Web Share API ──
@@ -644,19 +925,12 @@ if (btnShare) {
     };
 
     btnShare.addEventListener('click', async function () {
-        // Gunakan native Web Share API jika browser mendukung
         if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                // User membatalkan share — tidak perlu handling khusus
-            }
+            try { await navigator.share(shareData); } catch (err) {}
         } else {
-            // Fallback: salin link ke clipboard
             try {
                 await navigator.clipboard.writeText(shareData.url);
             } catch {
-                // Fallback lama untuk browser tanpa Clipboard API
                 const el = document.createElement('textarea');
                 el.value = shareData.url;
                 el.style.position = 'fixed';
@@ -666,13 +940,12 @@ if (btnShare) {
                 document.execCommand('copy');
                 document.body.removeChild(el);
             }
-            // Feedback visual "Tersalin"
             btnShare.classList.add('copied');
-            shareIcon.className  = 'bi bi-check-lg';
+            shareIcon.className    = 'bi bi-check-lg';
             shareLabel.textContent = 'Link Tersalin!';
             setTimeout(() => {
                 btnShare.classList.remove('copied');
-                shareIcon.className  = 'bi bi-share-fill';
+                shareIcon.className    = 'bi bi-share-fill';
                 shareLabel.textContent = 'Bagikan Event';
             }, 2500);
         }
