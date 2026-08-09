@@ -343,6 +343,9 @@
     $isClosed   = $event->status === 'inactive'; // ditutup manual oleh admin
     $pesertaCount = $event->participants->count();
 
+    // Event "ditutup" jika: inactive (admin tutup manual), sedang berlangsung, atau sudah selesai
+    $isSudahDitutup = $isClosed || $isOngoing || $isEnded;
+
     if ($isClosed && !$isEnded) {
         $badgeClass = 'bg-danger';
         $badgeText  = 'Ditutup';
@@ -355,7 +358,8 @@
     } else {
         $badgeClass = 'bg-secondary';
         $badgeText  = 'Sudah Selesai';
-    }@endphp
+    }
+@endphp
 
 <div class="detail-hero pb-5">
     <div class="container">
@@ -368,6 +372,66 @@
                 <!--<li class="breadcrumb-item active text-muted" aria-current="page">{{ Str::limit($event->event_name, 40) }}</li> -->           </ol>
         </nav>
 
+        {{-- ============================================================ --}}
+        {{-- TAMPILAN KHUSUS: Event sudah ditutup (inactive / berlangsung / selesai) --}}
+        {{-- ============================================================ --}}
+        @if($isSudahDitutup)
+        <div class="row justify-content-center py-5">
+            <div class="col-lg-7 col-md-9 text-center">
+
+                <div style="
+                    background: #fef2f2;
+                    border: 2px solid #fecaca;
+                    border-radius: 24px;
+                    padding: 60px 40px;
+                    box-shadow: 0 8px 30px rgba(239,68,68,.08);
+                ">
+                    <div style="
+                        width: 80px; height: 80px;
+                        background: #fee2e2;
+                        border-radius: 50%;
+                        display: flex; align-items: center; justify-content: center;
+                        margin: 0 auto 24px;
+                    ">
+                        <i class="bi bi-lock-fill" style="font-size: 2rem; color: #dc2626;"></i>
+                    </div>
+
+                    <h2 class="fw-bold mb-3" style="font-size: 1.5rem; color: #991b1b; line-height: 1.4;">
+                        EVENT {{ strtoupper($event->event_name) }} SUDAH DITUTUP
+                    </h2>
+
+                    <p class="text-muted mb-4" style="font-size: .92rem;">
+                        @if($isEnded)
+                            Event ini telah berakhir pada
+                            <strong>{{ \Carbon\Carbon::parse($event->event_end_date)->translatedFormat('d F Y') }}</strong>.
+                        @elseif($isOngoing)
+                            Event ini sedang berlangsung dan pendaftaran peserta baru telah ditutup.
+                        @else
+                            Pendaftaran untuk event ini telah ditutup oleh penyelenggara.
+                        @endif
+                    </p>
+
+                    <a href="{{ route('event.index') }}"
+                       class="btn"
+                       style="
+                           background: #dc2626; color: #fff;
+                           border-radius: 50px;
+                           padding: 12px 32px;
+                           font-weight: 700;
+                           font-size: .9rem;
+                           text-decoration: none;
+                           display: inline-flex; align-items: center; gap: 8px;
+                       ">
+                        <i class="bi bi-arrow-left"></i> Lihat Event Lainnya
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        @else
+        {{-- ============================================================ --}}
+        {{-- TAMPILAN NORMAL: Event masih aktif dan belum mulai --}}
+        {{-- ============================================================ --}}
         <div class="row g-5">
             {{-- Kiri: Info Event --}}
             <div class="col-lg-7">
@@ -608,11 +672,13 @@
                 </div>
             </div>
         </div>
+        @endif
+        {{-- /@if($isSudahDitutup) ... @else ... @endif --}}
     </div>
 </div>
 
-{{-- Floating CTA & WhatsApp (mobile only) --}}
-@if(!$isEnded && !$isClosed)
+{{-- Floating CTA & WhatsApp (mobile only) — hanya tampil jika event masih bisa didaftar --}}
+@if(!$isSudahDitutup)
     
     {{-- Memanggil komponen tombol WA bawaan --}}
     @include('layouts.wa')
@@ -625,7 +691,8 @@
     </div>
 @endif
 
-{{-- ── Bottom Sheet Form (mobile only) ── --}}
+{{-- ── Bottom Sheet Form (mobile only) — hanya jika event masih bisa didaftar ── --}}
+@if(!$isSudahDitutup)
 <div id="formSheetOverlay" class="form-sheet-overlay" aria-hidden="true"></div>
 
 <div id="formBottomSheet" class="form-bottom-sheet" role="dialog" aria-modal="true" aria-label="Formulir Pendaftaran">
@@ -769,6 +836,8 @@
         </form>
     @endif
 </div>
+@endif
+{{-- /@if(!$isSudahDitutup) bottom sheet --}}
 
 @endsection
 

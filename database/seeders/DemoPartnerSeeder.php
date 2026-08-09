@@ -34,7 +34,7 @@ class DemoPartnerSeeder extends Seeder
             'user_id'      => $userId,
             'uuid'         => (string) Str::uuid(),
             'nama_manager' => 'Budi Santoso',
-            'no_whatsapp'   => '08' . random_int(10000000, 99999999),
+            'no_wa'         => '08' . random_int(10000000, 99999999),
             'email'        => 'kasir.contoh@flavory.id',
             'created_at'   => now(),
             'updated_at'   => now(),

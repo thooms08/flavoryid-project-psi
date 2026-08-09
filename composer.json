@@ -11,7 +11,8 @@
         "laravel/reverb": "^1.8",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10.1",
-        "maatwebsite/excel": "^3.1",
+        "maatwebsite/excel": "4.x-dev",
+        "phpoffice/phpspreadsheet": "^5.8",
         "predis/predis": "^3.5",
         "pusher/pusher-php-server": "^7.2",
         "simplesoftwareio/simple-qrcode": "^4.2"

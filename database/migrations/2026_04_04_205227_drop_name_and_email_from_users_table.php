@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Menghapus ketiga kolom sekaligus
-            $table->dropColumn(['name', 'email', 'email_verified_at']);
+            $columns = [];
+            foreach (['name', 'email', 'email_verified_at'] as $col) {
+                if (Schema::hasColumn('users', $col)) {
+                    $columns[] = $col;
+                }
+            }
+            if (!empty($columns)) {
+                $table->dropColumn($columns);
+            }
         });
     }
 
@@ -23,10 +30,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Mengembalikan kolom jika migrasi di-rollback (best practice)
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
         });
     }
 };
