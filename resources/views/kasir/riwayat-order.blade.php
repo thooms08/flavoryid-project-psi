@@ -12,7 +12,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     @include('layouts.favicon')
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
     <style>
         :root { 
             --primary-orange: #fd7e14; 
@@ -107,7 +107,7 @@
                 <i class="bi bi-clock-history text-orange me-2"></i>Riwayat Pesanan
             </h2>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 ms-auto">
             <div class="card border-0 shadow-sm bg-orange text-white card-stats h-100">
                 <div class="card-body d-flex flex-column justify-content-center">
                     <small class="opacity-75 fw-medium">Total Transaksi</small>
@@ -115,23 +115,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-dark text-white card-stats h-100">
-                <div class="card-body d-flex flex-column justify-content-center position-relative">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <small class="opacity-75 fw-medium">Total Pendapatan</small>
-                        <button id="btn-toggle-pendapatan"
-                                onclick="togglePendapatan()"
-                                class="btn btn-sm p-0 text-white opacity-75"
-                                style="line-height:1; background:none; border:none;"
-                                title="Tampilkan / Sembunyikan">
-                            <i class="bi bi-eye-slash" id="icon-toggle-pendapatan"></i>
-                        </button>
-                    </div>
-                    <h4 class="fw-bold mb-0" id="stat-pendapatan">Rp {{ number_format($stats['total_pendapatan'] ?? 0, 0, ',', '.') }}</h4>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <div class="card filter-card mb-2">
@@ -162,7 +146,7 @@
     </div>
 
     <div class="row g-3 ms-auto" id="order-container">
-        @include('kasir.partials.order-cards')
+        @include('kasir.partials.order-history-cards')
     </div>
 
     <div id="loader" class="text-center py-5 d-none">
@@ -198,14 +182,6 @@
             
             orderContainer.innerHTML = data.html;
             document.getElementById('stat-transaksi').innerText = data.stats.total_transaksi;
-            // Simpan nilai asli ke data-attribute, lalu terapkan state tersembunyi jika aktif
-            const elPendapatan = document.getElementById('stat-pendapatan');
-            elPendapatan.dataset.nilai = data.stats.total_pendapatan;
-            if (localStorage.getItem('pendapatan_hidden') === '1') {
-                elPendapatan.innerText = '••••••••';
-            } else {
-                elPendapatan.innerText = data.stats.total_pendapatan;
-            }
 
             const paidOrderId = localStorage.getItem('last_paid_order_id');
         if (paidOrderId) {
@@ -254,37 +230,6 @@
         url.searchParams.set('limit', 'all');
         fetchOrders(url.toString());
     }
-
-    // ── Toggle sembunyikan / tampilkan Total Pendapatan ──
-    function togglePendapatan() {
-        const el   = document.getElementById('stat-pendapatan');
-        const icon = document.getElementById('icon-toggle-pendapatan');
-        const hidden = localStorage.getItem('pendapatan_hidden') === '1';
-
-        if (hidden) {
-            // Tampilkan kembali
-            el.innerText = el.dataset.nilai || el.innerText;
-            icon.className = 'bi bi-eye-slash';
-            localStorage.setItem('pendapatan_hidden', '0');
-        } else {
-            // Sembunyikan
-            el.dataset.nilai = el.innerText; // simpan nilai asli sebelum disembunyikan
-            el.innerText = '••••••••';
-            icon.className = 'bi bi-eye';
-            localStorage.setItem('pendapatan_hidden', '1');
-        }
-    }
-
-    // Terapkan state tersimpan saat halaman pertama kali dimuat
-    (function initPendapatanState() {
-        if (localStorage.getItem('pendapatan_hidden') === '1') {
-            const el   = document.getElementById('stat-pendapatan');
-            const icon = document.getElementById('icon-toggle-pendapatan');
-            el.dataset.nilai = el.innerText;
-            el.innerText     = '••••••••';
-            icon.className   = 'bi bi-eye';
-        }
-    })();
 </script>
 </body>
 </html>

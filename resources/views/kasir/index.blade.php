@@ -12,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     @include('layouts.favicon')
-    @include('layouts.loading')
 
     <style>
         :root { 
@@ -390,6 +389,20 @@
         </button>
     </div>
 
+    {{-- CTA Sinkronisasi Manual — muncul hanya jika ada offline orders yang belum tersinkron --}}
+    <div id="sync-banner" style="display: none; background-color: #fff3cd; border: 2px dashed #ffc107;" class="alert mb-4 shadow-sm flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-cloud-upload-fill fs-3 text-warning"></i>
+            <div>
+                <div class="fw-bold text-dark">Ada <span id="sync-count">0</span> pesanan offline yang belum tersinkron</div>
+                <div class="small text-muted">Pesanan ini tersimpan lokal dan belum masuk ke server. Sinkronkan sekarang saat koneksi stabil.</div>
+            </div>
+        </div>
+        <button class="btn btn-warning fw-bold px-4 py-2 shadow-sm text-dark flex-shrink-0" onclick="manualSync()">
+            <i class="bi bi-arrow-repeat me-2"></i> SINKRONKAN SEKARANG
+        </button>
+    </div>
+
     <div id="order-container">
         <div class="text-center py-5" id="loader">
             <div class="spinner-border text-warning" role="status"></div>
@@ -504,12 +517,82 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/loading.js') }}"></script>
 <script src="{{ asset('pwa-order.js') }}"></script>
 <script src="{{ asset('pwa-kasir.js') }}"></script>
 <script>
     // ==========================================
     // FUNGSI RENDER ULANG DATA OFFLINE (TanPA RELOAD)
     // ==========================================
+
+    // Cek IndexedDB lalu tampilkan/sembunyikan banner sinkronisasi manual
+    async function updateSyncBanner() {
+        const offlineOrders = await getOfflineOrders();
+        const banner = document.getElementById('sync-banner');
+        const countEl = document.getElementById('sync-count');
+        if (!banner) return;
+        if (offlineOrders.length > 0) {
+            countEl.textContent = offlineOrders.length;
+            banner.style.display = 'flex';
+        } else {
+            banner.style.display = 'none';
+        }
+    }
+
+    // Sinkronisasi manual dipicu kasir saat tombol CTA diklik
+    async function manualSync() {
+        if (!navigator.onLine) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Tidak Ada Koneksi',
+                text: 'Pastikan perangkat Anda terhubung ke internet terlebih dahulu sebelum sinkronisasi.'
+            });
+            return;
+        }
+
+        if (window.showLoading) window.showLoading('Menyinkronkan pesanan...');
+
+        try {
+            if (typeof syncOfflineOrders === 'function') {
+                await syncOfflineOrders();
+            }
+            if (typeof syncKasirActions === 'function') {
+                await syncKasirActions();
+            }
+            localStorage.removeItem('offline_pending_edits');
+        } catch (e) {
+            console.error('Gagal sinkronisasi manual:', e);
+        } finally {
+            if (window.hideLoading) window.hideLoading();
+            await updateSyncBanner();
+        }
+    }
+    /**
+     * Sorting terpusat untuk currentOrders.
+     * Aturan:
+     *  1. Pesanan offline yang BELUM disinkronkan (id dimulai 'offline-') → paling atas,
+     *     diurutkan dari yang terbaru (timestamp terbesar) ke terlama.
+     *  2. Pesanan online / offline yang sudah tersinkronkan ke server →
+     *     diurutkan berdasarkan created_at terbaru ke terlama.
+     *  3. Jika ada pesanan yang baru masuk via Pusher (ditandai localStorage 'new_order_id'),
+     *     urutan created_at sudah cukup karena baru masuk = created_at paling besar.
+     */
+    function sortOrders(orders) {
+        return orders.slice().sort((a, b) => {
+            const aIsPendingOffline = String(a.id).startsWith('offline-');
+            const bIsPendingOffline = String(b.id).startsWith('offline-');
+
+            // Pending offline selalu di atas online/synced
+            if (aIsPendingOffline && !bIsPendingOffline) return -1;
+            if (!aIsPendingOffline && bIsPendingOffline) return 1;
+
+            // Di dalam kelompok yang sama: terbaru di atas
+            const aTime = new Date(a.created_at).getTime();
+            const bTime = new Date(b.created_at).getTime();
+            return bTime - aTime;
+        });
+    }
+
     async function refreshOfflineUI() {
         // 0. Reset daftar currentOrders ke data asli dari Server
         currentOrders = @json($orders);
@@ -524,7 +607,8 @@
                 no_whatsapp: o.no_whatsapp,
                 no_meja: o.no_meja,
                 keterangan: o.keterangan,
-                created_at: new Date(o.timestamp).toISOString(),
+                // Gunakan timestamp dari IndexedDB agar bisa diSort dengan benar
+                created_at: new Date(o.timestamp || Date.now()).toISOString(),
                 total_harga: o.cart.reduce((sum, item) => sum + (item.harga * item.qty), 0),
                 order_details: o.cart.map(c => ({
                     menu_id: c.id, 
@@ -538,7 +622,7 @@
                 })),
                 is_offline: true
             };
-            currentOrders.unshift(fakeOrder);
+            currentOrders.push(fakeOrder);
         });
 
         // 2. Timpa list dengan hasil edit offline (Optimistic UI)
@@ -568,6 +652,9 @@
             return order;
         });
 
+        // 3. Sort: offline belum-sync di atas, lalu semua diurutkan terbaru ke terlama
+        currentOrders = sortOrders(currentOrders);
+
         renderOrders();
     }
 
@@ -579,6 +666,9 @@
 
         // Panggil fungsi perakitan data saat halaman pertama dimuat
         await refreshOfflineUI();
+
+        // Cek apakah ada pesanan offline yang perlu disinkronkan
+        await updateSyncBanner();
     });
     // ==========================================
     // MANAJEMEN JARINGAN & SINKRONISASI
@@ -614,16 +704,23 @@
         // 3. Hapus cache edit optimistic SETELAH kedua sync selesai
         localStorage.removeItem('offline_pending_edits');
         if (window.hideLoading) window.hideLoading();
+
+        // 4. Perbarui banner sync — sembunyikan jika semua berhasil tersinkron
+        await updateSyncBanner();
     });
 
     window.addEventListener('message', async function(event) {
         if (event.data.type === 'ORDER_SUCCESS') {
             // Jika pesanan Online, aman untuk reload
+            if (window.showLoading) window.showLoading('Memuat ulang pesanan…');
             window.location.reload(); 
         } else if (event.data.type === 'OFFLINE_ORDER_SAVED') {
             // JANGAN RELOAD HALAMAN! Tutup modal dan refresh Data UI saja
             if (orderModalObj) orderModalObj.hide();
             await refreshOfflineUI();
+            
+            // Perbarui banner sync — pesanan baru masuk ke antrean lokal
+            await updateSyncBanner();
             
             Swal.fire({
                 toast: true, position: 'top-end', icon: 'success',
@@ -634,6 +731,7 @@
         } else if (event.data.type === 'GOTO_MENU') {
             // Tombol "Atur Detail" dari modal tambah menu cepat
             if (orderModalObj) orderModalObj.hide();
+            if (window.showLoading) window.showLoading('Memuat halaman menu…');
             window.location.href = "{{ route('kasir.menu.index') }}";
         } else if (event.data.type === 'MENU_ADDED') {
             // Menu baru ditambahkan dari order iframe, tidak perlu aksi di parent
@@ -717,6 +815,7 @@
 
         currentOrders.unshift(data.order);
         localStorage.setItem('new_order_id', data.order.id);
+        currentOrders = sortOrders(currentOrders);
         renderOrders();
 
         Swal.fire({
@@ -812,6 +911,7 @@
                     if (!response.ok || !res.success) throw new Error(res.message || 'Server Error');
 
                     Swal.fire('Berhasil!', res.message, 'success').then(() => {
+                        if (window.showLoading) window.showLoading('Memuat ulang…');
                         window.location.reload();
                     });
                 } catch (e) {
@@ -1088,8 +1188,10 @@
             Swal.fire('Berhasil!', res.message, 'success').then(() =>{
                 if (url.includes('/kasir/bayar/')) {
                     localStorage.setItem('last_paid_order_id', selectedOrderForPay.id);
+                    if (window.showLoading) window.showLoading('Memuat riwayat…');
                     window.location.href = "{{ route('kasir.riwayat.index') }}";
                 } else {
+                    if (window.showLoading) window.showLoading('Memuat ulang…');
                     window.location.reload();
                 }
             });
@@ -1249,6 +1351,7 @@
 
                 Swal.fire('Berhasil!', res.message, 'success').then(() => {
                     localStorage.setItem('last_paid_order_id', selectedOrderForPay.id);
+                    if (window.showLoading) window.showLoading('Memuat riwayat…');
                     window.location.href = "{{ route('kasir.riwayat.index') }}";
                 });
             } catch (e) {

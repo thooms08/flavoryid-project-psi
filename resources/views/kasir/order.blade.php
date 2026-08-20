@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
     
     <style>
         :root { 
@@ -623,6 +623,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Global variables untuk pwa-order.js
+    window.SYNC_ORDER_URL = "{{ url('/kasir/order/sync') }}";
+</script>
 <script src="{{ asset('pwa-order.js') }}"></script>
 <script src="{{ asset('pwa-kasir.js') }}"></script>
 <script>

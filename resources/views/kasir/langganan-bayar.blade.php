@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     @include('layouts.favicon')
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
 </head>
 <body>
 <div class="container py-5 d-flex justify-content-center" style="font-family: 'Poppins', sans-serif;">

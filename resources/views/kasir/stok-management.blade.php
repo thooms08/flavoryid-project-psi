@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @include('layouts.favicon')
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
 </head>
 <style>
    body{font-family: 'Poppins', sans-serif; background-color: #fff7ed;}

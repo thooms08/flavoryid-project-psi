@@ -1,5 +1,5 @@
 const DB_ORDER = 'FlavoryOrderDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // 1. Inisialisasi Database
 function initOrderDB() {

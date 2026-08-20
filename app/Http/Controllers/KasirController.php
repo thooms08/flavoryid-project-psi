@@ -9,12 +9,42 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use App\Models\InformasiOutlet;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 
 class KasirController extends Controller
 {
+    /**
+     * Hapus semua cache laporan bisnis milik partner ini agar data terbaru
+     * langsung tampil tanpa menunggu TTL habis.
+     * Dipanggil setiap kali ada transaksi yang berubah ke status success.
+     */
+    private function bustLaporanCache(int $partnerId): void
+    {
+        $today = \Carbon\Carbon::today('Asia/Jakarta')->toDateString();
+
+        // Hapus cache laporan bisnis hari ini (paling umum dibuka kasir)
+        Cache::forget("laporan_bisnis_{$partnerId}_{$today}_{$today}");
+
+        // Hapus cache chart hari ini
+        Cache::forget("chart_bisnis_{$partnerId}_{$today}_{$today}");
+
+        // Hapus cache rentang yang mencakup hari ini (misalnya 1 minggu, 1 bulan)
+        // dengan menghapus berdasarkan tag jika driver mendukung, atau pola di bawah ini.
+        // Untuk shared hosting (file/database driver), kita cukup hapus yang paling kritis.
+        $ranges = [
+            \Carbon\Carbon::today('Asia/Jakarta')->subWeek()->toDateString(),
+            \Carbon\Carbon::today('Asia/Jakarta')->subMonth()->toDateString(),
+            \Carbon\Carbon::today('Asia/Jakarta')->subYear()->toDateString(),
+        ];
+
+        foreach ($ranges as $start) {
+            Cache::forget("laporan_bisnis_{$partnerId}_{$start}_{$today}");
+            Cache::forget("chart_bisnis_{$partnerId}_{$start}_{$today}");
+        }
+    }
 
     public function index()
     {
@@ -120,6 +150,9 @@ class KasirController extends Controller
             ]);
 
             DB::commit();
+
+            // Bust cache laporan bisnis agar data langsung tampil tanpa tunggu TTL
+            $this->bustLaporanCache($order->partner_id);
 
             return response()->json([
                 'success' => true,
@@ -234,6 +267,8 @@ public function updateSound(Request $request)
         try {
             DB::beginTransaction();
 
+            $partnerIdsToBust = [];
+
             foreach ($actions as $act) {
                 $orderId = $act['order_id'] ?? null;
                 $actionType = $act['action'] ?? null;
@@ -284,6 +319,9 @@ public function updateSound(Request $request)
                                 'kembalian'    => $kembalian,
                                 'status'       => 'success'
                             ]);
+
+                            // Tandai partner ini untuk bust cache setelah commit
+                            $partnerIdsToBust[] = $order->partner_id;
                         }
                         break;
 
@@ -359,6 +397,12 @@ public function updateSound(Request $request)
             }
 
             DB::commit();
+
+            // Bust cache laporan untuk semua partner yang transaksinya berubah ke success
+            foreach (array_unique($partnerIdsToBust) as $pid) {
+                $this->bustLaporanCache($pid);
+            }
+
             return response()->json(['success' => true, 'message' => 'Sinkronisasi berhasil.']);
 
         } catch (\Exception $e) {
@@ -406,6 +450,11 @@ public function updateSound(Request $request)
             }
 
             DB::commit();
+
+            // Bust cache laporan bisnis untuk semua order yang baru saja dikonfirmasi
+            if ($orders->isNotEmpty()) {
+                $this->bustLaporanCache($orders->first()->partner_id);
+            }
 
             return response()->json([
                 'success' => true,

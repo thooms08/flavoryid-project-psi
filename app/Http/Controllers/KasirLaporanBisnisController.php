@@ -13,13 +13,14 @@ use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class KasirLaporanBisnisController extends Controller
 {
-    // TTL cache: data historis (bukan hari ini) di-cache 10 menit,
+    // Data historis (bukan hari ini) di-cache 10 menit,
     // data hari ini 2 menit agar tetap near-realtime.
-    const CACHE_TTL_HISTORY = 600;  // 10 menit
-    const CACHE_TTL_TODAY   = 120;  // 2 menit
+    const CACHE_TTL_HISTORY = 600;
+    const CACHE_TTL_TODAY   = 120;
 
     public function index(Request $request)
     {
@@ -31,7 +32,6 @@ class KasirLaporanBisnisController extends Controller
 
         $partnerId = $user->partner->id;
 
-        // ── Resolusi tanggal ──
         $startDate = $request->input('start_date', Carbon::today('Asia/Jakarta')->toDateString());
         $endDate   = $request->input('end_date', Carbon::today('Asia/Jakarta')->toDateString());
 
@@ -44,63 +44,73 @@ class KasirLaporanBisnisController extends Controller
             if ($filter == '1_tahun')  $startDate = Carbon::today('Asia/Jakarta')->subYear()->toDateString();
         }
 
-        // TTL lebih pendek jika range mencakup hari ini
-        $today = Carbon::today('Asia/Jakarta')->toDateString();
-        $ttl   = ($endDate === $today) ? self::CACHE_TTL_TODAY : self::CACHE_TTL_HISTORY;
-
-        // ── Cache key unik per partner + rentang tanggal ──
+        $today    = Carbon::today('Asia/Jakarta')->toDateString();
+        $ttl      = ($endDate === $today) ? self::CACHE_TTL_TODAY : self::CACHE_TTL_HISTORY;
         $cacheKey = "laporan_bisnis_{$partnerId}_{$startDate}_{$endDate}";
 
         $data = Cache::remember($cacheKey, $ttl, function () use ($partnerId, $startDate, $endDate) {
 
-            // --- Summary Keuangan ---
+            $startTs = $startDate . ' 00:00:00';
+            $endTs   = $endDate   . ' 23:59:59';
+
+            // --- Summary Keuangan: 3 query agregat ringan ---
             $totalModal = Modal::where('partner_id', $partnerId)
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->sum('nominal');
 
             $totalOmzet = Order::where('partner_id', $partnerId)
                 ->where('status', 'success')
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->sum('total_harga');
 
             $totalPengeluaran = Pengeluaran::where('partner_id', $partnerId)
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->sum('total');
 
             $untungBersih = $totalOmzet - $totalPengeluaran;
 
-            // --- Top 10 Menu Paling Laku ---
+            // --- Top 10 Menu Paling Laku: JOIN bersih, 1 query ---
             $topMenus = OrderDetail::selectRaw('menus.nama_menu, SUM(order_details.qty) as total_qty')
                 ->join('orders', 'orders.id', '=', 'order_details.order_id')
                 ->join('menus',  'menus.id',  '=', 'order_details.menu_id')
                 ->where('orders.partner_id', $partnerId)
                 ->where('orders.status', 'success')
-                ->whereBetween('orders.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('orders.created_at', [$startTs, $endTs])
                 ->groupBy('menus.id', 'menus.nama_menu')
                 ->orderByDesc('total_qty')
                 ->limit(10)
                 ->get();
 
-            // --- 5 Menu Paling Tidak Laku ---
-            $leastMenus = Menu::select('menus.id', 'menus.nama_menu')
-                ->selectRaw('(
-                    SELECT MAX(orders.created_at)
-                    FROM order_details
-                    JOIN orders ON orders.id = order_details.order_id
-                    WHERE order_details.menu_id = menus.id
-                    AND orders.status = "success"
-                    AND orders.created_at <= ?
-                ) as last_sold_at', [$endDate . ' 23:59:59'])
+            // --- 5 Menu Paling Tidak Laku: LEFT JOIN ganti correlated subquery ---
+            // Subquery correlated sebelumnya mengeksekusi SELECT per baris menu (N kali).
+            // LEFT JOIN mengeksekusi 1 query saja.
+            $leastMenus = Menu::select('menus.id', 'menus.nama_menu', DB::raw('MAX(orders.created_at) as last_sold_at'))
+                ->leftJoin('order_details', 'order_details.menu_id', '=', 'menus.id')
+                ->leftJoin('orders', function ($join) use ($partnerId, $endTs) {
+                    $join->on('orders.id', '=', 'order_details.order_id')
+                         ->where('orders.status', '=', 'success')
+                         ->where('orders.created_at', '<=', $endTs);
+                })
                 ->where('menus.partner_id', $partnerId)
+                ->groupBy('menus.id', 'menus.nama_menu')
                 ->orderBy('last_sold_at', 'asc')
                 ->limit(5)
                 ->get();
 
-            // --- Tabel Laporan ---
+            // --- Tabel Laporan: hanya kolom yang dibutuhkan di view ---
+            // Eager load tetap ada (orderDetails.menu) agar tidak N+1 saat render view.
+            // select() pada Order membatasi kolom yang ditarik dari tabel orders.
             $orders = Order::with(['orderDetails.menu'])
+                ->select([
+                    'id', 'partner_id', 'uuid', 'nomor_pesanan',
+                    'nama_pelanggan', 'no_whatsapp', 'no_meja',
+                    'metode_bayar', 'total_harga', 'nominal_diskon',
+                    'jenis_diskon', 'uang_bayar', 'kembalian',
+                    'bukti_bayar', 'keterangan', 'created_at',
+                ])
                 ->where('partner_id', $partnerId)
                 ->where('status', 'success')
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -110,9 +120,9 @@ class KasirLaporanBisnisController extends Controller
             );
         });
 
-        // Kalkulasi di luar cache agar tidak menyimpan koleksi filter turunan
         $totalUntung     = $data['untungBersih'] > 0 ? $data['untungBersih'] : 0;
         $totalRugi       = $data['untungBersih'] < 0 ? abs($data['untungBersih']) : 0;
+        // Filter di Collection — tidak perlu query tambahan
         $ordersWithBukti = $data['orders']->whereNotNull('bukti_bayar');
 
         return view('kasir.laporan-bisnis', [
@@ -142,10 +152,10 @@ class KasirLaporanBisnisController extends Controller
         $filter    = $request->input('filter', '1_bulan');
         $endDate   = Carbon::today('Asia/Jakarta')->toDateString();
 
-        if ($filter == '1_hari')   $startDate = Carbon::today('Asia/Jakarta')->toDateString();
-        elseif ($filter == '1_minggu') $startDate = Carbon::today('Asia/Jakarta')->subWeek()->toDateString();
-        elseif ($filter == '1_bulan')  $startDate = Carbon::today('Asia/Jakarta')->subMonth()->toDateString();
-        elseif ($filter == '1_tahun')  $startDate = Carbon::today('Asia/Jakarta')->subYear()->toDateString();
+        if ($filter == '1_hari')        $startDate = Carbon::today('Asia/Jakarta')->toDateString();
+        elseif ($filter == '1_minggu')  $startDate = Carbon::today('Asia/Jakarta')->subWeek()->toDateString();
+        elseif ($filter == '1_bulan')   $startDate = Carbon::today('Asia/Jakarta')->subMonth()->toDateString();
+        elseif ($filter == '1_tahun')   $startDate = Carbon::today('Asia/Jakarta')->subYear()->toDateString();
         else {
             $startDate = $request->input('start_date', Carbon::today('Asia/Jakarta')->subMonth()->toDateString());
             $endDate   = $request->input('end_date', Carbon::today('Asia/Jakarta')->toDateString());
@@ -156,23 +166,29 @@ class KasirLaporanBisnisController extends Controller
         $cacheKey = "chart_bisnis_{$partnerId}_{$startDate}_{$endDate}";
 
         $chartData = Cache::remember($cacheKey, $ttl, function () use ($partnerId, $startDate, $endDate) {
-            $period = CarbonPeriod::create($startDate, $endDate);
+            $period   = CarbonPeriod::create($startDate, $endDate);
+            $startTs  = $startDate . ' 00:00:00';
+            $endTs    = $endDate   . ' 23:59:59';
 
+            // 3 query agregat per tanggal — masing-masing sudah di-index partner_id + created_at
             $modals = Modal::where('partner_id', $partnerId)
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->selectRaw('DATE(CONVERT_TZ(created_at, "+00:00", "+07:00")) as date, SUM(nominal) as total')
-                ->groupBy('date')->pluck('total', 'date');
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
             $omzets = Order::where('partner_id', $partnerId)
                 ->where('status', 'success')
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->selectRaw('DATE(CONVERT_TZ(created_at, "+00:00", "+07:00")) as date, SUM(total_harga) as total')
-                ->groupBy('date')->pluck('total', 'date');
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
             $pengeluarans = Pengeluaran::where('partner_id', $partnerId)
-                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->whereBetween('created_at', [$startTs, $endTs])
                 ->selectRaw('DATE(CONVERT_TZ(created_at, "+00:00", "+07:00")) as date, SUM(total) as total')
-                ->groupBy('date')->pluck('total', 'date');
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
             $labels = $dataModal = $dataOmzet = $dataPengeluaran = $dataUntung = $dataRugi = [];
 
@@ -183,12 +199,12 @@ class KasirLaporanBisnisController extends Controller
                 $peng    = (float) ($pengeluarans[$dateStr] ?? 0);
                 $untung  = $omzet - $peng;
 
-                $labels[]           = $date->format('d M');
-                $dataModal[]        = $modal;
-                $dataOmzet[]        = $omzet;
-                $dataPengeluaran[]  = $peng;
-                $dataUntung[]       = $untung > 0 ? $untung : 0;
-                $dataRugi[]         = $untung < 0 ? abs($untung) : 0;
+                $labels[]          = $date->format('d M');
+                $dataModal[]       = $modal;
+                $dataOmzet[]       = $omzet;
+                $dataPengeluaran[] = $peng;
+                $dataUntung[]      = $untung > 0 ? $untung : 0;
+                $dataRugi[]        = $untung < 0 ? abs($untung) : 0;
             }
 
             return compact('labels', 'dataModal', 'dataOmzet', 'dataPengeluaran', 'dataUntung', 'dataRugi');

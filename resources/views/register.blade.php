@@ -429,6 +429,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@include('layouts.loading')
+<script src="{{ asset('js/loading.js') }}"></script>
 </body>
 </html>

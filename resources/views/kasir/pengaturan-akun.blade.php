@@ -12,7 +12,7 @@
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     @include('layouts.favicon')
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
 </head>
 <style>
     :root { 

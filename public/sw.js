@@ -1,6 +1,7 @@
-const CACHE_NAME = 'flavory-pos-v8';
+const CACHE_NAME = 'flavory-pos-v10';
 const URLS_TO_CACHE = [
     '/kasir',
+    '/kasir/order/create',
     '/manifest.json',
     '/pwa-auth.js',
     '/pwa-order.js',

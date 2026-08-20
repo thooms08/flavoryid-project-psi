@@ -51,6 +51,22 @@
     .border-dashed {
         border-top: 1px dashed #dee2e6;
     }
+
+    /* Tombol cetak struk */
+    .btn-print-struk {
+        background: #fff4e6;
+        border: 1px solid rgba(253, 126, 20, 0.35);
+        color: var(--primary-orange);
+        border-radius: 8px;
+        padding: 4px 8px;
+        line-height: 1;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-print-struk:hover {
+        background: var(--primary-orange);
+        color: #fff;
+        border-color: var(--primary-orange);
+    }
 </style>
 
 <div class="row g-4">
@@ -64,50 +80,52 @@
                         <span class="text-orange fw-bold">#{{ $order->nomor_pesanan }}</span>
                     </div>
 
+                    {{-- Tombol cetak struk: icon printer lebih jelas dari titik tiga --}}
                     <div class="dropdown">
-            <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-three-dots-vertical fs-5"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                <li>
-                    <a class="dropdown-item small" href="{{ route('kasir.qr-struk', $order->uuid) }}">
-                        <i class="bi bi-qr-code me-2 text-secondary"></i> QR Struk Digital
-                    </a>
-                </li>
-                @if(!empty($order->no_whatsapp))
-                <li>
-                    @php
-                        $no_wa = $order->no_whatsapp;
-                        if(str_starts_with($no_wa, '0')) $no_wa = '62' . substr($no_wa, 1);
-                        $no_wa = preg_replace('/[^0-9]/', '', $no_wa);
-                        
-                        $url_struk = route('kasir.qr-struk', $order->uuid);
-                        $teks_wa = "Halo *{$order->nama_pelanggan}*, Berikut adalah struk digital pesanan Anda #{$order->nomor_pesanan}: {$url_struk}";
-                    @endphp
-                    <a class="dropdown-item small" 
-                    href="https://api.whatsapp.com/send?phone={{ $no_wa }}&text={{ urlencode($teks_wa) }}" 
-                    target="_blank">
-                        <i class="bi bi-whatsapp me-2 text-secondary"></i> Kirim via WhatsApp
-                    </a>
-                </li>
-                @endif
-                <li>
-                    <a class="dropdown-item small" href="{{ route('kasir.print-struk', $order->uuid) }}" target="_blank">
-                        <i class="bi bi-printer me-2 text-secondary"></i> Cetak Struk Via USB
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item small" href="{{ route('kasir.print-bt', $order->uuid) }}">
-                        <i class="bi bi-bluetooth me-2 text-secondary"></i> Cetak Struk Via BT
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item small" href="{{ route('kasir.print-kitchen-bt', $order->id) }}">
-                        <i class="bi bi-receipt me-2 text-secondary"></i> Cetak Struk Kitchen
-                    </a>
-                </li>
-            </ul>
-        </div>
+                        <button class="btn btn-print-struk" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Cetak / Kirim Struk">
+                            <i class="bi bi-printer-fill"></i>
+                            <i class="bi bi-chevron-down ms-1" style="font-size: 0.6rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li>
+                                <a class="dropdown-item small" href="{{ route('kasir.qr-struk', $order->uuid) }}">
+                                    <i class="bi bi-qr-code me-2 text-secondary"></i> QR Struk Digital
+                                </a>
+                            </li>
+                            @if(!empty($order->no_whatsapp))
+                            <li>
+                                @php
+                                    $no_wa = $order->no_whatsapp;
+                                    if(str_starts_with($no_wa, '0')) $no_wa = '62' . substr($no_wa, 1);
+                                    $no_wa = preg_replace('/[^0-9]/', '', $no_wa);
+                                    
+                                    $url_struk = route('kasir.qr-struk', $order->uuid);
+                                    $teks_wa = "Halo *{$order->nama_pelanggan}*, Berikut adalah struk digital pesanan Anda #{$order->nomor_pesanan}: {$url_struk}";
+                                @endphp
+                                <a class="dropdown-item small" 
+                                href="https://api.whatsapp.com/send?phone={{ $no_wa }}&text={{ urlencode($teks_wa) }}" 
+                                target="_blank">
+                                    <i class="bi bi-whatsapp me-2 text-secondary"></i> Kirim via WhatsApp
+                                </a>
+                            </li>
+                            @endif
+                            <li>
+                                <a class="dropdown-item small" href="{{ route('kasir.print-struk', $order->uuid) }}" target="_blank">
+                                    <i class="bi bi-printer me-2 text-secondary"></i> Cetak Struk Via USB
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item small" href="{{ route('kasir.print-bt', $order->uuid) }}">
+                                    <i class="bi bi-bluetooth me-2 text-secondary"></i> Cetak Struk Via BT
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item small" href="{{ route('kasir.print-kitchen-bt', $order->id) }}">
+                                    <i class="bi bi-receipt me-2 text-secondary"></i> Cetak Struk Kitchen
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -173,10 +191,10 @@
                 @endif
                 <div class="border-dashed pt-2">
                     <div class="d-flex justify-content-between mb-2">
-                      <span class="small text-muted">Metode Bayar</span>
-                    <span class="badge badge-method px-2 py-1 rounded-pill"><i class="bi bi-wallet2 me-1"></i>{{ strtoupper($order->metode_bayar) }}</span>
-                </div>
-                @if(isset($order->nominal_diskon) && $order->nominal_diskon > 0)
+                        <span class="small text-muted">Metode Bayar</span>
+                        <span class="badge badge-method px-2 py-1 rounded-pill"><i class="bi bi-wallet2 me-1"></i>{{ strtoupper($order->metode_bayar) }}</span>
+                    </div>
+                    @if(isset($order->nominal_diskon) && $order->nominal_diskon > 0)
                     <div class="d-flex justify-content-between mb-1">
                         <span class="small text-muted">Diskon</span>
                         <span class="small text-danger fw-bold bg-danger bg-opacity-10 px-2 rounded">
@@ -226,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 targetCard.classList.remove('order-paid-highlight');
                 localStorage.removeItem('last_paid_order_id');
-            }, 6000); // Sedikit lebih lama agar kasir sempat melihat
+            }, 6000);
         }
     }
 });

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     @include('layouts.favicon')
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
     <style>
         :root { 
             --primary-red: #dc3545; 
@@ -54,7 +54,7 @@
             <div class="col-md-3 ms-auto">
                 <div class="card border-0 shadow-sm bg-red text-white card-stats h-100">
                     <div class="card-body d-flex flex-column justify-content-center">
-                        <small class="opacity-75 fw-medium">Total Batal</small>
+                        <small class="opacity-75 fw-medium">Total Pesanan Batal</small>
                         <h3 class="fw-bold mb-0" id="stat-transaksi">{{ number_format($stats['total_transaksi'] ?? 0) }}</h3>
                     </div>
                 </div>

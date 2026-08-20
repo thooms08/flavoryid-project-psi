@@ -121,6 +121,6 @@
             this.value = this.value.toUpperCase();
         });
     </script>
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
 </body>
 </html>

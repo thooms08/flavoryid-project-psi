@@ -72,6 +72,6 @@
                 });
         }, 3000); 
     </script>
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
 </body>
 </html>

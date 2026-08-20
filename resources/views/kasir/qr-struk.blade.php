@@ -11,7 +11,7 @@
     {{-- Yeseva One untuk nama outlet — sama persis dengan page-outlet --}}
     <link href="https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap" rel="stylesheet">
     @include('layouts.favicon')
-    @include('layouts.loading')
+    <script src="{{ asset('js/loading.js') }}"></script>
 
     {{-- html-to-image: konversi DOM → PNG native tanpa screenshot JS --}}
     <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>

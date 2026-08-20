@@ -140,6 +140,10 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::get('/kasir/profile-outlet/download-qr', [KasirProfileController::class, 'downloadQr'])->name('kasir.profile-outlet.download-qr');
     Route::post('/kasir/update-sound', [KasirController::class, 'updateSound'])->name('kasir.update-sound');
     Route::post('/kasir/order/sync', [KasirOrderController::class, 'syncOffline']);
+    Route::get('/kasir/csrf-token', function() {
+        return response()->json(['token' => csrf_token()]);
+    });
+    Route::post('/kasir/offline/check-synced', [KasirOrderController::class, 'checkOfflineSynced'])->name('kasir.offline.check-synced');
     Route::post('/kasir/sync-actions', [KasirController::class, 'syncActions'])->name('kasir.sync-actions');
     Route::post('/kasir/konfirmasi-bulk', [KasirController::class, 'bulkKonfirmasi'])->name('kasir.konfirmasi.bulk');
     Route::get('/kasir/performa-bisnis', [KasirPerformaController::class, 'index'])->name('kasir.performa');
