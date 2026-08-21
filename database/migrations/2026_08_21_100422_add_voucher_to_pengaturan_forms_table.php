@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-             $table->string('voucher')->nullable()->after('nomor_pesanan');
-            //
+        Schema::table('pengaturan_form', function (Blueprint $table) {
+            $table->boolean('voucher')->default(true)->after('diskon');
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-             $table->dropColumn('voucher');
+        Schema::table('pengaturan_form', function (Blueprint $table) {
+            $table->dropColumn('voucher');
         });
     }
 };

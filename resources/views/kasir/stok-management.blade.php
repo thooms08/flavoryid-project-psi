@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-md-5 d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary fw-bold rounded-3 py-2 w-50" data-bs-toggle="modal" data-bs-target="#modalAturWarnaBaru">
-                        <i class="bi bi-palette-fill me-1"></i> ATUR WARNA
+                        <i class="bi bi-palette-fill me-1"></i> ATUR - WARNA
                     </button>
                     <button type="submit" class="btn text-white fw-bold rounded-3 py-2 w-50" style="background-color: #fd7e14;">
                         <i class="bi bi-plus-lg me-1"></i> TAMBAH

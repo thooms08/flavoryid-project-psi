@@ -41,7 +41,7 @@ class KasirFormController extends Controller
     {
         $validated = $request->validate([
             // <-- Tambahkan 'bukti_pembayaran' di dalam array validasi 'in'
-            'field'  => 'required|string|in:nama,whatsapp,meja,keterangan,diskon,bukti_pembayaran',
+            'field'  => 'required|string|in:nama,whatsapp,meja,keterangan,diskon,bukti_pembayaran,voucher',
             'status' => 'required|boolean',
         ]);
 

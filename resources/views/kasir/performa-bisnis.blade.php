@@ -43,12 +43,12 @@
             animation: mineShift 5s ease infinite;
         }
 
-        /* ── MineAI Card — warm gradient light style ── */
+        /* ── MineAI Card - warm gradient light style ── */
         .mine-card {
             border-radius: 28px;
             background: linear-gradient(135deg, #fff5f0 0%, #fff0f6 40%, #fdf0ff 100%);
             position: relative;
-            /* overflow: hidden DIHAPUS — ini yang menyebabkan konten terpotong saat reveal */
+            /* overflow: hidden DIHAPUS - ini yang menyebabkan konten terpotong saat reveal */
             box-shadow: 0 0 0 2px rgba(255,106,0,0.2),
                         0 20px 60px rgba(238,9,121,0.12),
                         0 4px 24px rgba(255,106,0,0.08);
@@ -60,7 +60,7 @@
                         0 4px 24px rgba(255,106,0,0.12);
         }
 
-        /* Orb wrapper — overflow hidden ditaruh di sini saja, bukan di card */
+        /* Orb wrapper - overflow hidden ditaruh di sini saja, bukan di card */
         .mine-orb-wrap {
             position: absolute;
             inset: 0;
@@ -100,7 +100,7 @@
         /* Content di dalam mine-card harus di atas orbs */
         .mine-card-inner { position: relative; z-index: 2; }
 
-        /* Logo MineAI — background warm semi-transparan */
+        /* Logo MineAI - background warm semi-transparan */
         .mine-logo-wrap {
             width: 48px; height: 48px;
             border-radius: 14px;
@@ -178,7 +178,7 @@
             transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* Insight panels — light warm theme */
+        /* Insight panels - light warm theme */
         .insight-panel {
             border-radius: 16px;
             padding: 1.2rem 1.4rem;
@@ -201,7 +201,7 @@
         .insight-panel h6 { font-size: 0.85rem; color: #1e1e2e; }
         .insight-panel p  { color: #4a4a6a !important; font-size: 0.82rem !important; }
 
-        /* Signal chips — warm light */
+        /* Signal chips - warm light */
         .mine-chip {
             display: inline-flex;
             align-items: center;
@@ -223,7 +223,7 @@
             margin: 1.5rem 0;
         }
 
-        /* Insight area — pakai visibility+max-height bukan display:none
+        /* Insight area - pakai visibility+max-height bukan display:none
            agar tidak ada layout collapse saat reveal */
         #mineInsightArea {
             max-height: 0;
@@ -441,7 +441,7 @@
 <div class="container-fluid px-3 px-md-5 pb-5">
     <div class="mine-card p-4 p-md-5">
 
-        {{-- Orb backgrounds — dibungkus wrapper agar overflow:hidden tidak potong konten card --}}
+        {{-- Orb backgrounds - dibungkus wrapper agar overflow:hidden tidak potong konten card --}}
         <div class="mine-orb-wrap">
             <div class="mine-orb mine-orb-1"></div>
             <div class="mine-orb mine-orb-2"></div>
@@ -450,7 +450,7 @@
 
         <div class="mine-card-inner">
 
-            {{-- ── Heading utama — Flexbox Fix untuk Mobile ── --}}
+            {{-- ── Heading utama - Flexbox Fix untuk Mobile ── --}}
             <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-4 text-center text-md-start">
                 
                 <div class="d-flex flex-column flex-md-row align-items-center gap-3">
@@ -485,14 +485,14 @@
                     </div>
                 </div>
 
-                {{-- Tombol utama — redirect ke halaman MineAI --}}
+                {{-- Tombol utama - redirect ke halaman MineAI --}}
                 <a href="{{ route('kasir.mineai') }}" class="btn-mine" id="btnMineInsight">
                     <i class="bi bi-stars"></i>
                     <span>Minta Insight MineAI</span>
                 </a>
             </div>
 
-            {{-- ── Insight area — tersembunyi sampai tombol diklik ── --}}
+            {{-- ── Insight area - tersembunyi sampai tombol diklik ── --}}
             <div id="mineInsightArea">
                 <div class="mine-divider"></div>
 
@@ -613,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// ── MineAI Reveal — dipanggil saat tombol diklik ──
+// ── MineAI Reveal - dipanggil saat tombol diklik ──
 function revealInsight() {
     const btn     = document.getElementById('btnMineInsight');
     const btnText = document.getElementById('btnMineText');
@@ -629,7 +629,7 @@ function revealInsight() {
     btn.style.pointerEvents = 'none';
 
     setTimeout(() => {
-        // Reveal dengan class — CSS transition yang handle animasi, BUKAN display:none toggle
+        // Reveal dengan class - CSS transition yang handle animasi, BUKAN display:none toggle
         area.classList.add('revealed');
 
         // Animate confidence bar

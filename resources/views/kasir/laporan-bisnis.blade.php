@@ -81,7 +81,7 @@
         <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
             <i class="bi bi-arrow-left fs-4"></i>
         </a>
-        <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;">Laporan Bisnis</h1>
+        <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;">Ikhtisar Bisnis</h1>
     </div>
 
     <div class="card shadow-sm border-0 mb-4">
@@ -138,51 +138,82 @@
         </div>
     </div>
 
+    {{-- Tombol toggle semua nominal --}}
     <div class="row g-3 mb-3">
         <div class="col-6 col-md-4 col-lg-2">
             <div class="card summary-card border-modal shadow-sm h-100">
                 <div class="card-body p-3">
-                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-wallet2 text-secondary"></i> TOTAL MODAL</div>
-                    <h5 class="fw-bold mb-0 text-dark">Rp {{ number_format($totalModal ?? 0, 0, ',', '.') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="text-muted small fw-bold"><i class="bi bi-wallet2 text-secondary me-1"></i> TOTAL MODAL</div>
+                        <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="bisnis_modal" style="font-size:.8rem;" title="Sembunyikan/Tampilkan"><i class="bi bi-eye-slash"></i></button>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-dark card-nominal"
+                        data-original="Rp {{ number_format($totalModal ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalModal ?? 0, 0, ',', '.') }}
+                    </h5>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-4 col-lg-2">
             <div class="card summary-card border-omzet shadow-sm h-100">
                 <div class="card-body p-3">
-                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-graph-up text-purple" style="color:#6f42c1;"></i> TOTAL OMZET</div>
-                    <h5 class="fw-bold mb-0 text-dark">Rp {{ number_format($totalOmzet ?? 0, 0, ',', '.') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="text-muted small fw-bold"><i class="bi bi-graph-up me-1" style="color:#6f42c1;"></i> TOTAL OMZET</div>
+                        <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="bisnis_omzet" style="font-size:.8rem;" title="Sembunyikan/Tampilkan"><i class="bi bi-eye-slash"></i></button>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-dark card-nominal"
+                        data-original="Rp {{ number_format($totalOmzet ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalOmzet ?? 0, 0, ',', '.') }}
+                    </h5>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
             <div class="card summary-card border-untung shadow-sm h-100">
                 <div class="card-body p-3">
-                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-emoji-smile text-success"></i> TOTAL UNTUNG</div>
-                    <h5 class="fw-bold mb-0 text-success">Rp {{ number_format($totalUntung ?? 0, 0, ',', '.') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="text-muted small fw-bold"><i class="bi bi-emoji-smile text-success me-1"></i> TOTAL UNTUNG</div>
+                        <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="bisnis_untung" style="font-size:.8rem;" title="Sembunyikan/Tampilkan"><i class="bi bi-eye-slash"></i></button>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-success card-nominal"
+                        data-original="Rp {{ number_format($totalUntung ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalUntung ?? 0, 0, ',', '.') }}
+                    </h5>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <div class="card summary-card border-rugi shadow-sm h-100">
                 <div class="card-body p-3">
-                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-emoji-frown text-danger"></i> TOTAL RUGI</div>
-                    <h5 class="fw-bold mb-0 text-danger">Rp {{ number_format($totalRugi ?? 0, 0, ',', '.') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="text-muted small fw-bold"><i class="bi bi-emoji-frown text-danger me-1"></i> TOTAL RUGI</div>
+                        <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="bisnis_rugi" style="font-size:.8rem;" title="Sembunyikan/Tampilkan"><i class="bi bi-eye-slash"></i></button>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-danger card-nominal"
+                        data-original="Rp {{ number_format($totalRugi ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalRugi ?? 0, 0, ',', '.') }}
+                    </h5>
                 </div>
             </div>
         </div>
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card summary-card border-pengeluaran shadow-sm h-100">
                 <div class="card-body p-3">
-                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-cart-dash text-warning"></i> TOTAL PENGELUARAN</div>
-                    <h5 class="fw-bold mb-0 text-dark">Rp {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="text-muted small fw-bold"><i class="bi bi-cart-dash text-warning me-1"></i> TOTAL PENGELUARAN</div>
+                        <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="bisnis_pengeluaran" style="font-size:.8rem;" title="Sembunyikan/Tampilkan"><i class="bi bi-eye-slash"></i></button>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-dark card-nominal"
+                        data-original="Rp {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}
+                    </h5>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="mb-4">
-        <button type="button" class="btn btn-outline-orange w-100 fw-bold py-2 shadow-sm rounded-3" data-bs-toggle="modal" data-bs-target="#modalChartKeuangan">
+    <div class="mb-4 d-grid d-md-flex justify-content-md-center">
+        <button type="button" class="btn btn-outline-orange fw-bold py-2 px-5 shadow-sm rounded-3" data-bs-toggle="modal" data-bs-target="#modalChartKeuangan">
             <i class="bi bi-bar-chart-line-fill me-2"></i> LIHAT CHART DATA KEUANGAN
         </button>
     </div>
@@ -224,15 +255,6 @@
             </div>
         </div>
     </div>
-    
-    <div class="d-flex justify-content-center align-items-center mb-4 gap-3">
-       <a href="{{ route('kasir.modal.index') }}" class="btn btn-success px-4 py-2 shadow-sm fw-bold rounded-pill">
-            <i class="bi bi-plus-circle-fill me-2"></i> MODAL USAHA
-        </a>
-        <a href="{{ route('kasir.pengeluaran.index') }}" class="btn btn-danger px-4 py-2 shadow-sm fw-bold rounded-pill">
-            <i class="bi bi-dash-circle-fill me-2"></i> PENGELUARAN
-        </a>
-    </div>
 
     <div class="card shadow-sm border-0 border-top border-orange border-3 rounded-3">
         <div class="card-header bg-white border-bottom-0 pt-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
@@ -264,13 +286,14 @@
                         <tr>
                             <th class="col-lengkap text-center py-3" width="5%">#</th>
                             <th class="col-lengkap py-3" width="15%">PELANGGAN</th>
-                            <th class="py-3" width="20%">PESANAN</th> 
-                            <th class="col-lengkap text-end py-3" width="10%">DISKON</th> 
-                            <th class="col-lengkap text-end py-3" width="12%">TOTAL</th>
-                            <th class="col-lengkap text-end py-3" width="10%">BAYAR</th> 
-                            <th class="col-lengkap text-end py-3" width="10%">KEMBALI</th>
-                            <th class="col-lengkap text-center py-3" width="8%">BUKTI</th>
-                            <th class="col-lengkap text-center py-3" width="9%">METODE</th>
+                            <th class="py-3" width="17%">PESANAN</th> 
+                            <th class="col-lengkap text-end py-3" width="9%">DISKON</th>
+                            <th class="col-lengkap text-end py-3" width="9%">VOUCHER</th>
+                            <th class="col-lengkap text-end py-3" width="10%">TOTAL</th>
+                            <th class="col-lengkap text-end py-3" width="9%">BAYAR</th> 
+                            <th class="col-lengkap text-end py-3" width="9%">KEMBALI</th>
+                            <th class="col-lengkap text-center py-3" width="7%">BUKTI</th>
+                            <th class="col-lengkap text-center py-3" width="8%">METODE</th>
                             <th class="py-3" width="9%">TANGGAL</th>
                         </tr>
                     </thead>
@@ -312,6 +335,20 @@
                                         @endif
                                     @else
                                         <span class="text-muted" style="font-size: 0.8rem;">0</span>
+                                    @endif
+                                </td>
+                                <td class="col-lengkap text-end fw-medium">
+                                    @if(!empty($order->kode_voucher) && $order->nilai_voucher > 0)
+                                        <div class="d-flex flex-column align-items-end gap-1">
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style="font-family:'Courier New',monospace;letter-spacing:1px;font-size:0.72rem;">
+                                                {{ $order->kode_voucher }}
+                                            </span>
+                                            <span class="text-success" style="font-size:0.8rem;">
+                                                -Rp {{ number_format($order->nilai_voucher, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
                                     @endif
                                 </td>
                                 <td class="col-lengkap text-end fw-bold text-orange fs-6">
@@ -367,7 +404,7 @@
                             @endforeach
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center text-muted py-5"> <div class="d-flex flex-column align-items-center">
+                                <td colspan="11" class="text-center text-muted py-5"> <div class="d-flex flex-column align-items-center">
                                         <i class="bi bi-inbox fs-1 text-light mb-2"></i>
                                         <span>Tidak ada data penjualan pada periode ini.</span>
                                     </div>
@@ -472,6 +509,35 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+// ===== TOGGLE NOMINAL PER CARD (EYE) - persist via localStorage =====
+(function() {
+    const MASK    = '••••••';
+    const PREFIX  = 'card_hidden_';
+
+    function applyCard(btn, hidden) {
+        const card    = btn.closest('.card-body');
+        const nominal = card.querySelector('.card-nominal');
+        const icon    = btn.querySelector('i');
+        nominal.textContent = hidden ? MASK : nominal.dataset.original;
+        icon.className = hidden ? 'bi bi-eye' : 'bi bi-eye-slash';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn-eye-card').forEach(function(btn) {
+            const key    = PREFIX + (btn.dataset.key || btn.closest('.card').dataset.cardKey || '');
+            const hidden = localStorage.getItem(key) === '1';
+            applyCard(btn, hidden);
+
+            btn.addEventListener('click', function() {
+                const nowHidden = localStorage.getItem(key) === '1';
+                const next      = !nowHidden;
+                localStorage.setItem(key, next ? '1' : '0');
+                applyCard(btn, next);
+            });
+        });
+    });
+})();
+
 function showBukti(imageUrl) {
         document.getElementById('previewImageSrc').src = imageUrl;
         var previewModal = new bootstrap.Modal(document.getElementById('modalPreviewBukti'));

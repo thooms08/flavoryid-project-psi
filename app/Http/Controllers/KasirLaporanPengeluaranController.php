@@ -31,29 +31,93 @@ class KasirLaporanPengeluaranController extends Controller
         }
         $partnerId = $user->partner->id;
 
-        $status    = $request->input('status', 'save');
-        $startDate = $request->input('start_date', Carbon::today('Asia/Jakarta')->toDateString());
-        $endDate   = $request->input('end_date', Carbon::today('Asia/Jakarta')->toDateString());
+        $status      = $request->input('status', 'save');
+        $quickFilter = $request->input('quick_filter');
+
+        // Tentukan startDate & endDate berdasarkan quick_filter atau input manual
+        if ($quickFilter) {
+            $endDate   = Carbon::today('Asia/Jakarta')->toDateString();
+            $startDate = match($quickFilter) {
+                '1_hari'   => Carbon::today('Asia/Jakarta')->toDateString(),
+                '1_minggu' => Carbon::today('Asia/Jakarta')->subWeek()->toDateString(),
+                '1_bulan'  => Carbon::today('Asia/Jakarta')->subMonth()->toDateString(),
+                '1_tahun'  => Carbon::today('Asia/Jakarta')->subYear()->toDateString(),
+                default    => Carbon::today('Asia/Jakarta')->toDateString(),
+            };
+        } else {
+            $startDate = $request->input('start_date', Carbon::today('Asia/Jakarta')->toDateString());
+            $endDate   = $request->input('end_date', Carbon::today('Asia/Jakarta')->toDateString());
+        }
+
+        // Bangun range waktu — pakai string langsung agar konsisten dengan laporan bisnis
+        $startTs = $startDate . ' 00:00:00';
+        $endTs   = $endDate   . ' 23:59:59';
 
         // Eager load buktiPengeluaran — mencegah N+1 saat view mengakses relasi
         $pengeluarans = Pengeluaran::with('buktiPengeluaran')
             ->where('partner_id', $partnerId)
             ->where('status', $status)
-            ->whereBetween('created_at', [
-                Carbon::parse($startDate, 'Asia/Jakarta')->startOfDay(),
-                Carbon::parse($endDate, 'Asia/Jakarta')->endOfDay(),
-            ])
+            ->whereBetween('created_at', [$startTs, $endTs])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Gunakan relasi yang sudah di-eager load — tidak perlu query BuktiPengeluaran lagi
+        // De-duplikasi berdasarkan path_bukti — 1 foto = 1 card di folder bukti.
         $galleryBukti = $pengeluarans
             ->pluck('buktiPengeluaran')
             ->flatten()
-            ->unique('path_bukti');
+            ->unique('path_bukti')
+            ->values();
+
+        // --- Summary & Chart (selalu dari status 'save' agar angka akurat) ---
+        $summaryBase = Pengeluaran::where('partner_id', $partnerId)
+            ->where('status', 'save')
+            ->whereBetween('created_at', [$startTs, $endTs]);
+
+        $totalPengeluaran = (clone $summaryBase)->sum('total');
+
+        $totalPerKategori = (clone $summaryBase)
+            ->selectRaw('kategori, SUM(total) as jumlah')
+            ->groupBy('kategori')
+            ->pluck('jumlah', 'kategori')
+            ->toArray();
+
+        // Chart: groupBy hari / minggu / bulan sesuai panjang range
+        $diffDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
+
+        if ($diffDays <= 31) {
+            $chartRaw = (clone $summaryBase)
+                ->selectRaw("DATE(created_at) as label, SUM(total) as jumlah")
+                ->groupByRaw("DATE(created_at)")
+                ->orderByRaw("label ASC")
+                ->get();
+            $chartLabels = $chartRaw->map(fn($r) =>
+                Carbon::parse($r->label)->translatedFormat('d M')
+            )->toArray();
+        } elseif ($diffDays <= 366) {
+            $chartRaw = (clone $summaryBase)
+                ->selectRaw("DATE_FORMAT(created_at, '%Y-%u') as label, SUM(total) as jumlah, MIN(DATE(created_at)) as first_day")
+                ->groupByRaw("DATE_FORMAT(created_at, '%Y-%u')")
+                ->orderByRaw("label ASC")
+                ->get();
+            $chartLabels = $chartRaw->map(fn($r) =>
+                'Minggu ' . Carbon::parse($r->first_day)->translatedFormat('d M')
+            )->toArray();
+        } else {
+            $chartRaw = (clone $summaryBase)
+                ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as label, SUM(total) as jumlah")
+                ->groupByRaw("DATE_FORMAT(created_at, '%Y-%m')")
+                ->orderByRaw("label ASC")
+                ->get();
+            $chartLabels = $chartRaw->map(fn($r) =>
+                Carbon::parse($r->label . '-01')->translatedFormat('M Y')
+            )->toArray();
+        }
+        $chartData = $chartRaw->pluck('jumlah')->map(fn($v) => (float) $v)->toArray();
 
         return view('kasir.laporan-pengeluaran', compact(
-            'pengeluarans', 'startDate', 'endDate', 'galleryBukti', 'status'
+            'pengeluarans', 'startDate', 'endDate', 'galleryBukti', 'status',
+            'totalPengeluaran', 'totalPerKategori', 'chartLabels', 'chartData',
+            'quickFilter'
         ));
     }
 
@@ -74,11 +138,14 @@ class KasirLaporanPengeluaranController extends Controller
         $now        = now();
 
         $pathBukti = null;
+        $kodeBukti = null;
         if ($request->hasFile('bukti')) {
             $file      = $request->file('bukti');
             $filename  = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('pengeluaran', $filename);
             $pathBukti = $filename;
+            // Generate kode unik 6 karakter (alfanumerik uppercase) sebagai label penanda
+            $kodeBukti = strtoupper(substr(str_replace(['+', '/', '='], '', base64_encode(random_bytes(6))), 0, 6));
         }
 
         // Kumpulkan semua baris valid terlebih dahulu
@@ -112,9 +179,12 @@ class KasirLaporanPengeluaranController extends Controller
                     ->pluck('id')
                     ->all();
 
+                // Setiap pengeluaran dapat 1 record bukti dengan kode yang sama
+                // sehingga di folder bukti, foto ini tampil 1x dengan label kode tersebut
                 $buktiRows = array_map(fn($id) => [
                     'pengeluaran_id' => $id,
                     'path_bukti'     => $pathBukti,
+                    'kode'           => $kodeBukti,
                     'created_at'     => $now,
                     'updated_at'     => $now,
                 ], $newIds);

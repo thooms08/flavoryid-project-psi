@@ -111,17 +111,17 @@
                             @endif
                             <li>
                                 <a class="dropdown-item small" href="{{ route('kasir.print-struk', $order->uuid) }}" target="_blank">
-                                    <i class="bi bi-printer me-2 text-secondary"></i> Cetak Struk Via USB
+                                    <i class="bi bi-printer me-2 text-secondary"></i> Cetak Struk USB
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item small" href="{{ route('kasir.print-bt', $order->uuid) }}">
-                                    <i class="bi bi-bluetooth me-2 text-secondary"></i> Cetak Struk Via BT
+                                    <i class="bi bi-bluetooth me-2 text-secondary"></i> Cetak Struk BT
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item small" href="{{ route('kasir.print-kitchen-bt', $order->id) }}">
-                                    <i class="bi bi-receipt me-2 text-secondary"></i> Cetak Struk Kitchen
+                                    <i class="bi bi-receipt me-2 text-secondary"></i> Cetak Struk Dapur
                                 </a>
                             </li>
                         </ul>
@@ -204,6 +204,17 @@
                             @else
                                 Rp {{ number_format($order->nominal_diskon, 0, ',', '.') }}
                             @endif
+                        </span>
+                    </div>
+                    @endif
+                    @if(!empty($order->kode_voucher) && $order->nilai_voucher > 0)
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small text-muted">Voucher
+                            <span class="fw-bold text-success" style="font-family:'Courier New',monospace;letter-spacing:1px;font-size:0.75rem;">{{ $order->kode_voucher }}</span>
+                        </span>
+                        <span class="small text-success fw-bold bg-success bg-opacity-10 px-2 rounded">
+                            <i class="bi bi-ticket-perforated-fill me-1"></i>
+                            - Rp {{ number_format($order->nilai_voucher, 0, ',', '.') }}
                         </span>
                     </div>
                     @endif

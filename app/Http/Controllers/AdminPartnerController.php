@@ -60,6 +60,12 @@ class AdminPartnerController extends Controller
         
         // Pastikan outlet dan mediaQr ada sebelum update
         if ($partner->outlet && $partner->outlet->mediaQr) {
+            // --- PROTEKSI PAKET SUPER (SELAMANYA) ---
+            // Paket super tidak boleh dijatuh tempo atau dinonaktifkan oleh admin
+            if (strtolower($partner->outlet->mediaQr->paket) === 'super' && in_array($status, ['jatuh_tempo', 'nonaktif'])) {
+                return back()->with('error', 'Partner ini menggunakan Paket Super (Selamanya). Status tidak dapat diubah menjadi jatuh tempo atau nonaktif.');
+            }
+
             $partner->outlet->mediaQr->update(['status' => $status]);
         } else {
             return back()->with('error', 'Data Media QR partner belum lengkap.');

@@ -154,7 +154,7 @@
         .detail-hero { padding-top: 100px; }
     }
 
-    /* ── Floating CTA (mobile only) — tombol kecil sebelum sheet dibuka ── */
+    /* ── Floating CTA (mobile only) - tombol kecil sebelum sheet dibuka ── */
     /* ── Floating CTA & Container (mobile only) ── */
     .floating-cta {
         display: none;
@@ -677,7 +677,7 @@
     </div>
 </div>
 
-{{-- Floating CTA & WhatsApp (mobile only) — hanya tampil jika event masih bisa didaftar --}}
+{{-- Floating CTA & WhatsApp (mobile only) - hanya tampil jika event masih bisa didaftar --}}
 @if(!$isSudahDitutup)
     
     {{-- Memanggil komponen tombol WA bawaan --}}
@@ -691,7 +691,7 @@
     </div>
 @endif
 
-{{-- ── Bottom Sheet Form (mobile only) — hanya jika event masih bisa didaftar ── --}}
+{{-- ── Bottom Sheet Form (mobile only) - hanya jika event masih bisa didaftar ── --}}
 @if(!$isSudahDitutup)
 <div id="formSheetOverlay" class="form-sheet-overlay" aria-hidden="true"></div>
 
@@ -962,7 +962,7 @@ function closeSheet() {
 if (floatingCta) {
     floatingCta.addEventListener('click', function (e) {
         e.preventDefault();
-        // Di desktop (>991px), tidak ada sheet — scroll ke form saja
+        // Di desktop (>991px), tidak ada sheet - scroll ke form saja
         if (window.innerWidth > 991) {
             document.getElementById('formPendaftaran')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {

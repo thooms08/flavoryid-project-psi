@@ -33,7 +33,7 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
-    .profile-info { display: flex; flex-direction: column; }
+    .profile-info { display: flex; flex-direction: column; min-width: 0; }
     .profile-text-nav {
         font-size: 0.7rem; font-weight: 800; color: var(--primary-orange);
         letter-spacing: 0.5px; text-transform: uppercase; line-height: 1;
@@ -193,8 +193,26 @@
         }
         
         .profile-container-nav { 
-            order: -1; 
-            margin-bottom: 0; /* Menghapus margin-bottom agar tidak merusak posisi di top-left */
+            order: -1;
+            /* Biarkan profile box mengambil sisa ruang tapi tidak mendorong tombol lain */
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        /* Batasi lebar profile box agar tidak overflow di mobile */
+        .profile-outlet-nav {
+            max-width: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        /* Potong teks nama outlet yang terlalu panjang */
+        .profile-text-nav {
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
         }
 
         /* Opsi tambahan agar tombol logout rapi di mobile */
@@ -207,7 +225,21 @@
         }
     }
 
-    /* ── MineAI menu item — animated highlight ── */
+    @media (max-width: 400px) {
+        /* Layar sangat kecil: kurangi padding navbar & kecilkan sedikit */
+        .navbar-flavory {
+            padding: 0.6rem 1rem;
+        }
+        .profile-text-nav {
+            max-width: 90px;
+        }
+        .logo-outlet-nav {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    /* ── MineAI menu item - animated highlight ── */
     @keyframes mineGlow {
         0%   { background-position: 0% 50%; box-shadow: 0 0 0 rgba(255,106,0,0); }
         50%  { background-position: 100% 50%; box-shadow: 0 0 12px rgba(238,9,121,.25); }
@@ -292,7 +324,7 @@
             </a>
         </div>
 
-        {{-- Bantuan & CS — tampil di mobile saja (di luar collapse) --}}
+        {{-- Bantuan & CS - tampil di mobile saja (di luar collapse) --}}
         <a href="{{ route('panduan.menu') }}"
            class="d-lg-none text-muted me-1"
            style="font-size: 1.35rem; line-height:1;"
@@ -358,7 +390,17 @@
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item" href="{{ route('kasir.laporan.index') }}">
-                                <span><i class="bi bi-bar-chart-line me-2"></i>Laporan Bisnis</span>
+                                <span><i class="bi bi-bar-chart-line me-2"></i>Ikhtisar Bisnis</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('kasir.pengeluaran.index') }}">
+                                <span><i class="bi bi-graph-down-arrow me-2"></i>Pengeluaran</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('kasir.modal.index') }}">
+                                <span><i class="bi bi-cash-coin me-2"></i>Modal Usaha</span>
                             </a>
                         </li>
                         <li>
@@ -412,7 +454,7 @@
             </ul>
 
             <div class="d-lg-flex align-items-center gap-3">
-                {{-- Bantuan & CS — tampil di desktop/tablet (d-none d-lg-inline-flex) --}}
+                {{-- Bantuan & CS - tampil di desktop/tablet (d-none d-lg-inline-flex) --}}
                 <a href="{{ route('panduan.menu') }}"
                    class="d-none d-lg-inline-flex align-items-center text-muted"
                    style="font-size: 1.35rem; line-height:1;"

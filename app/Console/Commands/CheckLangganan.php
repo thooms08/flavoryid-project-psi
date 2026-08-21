@@ -105,18 +105,11 @@ class CheckLangganan extends Command
                 }
             }
 
-            // --- LOGIKA PAKET SUPER (Tahunan) ---
+            // --- LOGIKA PAKET SUPER (Selamanya/Lifetime) ---
+            // Paket super adalah bayar sekali untuk selamanya, tidak pernah jatuh tempo atau nonaktif.
             if ($paket === 'super') {
-                if ($hariBerlalu >= 366 && $qr->status !== 'nonaktif') {
-                    $qr->update(['status' => 'nonaktif']);
-                    $this->info("Outlet ID {$infoOutlet->id} -> NONAKTIF");
-                    $kirimEmail('nonaktif');
-                } 
-                elseif ($hariBerlalu >= 362 && $hariBerlalu < 366 && $qr->status !== 'jatuh_tempo') {
-                    $qr->update(['status' => 'jatuh_tempo']);
-                    $this->info("Outlet ID {$infoOutlet->id} -> JATUH TEMPO");
-                    $kirimEmail('jatuh_tempo');
-                }
+                $this->info("Outlet ID {$infoOutlet->id} paket SUPER (selamanya) - dilewati, tidak ada expiry.");
+                continue;
             }
         }
 

@@ -38,7 +38,7 @@
             </table>
         </div>
 
-        {{-- Tombol Lihat Semua — hanya muncul jika menu > 20 --}}
+        {{-- Tombol Lihat Semua - hanya muncul jika menu > 20 --}}
         @if($menus->count() > 20)
         <div id="show-all-wrapper" class="text-center py-3 border-top border-warning-subtle">
             <button type="button" id="btnLihatSemua" onclick="toggleSemuaMenu()"

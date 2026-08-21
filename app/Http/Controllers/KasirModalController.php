@@ -16,26 +16,83 @@ class KasirModalController extends Controller
         if (!$user || !$user->partner) {
             abort(403, 'Akses ditolak: Akun tidak memiliki relasi Partner.');
         }
-        
-        // Ambil tanggal hari ini sesuai timezone aplikasi
-        $today = Carbon::today()->toDateString();
-        
-        $startDate = $request->input('start_date', $today);
-        $endDate = $request->input('end_date', $today);
-        
-        // Menangkap filter status (default 'save')
-        $status = $request->input('status', 'save');
-        
-        $modals = Modal::where('partner_id', $user->partner->id)
+
+        $partnerId   = $user->partner->id;
+        $status      = $request->input('status', 'save');
+        $quickFilter = $request->input('quick_filter');
+
+        // Tentukan rentang tanggal berdasarkan quick_filter atau input manual
+        if ($quickFilter) {
+            $endDate   = Carbon::today('Asia/Jakarta')->toDateString();
+            $startDate = match($quickFilter) {
+                '1_hari'   => Carbon::today('Asia/Jakarta')->toDateString(),
+                '1_minggu' => Carbon::today('Asia/Jakarta')->subWeek()->toDateString(),
+                '1_bulan'  => Carbon::today('Asia/Jakarta')->subMonth()->toDateString(),
+                '1_tahun'  => Carbon::today('Asia/Jakarta')->subYear()->toDateString(),
+                default    => Carbon::today('Asia/Jakarta')->toDateString(),
+            };
+        } else {
+            $startDate = $request->input('start_date', Carbon::today('Asia/Jakarta')->toDateString());
+            $endDate   = $request->input('end_date', Carbon::today('Asia/Jakarta')->toDateString());
+        }
+
+        $startTs = $startDate . ' 00:00:00';
+        $endTs   = $endDate   . ' 23:59:59';
+
+        // Data tabel (sesuai status tab)
+        $modals = Modal::where('partner_id', $partnerId)
             ->where('status', $status)
-            ->whereBetween('created_at', [
-                Carbon::parse($startDate)->startOfDay(),
-                Carbon::parse($endDate)->endOfDay()
-            ])
+            ->whereBetween('created_at', [$startTs, $endTs])
             ->orderBy('created_at', 'desc')
             ->get();
-        
-        return view('kasir.modal', compact('modals', 'startDate', 'endDate', 'status'));
+
+        // Total modal (selalu dari status 'save' agar angka akurat)
+        $totalModal = Modal::where('partner_id', $partnerId)
+            ->where('status', 'save')
+            ->whereBetween('created_at', [$startTs, $endTs])
+            ->sum('nominal');
+
+        // Chart — groupBy hari / minggu / bulan sesuai panjang range
+        $diffDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
+
+        $summaryBase = Modal::where('partner_id', $partnerId)
+            ->where('status', 'save')
+            ->whereBetween('created_at', [$startTs, $endTs]);
+
+        if ($diffDays <= 31) {
+            $chartRaw = (clone $summaryBase)
+                ->selectRaw("DATE(created_at) as label, SUM(nominal) as jumlah")
+                ->groupByRaw("DATE(created_at)")
+                ->orderByRaw("label ASC")
+                ->get();
+            $chartLabels = $chartRaw->map(fn($r) =>
+                Carbon::parse($r->label)->translatedFormat('d M')
+            )->toArray();
+        } elseif ($diffDays <= 366) {
+            $chartRaw = (clone $summaryBase)
+                ->selectRaw("DATE_FORMAT(created_at, '%Y-%u') as label, SUM(nominal) as jumlah, MIN(DATE(created_at)) as first_day")
+                ->groupByRaw("DATE_FORMAT(created_at, '%Y-%u')")
+                ->orderByRaw("label ASC")
+                ->get();
+            $chartLabels = $chartRaw->map(fn($r) =>
+                'Minggu ' . Carbon::parse($r->first_day)->translatedFormat('d M')
+            )->toArray();
+        } else {
+            $chartRaw = (clone $summaryBase)
+                ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as label, SUM(nominal) as jumlah")
+                ->groupByRaw("DATE_FORMAT(created_at, '%Y-%m')")
+                ->orderByRaw("label ASC")
+                ->get();
+            $chartLabels = $chartRaw->map(fn($r) =>
+                Carbon::parse($r->label . '-01')->translatedFormat('M Y')
+            )->toArray();
+        }
+        $chartData = $chartRaw->pluck('jumlah')->map(fn($v) => (float) $v)->toArray();
+
+        return view('kasir.modal', compact(
+            'modals', 'startDate', 'endDate', 'status',
+            'totalModal', 'chartLabels', 'chartData', 'quickFilter'
+        ));
     }
 
     public function store(Request $request)

@@ -11,6 +11,7 @@
     @include('layouts.favicon')
     <script src="{{ asset('js/loading.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <style>
     :root {
@@ -61,7 +62,7 @@
 
 <div class="container-fluid py-4">
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a href="{{ route('kasir.laporan.index') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
+        <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
             <i class="bi bi-arrow-left fs-4"></i>
         </a>
         <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;">Laporan Pengeluaran</h1>
@@ -76,22 +77,148 @@
 
     <div class="card shadow-sm border-0 mb-4 rounded-3 border-top border-orange border-3">
         <div class="card-body">
-            <form action="{{ route('kasir.pengeluaran.index') }}" method="GET" class="row g-3 align-items-end">
+            <form action="{{ route('kasir.pengeluaran.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
                 <input type="hidden" name="status" value="{{ $status }}">
                 <div class="col-md-5">
-                    <label class="form-label fw-bold text-muted">Dari Tanggal</label>
-                    <input type="date" name="start_date" class="form-control" value="{{ $startDate }}">
+                    <label class="form-label fw-bold text-muted small mb-1">Dari Tanggal</label>
+                    <input type="date" name="start_date" class="form-control rounded-3" value="{{ $startDate }}">
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label fw-bold text-muted">Sampai Tanggal</label>
-                    <input type="date" name="end_date" class="form-control" value="{{ $endDate }}">
+                    <label class="form-label fw-bold text-muted small mb-1">Sampai Tanggal</label>
+                    <input type="date" name="end_date" class="form-control rounded-3" value="{{ $endDate }}">
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-orange w-100 fw-medium shadow-sm"><i class="bi bi-filter"></i> Filter</button>
+                    <button type="submit" class="btn btn-orange w-100 fw-medium shadow-sm rounded-3">
+                        <i class="bi bi-search me-1"></i> Terapkan
+                    </button>
+                </div>
+
+                @php
+                    $isDefault = !$quickFilter && !request('start_date');
+                @endphp
+                <div class="col-12 mt-3">
+                    <div class="btn-group w-100 d-flex flex-wrap gap-2" role="group">
+                        <button type="submit" name="quick_filter" value="1_hari"
+                                class="btn flex-fill rounded-3 border fw-medium {{ ($quickFilter == '1_hari' || $isDefault) ? 'btn-orange text-white shadow-sm' : 'btn-outline-orange' }}">
+                            1 Hari
+                        </button>
+                        <button type="submit" name="quick_filter" value="1_minggu"
+                                class="btn flex-fill rounded-3 border fw-medium {{ $quickFilter == '1_minggu' ? 'btn-orange text-white shadow-sm' : 'btn-outline-orange' }}">
+                            1 Minggu
+                        </button>
+                        <button type="submit" name="quick_filter" value="1_bulan"
+                                class="btn flex-fill rounded-3 border fw-medium {{ $quickFilter == '1_bulan' ? 'btn-orange text-white shadow-sm' : 'btn-outline-orange' }}">
+                            1 Bulan
+                        </button>
+                        <button type="submit" name="quick_filter" value="1_tahun"
+                                class="btn flex-fill rounded-3 border fw-medium {{ $quickFilter == '1_tahun' ? 'btn-orange text-white shadow-sm' : 'btn-outline-orange' }}">
+                            1 Tahun
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
+
+    {{-- ===== SUMMARY CARDS + CHART ===== --}}
+    {{-- ===== SUMMARY CARDS + CHART ===== --}}
+    <div class="row g-3 mb-4">
+        {{-- Card Total Keseluruhan --}}
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 rounded-3" style="border-left: 4px solid #fd7e14 !important;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing:.5px">Total Pengeluaran</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="pengeluaran_total" style="font-size:.85rem;" title="Sembunyikan/Tampilkan">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                            <span class="badge bg-warning-subtle text-warning rounded-pill"><i class="bi bi-wallet2"></i></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-danger card-nominal" style="font-size:1.35rem;"
+                             data-original="Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}">
+                            Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
+                        </div>
+                        <small class="text-muted">{{ \Carbon\Carbon::parse($startDate)->translatedFormat('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d M Y') }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Card Operasional Usaha --}}
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing:.5px">Operasional Usaha</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="pengeluaran_operasional_usaha" style="font-size:.85rem;" title="Sembunyikan/Tampilkan">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                            <span class="badge bg-warning-subtle text-warning rounded-pill"><i class="bi bi-shop"></i></span>
+                        </div>
+                    </div>
+                    <div class="fw-bold text-dark card-nominal" style="font-size:1.1rem;"
+                         data-original="Rp {{ number_format($totalPerKategori['operasional usaha'] ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalPerKategori['operasional usaha'] ?? 0, 0, ',', '.') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Card Operasional Karyawan --}}
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing:.5px">Operasional Karyawan</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="pengeluaran_operasional_karyawan" style="font-size:.85rem;" title="Sembunyikan/Tampilkan">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                            <span class="badge bg-info-subtle text-info rounded-pill"><i class="bi bi-people"></i></span>
+                        </div>
+                    </div>
+                    <div class="fw-bold text-dark card-nominal" style="font-size:1.1rem;"
+                         data-original="Rp {{ number_format($totalPerKategori['operasional karyawan'] ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalPerKategori['operasional karyawan'] ?? 0, 0, ',', '.') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Card Lainnya --}}
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing:.5px">Lainnya</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <button type="button" class="btn-eye-card btn btn-link p-0 text-muted" data-key="pengeluaran_lainnya" style="font-size:.85rem;" title="Sembunyikan/Tampilkan">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill"><i class="bi bi-three-dots"></i></span>
+                        </div>
+                    </div>
+                    <div class="fw-bold text-dark card-nominal" style="font-size:1.1rem;"
+                         data-original="Rp {{ number_format($totalPerKategori['lainnya'] ?? 0, 0, ',', '.') }}">
+                        Rp {{ number_format($totalPerKategori['lainnya'] ?? 0, 0, ',', '.') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== GRAFIK BATANG ===== --}}
+    @if(count($chartLabels) > 0)
+    <div class="card shadow-sm border-0 mb-4 rounded-3">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+            <h6 class="fw-bold text-dark m-0"><i class="bi bi-bar-chart-line text-orange me-2"></i> Grafik Pengeluaran</h6>
+        </div>
+        <div class="card-body pt-2 pb-4">
+            <canvas id="chartPengeluaran" style="max-height: 280px;"></canvas>
+        </div>
+    </div>
+    @endif
 
     <div class="card shadow-sm border-0 mb-4 rounded-3">
         <div class="card-header bg-white pt-4 pb-2 border-0">
@@ -102,7 +229,7 @@
             @csrf
             <input type="hidden" name="status" value="save">
             
-            <div class="card-body bg-light">
+            <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Kategori Pengeluaran</label>
@@ -206,17 +333,30 @@
                 
                 {{-- TAB NAVIGASI STATUS --}}
                 <div class="nav-status d-flex gap-2">
-                    <a href="{{ route('kasir.pengeluaran.index', ['status' => 'save', 'start_date' => $startDate, 'end_date' => $endDate]) }}" 
+                    <a href="{{ route('kasir.pengeluaran.index', ['status' => 'save', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}" 
                        class="btn {{ $status == 'save' ? 'btn-active' : 'btn-inactive' }}">
                         <i class="bi bi-check-circle me-1"></i> Data Tersedia
                     </a>
-                    <a href="{{ route('kasir.pengeluaran.index', ['status' => 'delete', 'start_date' => $startDate, 'end_date' => $endDate]) }}" 
+                    <a href="{{ route('kasir.pengeluaran.index', ['status' => 'delete', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}" 
                        class="btn {{ $status == 'delete' ? 'btn-active' : 'btn-inactive' }}">
                         <i class="bi bi-trash-fill me-1"></i> Data Terhapus
                     </a>
                 </div>
 
                 <div class="d-flex gap-2">
+                    {{-- Filter Kategori --}}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm fw-medium shadow-sm dropdown-toggle" type="button" id="dropdownKategori" data-bs-toggle="dropdown">
+                            <i class="bi bi-funnel me-1"></i> <span id="labelKategori">Semua Kategori</span>
+                        </button>
+                        <ul class="dropdown-menu shadow-sm border-0" style="min-width:200px;">
+                            <li><a class="dropdown-item filter-kategori-item" href="#" data-kategori="">Semua Kategori</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item filter-kategori-item" href="#" data-kategori="operasional usaha"></i>Operasional Usaha</a></li>
+                            <li><a class="dropdown-item filter-kategori-item" href="#" data-kategori="operasional karyawan"></i>Operasional Karyawan</a></li>
+                            <li><a class="dropdown-item filter-kategori-item" href="#" data-kategori="lainnya"></i>Lainnya</a></li>
+                        </ul>
+                    </div>
                     <button type="button" class="btn btn-dark btn-sm fw-medium shadow-sm" data-bs-toggle="modal" data-bs-target="#modalGallery">
                         <i class="bi bi-folder-fill me-1"></i> FOLDER BUKTI
                     </button>
@@ -235,20 +375,33 @@
                 <table class="table table-hover align-middle mb-0">
                    <thead class="table-light text-muted" style="font-size: 0.85rem; letter-spacing: 0.5px;">
                         <tr>
-                            <th class="text-center py-3" width="5%">#</th>
-                            <th class="py-3" width="15%">KATEGORI</th>
-                            <th class="py-3" width="20%">NAMA ITEM</th>
-                            <th class="text-end py-3" width="12%">HARGA</th>
-                            <th class="text-center py-3" width="8%">QTY</th>
-                            <th class="text-end py-3" width="12%">TOTAL</th>
-                            <th class="py-3" width="18%">TANGGAL</th>
-                            <th class="text-center py-3" width="10%">AKSI</th>
+                            <th class="text-center py-3" width="4%">#</th>
+                            <th class="py-3" width="13%">KODE PENGELUARAN</th>
+                            <th class="py-3" width="13%">KATEGORI</th>
+                            <th class="py-3" width="17%">NAMA ITEM</th>
+                            <th class="text-end py-3" width="11%">HARGA</th>
+                            <th class="text-center py-3" width="7%">QTY</th>
+                            <th class="text-end py-3" width="11%">TOTAL</th>
+                            <th class="py-3" width="16%">TANGGAL</th>
+                            <th class="text-center py-3" width="8%">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0" id="tableBody">
                         @forelse($pengeluarans as $index => $p)
-                            <tr class="table-row" data-index="{{ $index }}">
+                            <tr class="table-row" data-index="{{ $index }}" data-kategori="{{ $p->kategori }}">
                                 <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td>
+                                    @php
+                                        $kodeBukti = $p->buktiPengeluaran->first()?->kode;
+                                    @endphp
+                                    @if($kodeBukti)
+                                        <span class="badge bg-dark-subtle text-dark border fw-bold" style="font-size: 0.78rem; letter-spacing: 0.5px;">
+                                            <i class="bi bi-upc-scan me-1"></i>{{ $kodeBukti }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <span class="badge {{ $p->kategori == 'operasional usaha' ? 'bg-warning-subtle text-warning' : ($p->kategori == 'operasional karyawan' ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning') }} border">
                                         {{ ucwords($p->kategori) }}
@@ -273,13 +426,13 @@
                                     <div class="d-flex justify-content-center gap-1">
                                         @if($status == 'save')
                                             <button class="btn btn-sm btn-light text-warning border shadow-sm" onclick="openEditModal({{ $p->id }}, '{{ addslashes($p->item) }}', {{ $p->harga }}, {{ floatval($p->qty) }}, {{ $p->total }}, '{{ addslashes($p->keterangan) }}')"><i class="bi bi-pencil"></i></button>
-                                            <form action="{{ route('kasir.pengeluaran.destroy', $p->id) }}" method="POST" class="m-0 form-trash">
+                                            <form action="{{ route('kasir.pengeluaran.destroy', $p->id) }}" method="POST" class="m-0 form-trash" data-no-loading>
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-light text-danger border shadow-sm"><i class="bi bi-trash"></i></button>
                                             </form>
                                         @else
                                             {{-- Tambahkan class 'form-restore' pada form pulihkan --}}
-                                            <form action="{{ route('kasir.pengeluaran.restore', $p->id) }}" method="POST" class="m-0 form-restore">
+                                            <form action="{{ route('kasir.pengeluaran.restore', $p->id) }}" method="POST" class="m-0 form-restore" data-no-loading>
                                                 @csrf @method('PATCH')
                                                 <button type="submit" class="btn btn-sm btn-success border shadow-sm fw-bold">
                                                     <i class="bi bi-arrow-counterclockwise me-1"></i> Pulihkan
@@ -290,7 +443,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-center py-5 text-muted">Belum ada pengeluaran pada periode ini.</td></tr>
+                            <tr><td colspan="9" class="text-center py-5 text-muted">Belum ada pengeluaran pada periode ini.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -335,7 +488,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold text-danger">Total Keseluruhan</label>
-                        <input type="number" step="0.01" name="total" id="editTotal" class="form-control fw-bold border-danger" required>
+                        <input type="number" step="0.01" name="total" id="editTotal" class="form-control fw-bold border-danger bg-light" readonly required>
                     </div>
                 </div>
                 <div class="mb-3 px-3">
@@ -365,7 +518,12 @@
                                 <a href="{{ route('private.pengeluaran', basename($bukti->path_bukti)) }}" target="_blank">
                                     <img src="{{ route('private.pengeluaran', basename($bukti->path_bukti)) }}" class="gallery-img mb-2" alt="Bukti">
                                 </a>
-                                <small class="text-muted fw-bold d-block">
+                                @if($bukti->kode)
+                                    <span class="badge bg-dark text-white fw-bold mb-1" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                                        <i class="bi bi-upc-scan me-1"></i>{{ $bukti->kode }}
+                                    </span>
+                                @endif
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">
                                     <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($bukti->created_at)->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') }}
                                 </small>
                             </div>
@@ -381,6 +539,35 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+// ===== TOGGLE NOMINAL PER CARD (EYE) - persist via localStorage =====
+(function() {
+    const MASK    = '••••••';
+    const PREFIX  = 'card_hidden_';
+
+    function applyCard(btn, hidden) {
+        const card    = btn.closest('.card-body');
+        const nominal = card.querySelector('.card-nominal');
+        const icon    = btn.querySelector('i');
+        nominal.textContent = hidden ? MASK : nominal.dataset.original;
+        icon.className = hidden ? 'bi bi-eye' : 'bi bi-eye-slash';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn-eye-card').forEach(function(btn) {
+            const key    = PREFIX + (btn.dataset.key || '');
+            const hidden = localStorage.getItem(key) === '1';
+            applyCard(btn, hidden);
+
+            btn.addEventListener('click', function() {
+                const nowHidden = localStorage.getItem(key) === '1';
+                const next      = !nowHidden;
+                localStorage.setItem(key, next ? '1' : '0');
+                applyCard(btn, next);
+            });
+        });
+    });
+})();
+
 document.addEventListener("DOMContentLoaded", function() {
 
     // 1. Logika Kategori (Show/Hide Keterangan)
@@ -509,7 +696,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Tambahkan Efek Loading pada Table
             document.getElementById('tableBody').innerHTML = `
                 <tr>
-                    <td colspan="8" class="text-center py-5 text-muted">
+                    <td colspan="9" class="text-center py-5 text-muted">
                         <div class="spinner-border text-orange mb-2" role="status"></div>
                         <div>Memuat data...</div>
                     </td>
@@ -578,7 +765,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (window.showLoading) window.showLoading();
                     form.submit();
                 }
             });
@@ -599,7 +785,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (window.showLoading) window.showLoading();
                     form.submit();
                 }
             });
@@ -619,6 +804,115 @@ function openEditModal(id, item, harga, qty, total, keterangan) {
     
     new bootstrap.Modal(document.getElementById('modalEdit')).show();
 }
+
+// ===== CHART PENGELUARAN =====
+@if(count($chartLabels) > 0)
+(function() {
+    const ctx = document.getElementById('chartPengeluaran');
+    if (!ctx) return;
+
+    const labels = @json($chartLabels);
+    const data   = @json($chartData);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Pengeluaran (Rp)',
+                data: data,
+                backgroundColor: 'rgba(253, 126, 20, 0.7)',
+                borderColor: '#fd7e14',
+                borderWidth: 1.5,
+                borderRadius: 6,
+                borderSkipped: false,
+                // Batasi lebar batang agar tidak melar saat data sedikit
+                maxBarThickness: 48,
+                barPercentage: 0.6,
+                categoryPercentage: 0.7,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => 'Rp ' + Number(ctx.raw).toLocaleString('id-ID')
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: v => 'Rp ' + Number(v).toLocaleString('id-ID'),
+                        font: { size: 11 }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    ticks: { font: { size: 11 } },
+                    grid: { display: false },
+                    // Padding kiri-kanan agar batang tidak menempel ke tepi
+                    offset: true,
+                }
+            }
+        }
+    });
+})();
+@endif
+
+// ===== FILTER KATEGORI CLIENT-SIDE =====
+(function() {
+    let activeKategori = '';
+
+    function applyKategoriFilter() {
+        const rows = document.querySelectorAll('#tableBody .table-row');
+        let visibleIdx = 0;
+        rows.forEach(row => {
+            const kat = (row.dataset.kategori || '').toLowerCase();
+            const match = !activeKategori || kat === activeKategori;
+            row.style.display = match ? '' : 'none';
+            if (match) {
+                row.dataset.index = visibleIdx;
+                visibleIdx++;
+            }
+        });
+        // Tampilkan empty state jika tidak ada hasil
+        let emptyRow = document.getElementById('emptyKategoriRow');
+        if (visibleIdx === 0 && activeKategori) {
+            if (!emptyRow) {
+                emptyRow = document.createElement('tr');
+                emptyRow.id = 'emptyKategoriRow';
+                emptyRow.innerHTML = `<td colspan="9" class="text-center py-4 text-muted">Tidak ada data untuk kategori ini.</td>`;
+                document.getElementById('tableBody').appendChild(emptyRow);
+            }
+            emptyRow.style.display = '';
+        } else if (emptyRow) {
+            emptyRow.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const item = e.target.closest('.filter-kategori-item');
+        if (!item) return;
+        e.preventDefault();
+        activeKategori = item.dataset.kategori || '';
+        const label = activeKategori
+            ? item.textContent.trim()
+            : 'Semua Kategori';
+        const labelEl = document.getElementById('labelKategori');
+        if (labelEl) labelEl.textContent = label;
+
+        // Tandai item aktif
+        document.querySelectorAll('.filter-kategori-item').forEach(a => a.classList.remove('active'));
+        item.classList.add('active');
+
+        applyKategoriFilter();
+    });
+})();
 
 function calcEdit() {
     let harga = parseFloat(document.getElementById('editHarga').value) || 0;

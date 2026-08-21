@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     {{-- Poppins untuk body struk --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    {{-- Yeseva One untuk nama outlet — sama persis dengan page-outlet --}}
+    {{-- Yeseva One untuk nama outlet - sama persis dengan page-outlet --}}
     <link href="https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap" rel="stylesheet">
     @include('layouts.favicon')
     <script src="{{ asset('js/loading.js') }}"></script>
@@ -23,8 +23,8 @@
             color: #1a1a1a; /* Diperjelas dari #333 */
         }
 
-        /* ── Nama outlet: Yeseva One — sama dengan page-outlet ── */
-        /* Yeseva One hanya punya weight 400 — jangan paksa 700/800 atau browser akan faux-bold */
+        /* ── Nama outlet: Yeseva One - sama dengan page-outlet ── */
+        /* Yeseva One hanya punya weight 400 - jangan paksa 700/800 atau browser akan faux-bold */
         .outlet-name {
             font-family: 'Yeseva One', serif;
             font-weight: 400;
@@ -160,7 +160,7 @@
                             </div>-->
                         </div>
                         <div class="d-grid gap-2">
-                            <button onclick="toggleView()" class="btn btn-orange fw-bold py-2">
+                            <button id="btn-toggle-view" onclick="toggleView()" class="btn btn-orange fw-bold py-2">
                                 <i class="bi bi-eye me-2"></i> Preview Struk
                             </button>
                         </div>
@@ -253,6 +253,20 @@
                                             <td class="text-end">-Rp {{ number_format($potongan, 0, ',', '.') }}</td>
                                         </tr>
                                     @endif
+                                    @if(!empty($order->kode_voucher) && $order->nilai_voucher > 0)
+                                        @if(!(isset($order->nominal_diskon) && $order->nominal_diskon > 0))
+                                            <tr style="font-weight:400; color:#4b5563;">
+                                                <td>Subtotal</td>
+                                                <td class="text-end">Rp {{ number_format($subTotalRaw, 0, ',', '.') }}</td>
+                                            </tr>
+                                        @endif
+                                        <tr class="text-success" style="font-weight:400;">
+                                            <td>
+                                                Voucher
+                                            </td>
+                                            <td class="text-end">-Rp {{ number_format($order->nilai_voucher, 0, ',', '.') }}</td>
+                                        </tr>
+                                    @endif
                                     <tr class="total-row">
                                         <td>TOTAL</td>
                                         <td class="text-end">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
@@ -309,9 +323,19 @@
     function toggleView() {
         const qr    = document.getElementById('qr-section');
         const struk = document.getElementById('struk-preview');
+        const btn   = document.getElementById('btn-toggle-view');
         const showing = struk.style.display !== 'none';
         struk.style.display = showing ? 'none' : 'block';
         qr.style.display    = showing ? 'block' : 'none';
+        if (btn) {
+            if (showing) {
+                // Sekarang QR ditampilkan → tombol untuk ke struk
+                btn.innerHTML = '<i class="bi bi-eye me-2"></i> Preview Struk';
+            } else {
+                // Sekarang Struk ditampilkan → tombol untuk ke QR
+                btn.innerHTML = '<i class="bi bi-qr-code-scan me-2"></i> Preview QR';
+            }
+        }
     }
 
     /**

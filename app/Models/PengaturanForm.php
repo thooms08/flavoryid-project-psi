@@ -17,16 +17,18 @@ class PengaturanForm extends Model
         'keterangan',
         'diskon',
         'bukti_pembayaran',
+        'voucher',
     ];
 
     // Casting tipe data ke boolean agar otomatis dikonversi saat diakses
     protected $casts = [
-        'nama' => 'boolean',
-        'whatsapp' => 'boolean',
-        'meja' => 'boolean',
-        'keterangan' => 'boolean',
-        'diskon' => 'boolean',
+        'nama'             => 'boolean',
+        'whatsapp'         => 'boolean',
+        'meja'             => 'boolean',
+        'keterangan'       => 'boolean',
+        'diskon'           => 'boolean',
         'bukti_pembayaran' => 'boolean',
+        'voucher'          => 'boolean',
     ];
 
     /**

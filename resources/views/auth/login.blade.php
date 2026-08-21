@@ -71,7 +71,7 @@
             <div class="flex items-center gap-2">
                 <i class="bi bi-wifi-off text-blue-500 flex-shrink-0"></i>
                 <p class="text-[11px] font-semibold text-blue-700">
-                    Mode offline — login dengan data tersimpan di perangkat ini.
+                    Mode offline - login dengan data tersimpan di perangkat ini.
                 </p>
             </div>
         </div>
@@ -235,7 +235,7 @@ loginForm.addEventListener('submit', async function(e) {
         // ── ONLINE: tampilkan loading, simpan credential, lanjutkan submit ke server ──
         setLoading(true);
         try { await saveCredential(user, pass); } catch (_) {}
-        // Biarkan form submit native ke server — tidak ada e.preventDefault()
+        // Biarkan form submit native ke server - tidak ada e.preventDefault()
         return;
     }
 

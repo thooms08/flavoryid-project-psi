@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BuktiPengeluaran extends Model
 {
     protected $fillable = [
-        'pengeluaran_id', 'path_bukti'
+        'pengeluaran_id', 'path_bukti', 'kode'
     ];
 
     public function pengeluaran(): BelongsTo

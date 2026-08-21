@@ -6,7 +6,8 @@ use App\Http\Controllers\{KasirMenuController, RegisterController, VerifikasiCon
 KasirController, KasirOrderController, KasirOrderHistoryController, KasirOrderBatalController,
 KasirFormController, KasirStokController, KasirProfileController, KasirLaporanBisnisController,
 KasirLaporanPengeluaranController, KasirModalController, PageOutletController, KasirPerformaController,
-KasirNoteController, KasirLanggananController, KasirAkunController, PublicController, PublicEventController};
+KasirNoteController, KasirLanggananController, KasirAkunController, PublicController, PublicEventController,
+KasirVoucherController};
 use App\Http\Middleware\CheckSubscriptionStatus;
 use App\Http\Controllers\{AdminController, AdminPartnerController, AdminAkunPartnerController, PartnerResetPasswordController, AdminProfileController, AdminAktivitasController, AdminEventController, AdminPesertaController};
 
@@ -76,6 +77,7 @@ Route::get('/kasir/qr-struk/{uuid}', [KasirOrderHistoryController::class, 'showQ
 Route::get('/outlet/{page_name}', [PageOutletController::class, 'show'])->name('outlet.show');
 Route::get('/outlet/{page_name}/search', [PageOutletController::class, 'search'])->name('outlet.search');
 Route::get('/outlet/{page_name}/menu', [PageOutletController::class, 'allMenu'])->name('outlet.menu.all');
+Route::post('/outlet/{page_name}/voucher/apply', [PageOutletController::class, 'applyVoucher'])->name('outlet.voucher.apply');
 
 // Proteksi Halaman
 Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
@@ -112,6 +114,13 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::get('/kasir/print-kitchen-bt/{order}', [KasirController::class, 'printKitchenBluetooth'])->name('kasir.print-kitchen-bt');
     Route::get('/kasir/pengaturan-form', [KasirFormController::class, 'index'])->name('kasir.pengaturan.index');
     Route::post('/kasir/pengaturan-form/update', [KasirFormController::class, 'update'])->name('kasir.pengaturan.update');
+    // Voucher routes
+    Route::get('/kasir/voucher', [KasirVoucherController::class, 'index'])->name('kasir.voucher.index');
+    Route::post('/kasir/voucher', [KasirVoucherController::class, 'store'])->name('kasir.voucher.store');
+    Route::delete('/kasir/voucher/{voucher}', [KasirVoucherController::class, 'destroy'])->name('kasir.voucher.destroy');
+    Route::post('/kasir/voucher/check-kode', [KasirVoucherController::class, 'checkKode'])->name('kasir.voucher.check-kode');
+    // Cek voucher saat order (validasi + ambil data potongan)
+    Route::post('/kasir/voucher/apply', [KasirVoucherController::class, 'applyVoucher'])->name('kasir.voucher.apply');
     Route::get('/stok-management', [KasirStokController::class, 'index'])->name('kasir.stok.index');
     Route::post('/stok/store', [KasirStokController::class, 'store'])->name('kasir.stok.store');
     Route::post('/stok/update/{stok}', [KasirStokController::class, 'update'])->name('kasir.stok.update');

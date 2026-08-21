@@ -17,7 +17,7 @@
         $badgeClass = 'bg-primary';
         $badgeText  = 'Segera Hadir';
     } else {
-        // $isEnded — tanggal memang sudah lewat
+        // $isEnded - tanggal memang sudah lewat
         $badgeClass = 'bg-secondary';
         $badgeText  = 'Sudah Selesai';
     }

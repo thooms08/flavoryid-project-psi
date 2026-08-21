@@ -302,7 +302,7 @@
                                     </h2>
                                     <div id="collapseHarga3" class="accordion-collapse collapse" data-bs-parent="#accordionHarga">
                                         <div class="accordion-body">
-                                            Flavory.id menawarkan paket yang sangat terjangkau. Saat ini tersedia <strong>Paket Eksklusif (Bulanan) seharga Rp 67.000</strong> dan <strong>Paket Super (Tahunan) seharga Rp 880.000</strong>. Harga ini sudah mencakup seluruh fitur All-in-One, termasuk MineAI dan Prediksi Bisnis, tanpa biaya tersembunyi.
+                                            Flavory.id menawarkan paket yang sangat terjangkau. Saat ini tersedia <strong>Paket Eksklusif (Bulanan) seharga Rp 70.000</strong> dan <strong>Paket Super (Selamanya) seharga Rp 880.000</strong>. Harga ini sudah mencakup seluruh fitur All-in-One, termasuk MineAI dan Prediksi Bisnis, tanpa biaya tersembunyi. Paket Super cukup bayar sekali dan aktif selamanya.
                                         </div>
                                     </div>
                                 </div>

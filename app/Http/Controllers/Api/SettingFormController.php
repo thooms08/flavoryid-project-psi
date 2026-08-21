@@ -54,7 +54,7 @@ class SettingFormController extends Controller
     {
         try {
             $validated = $request->validate([
-                'field'  => 'required|string|in:nama,whatsapp,meja,keterangan,diskon,bukti_pembayaran',
+                'field'  => 'required|string|in:nama,whatsapp,meja,keterangan,diskon,bukti_pembayaran,voucher',
                 'status' => 'required|boolean', // 1 atau 0 (true/false)
             ]);
 

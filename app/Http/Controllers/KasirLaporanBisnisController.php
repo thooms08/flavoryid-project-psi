@@ -105,7 +105,8 @@ class KasirLaporanBisnisController extends Controller
                     'id', 'partner_id', 'uuid', 'nomor_pesanan',
                     'nama_pelanggan', 'no_whatsapp', 'no_meja',
                     'metode_bayar', 'total_harga', 'nominal_diskon',
-                    'jenis_diskon', 'uang_bayar', 'kembalian',
+                    'jenis_diskon', 'kode_voucher', 'nilai_voucher',
+                    'uang_bayar', 'kembalian',
                     'bukti_bayar', 'keterangan', 'created_at',
                 ])
                 ->where('partner_id', $partnerId)

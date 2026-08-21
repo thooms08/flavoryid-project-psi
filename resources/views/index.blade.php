@@ -31,7 +31,7 @@
         transform: translateY(0);
     }
 
-    /* ══ HERO SECTION — Light Premium 3D ══ */
+    /* ══ HERO SECTION - Light Premium 3D ══ */
     .hero-section {
         position: relative;
         min-height: 100vh;
@@ -113,7 +113,7 @@
     }
     .hero-badge-text { font-size: .72rem; font-weight: 800; letter-spacing: .4px; color: var(--primary-orange); }
 
-    /* Title — proporsional */
+    /* Title - proporsional */
     .hero-title {
         font-size: clamp(1.9rem, 3.5vw, 2.8rem);
         line-height: 1.2;
@@ -218,7 +218,7 @@
         align-items: center;
     }
 
-    /* Gambar/GIF — penuh, tidak ada overlay */
+    /* Gambar/GIF - penuh, tidak ada overlay */
     .hero-main-card {
         position: relative;
         border-radius: 20px;
@@ -732,7 +732,7 @@
                                 </div>
                             </div>
 
-                            {{-- Gambar/GIF — BERSIH, tidak ada overlay apapun --}}
+                            {{-- Gambar/GIF - BERSIH, tidak ada overlay apapun --}}
                             <div class="hero-main-card">
                                 <img src="{{asset('assets/hero.png')}}"
                                      onerror="this.src='https://placehold.co/700x470/fff4ec/ff6a00?text=Dashboard+Flavory.id'"
@@ -1030,10 +1030,10 @@
                     <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.3s;">
                         <article class="pricing-card text-center">
                             <h3 class="h4 fw-bold text-dark mb-1">Paket Pebisnis Sukses</h3>
-                            <p class="text-muted small mb-3">Lebih hemat untuk jangka panjang</p>
+                            <p class="text-muted small mb-3">Bayar sekali, aktif selamanya</p>
                             <div class="mb-4">
-                                <span class="fw-bold text-dark mb-0 display-6 d-block">Rp 840.000</span>
-                                <span class="text-muted">/ 1 Tahun <span class="badge bg-success-subtle text-success fw-bold ms-1" style="font-size:.65rem;">Hemat 2 Bulan</span></span>
+                                <span class="fw-bold text-dark mb-0 display-6 d-block">Rp 880.000</span>
+                                <span class="text-muted">/ Selamanya <span class="badge bg-success-subtle text-success fw-bold ms-1" style="font-size:.65rem;">Bayar Sekali</span></span>
                             </div>
                             
                             <ul class="check-list text-start mb-4 border-top pt-4">
@@ -1045,9 +1045,10 @@
                                 <li><i class="bi bi-check2 text-success"></i> Cetak struk & kitchen ticket</li>
                                 <li><i class="bi bi-check2 text-success"></i> Pembaruan sistem otomatis</li>
                                 <li><i class="bi bi-check2 text-success"></i> Prioritas dukungan teknis CS</li>
+                                <li><i class="bi bi-infinity text-success"></i> <strong>Aktif Selamanya, tidak ada perpanjangan</strong></li>
                             </ul>
                             <div class="mt-auto">
-                                <a href="{{ route('register') ?? '#' }}" class="btn btn-outline-success w-100 fw-bold py-2">Pilih Paket Tahunan</a>
+                                <a href="{{ route('register') ?? '#' }}" class="btn btn-outline-success w-100 fw-bold py-2">Pilih Paket Selamanya</a>
                             </div>
                         </article>
                     </div>
@@ -1374,7 +1375,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // ═══════════════════════════════════════════════════════
-    //  WORD BLUR REVEAL  +  ROTATING PHRASES  — looping
+    //  WORD BLUR REVEAL  +  ROTATING PHRASES  - looping
     // ═══════════════════════════════════════════════════════
 
     const col      = document.querySelector('.hero-reveal-col');
@@ -1415,7 +1416,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-                // Misal <span> untuk warna — bungkus seluruh elemennya
+                // Misal <span> untuk warna - bungkus seluruh elemennya
                 node.textContent.split(/(\s+)/).forEach(part => {
                     if (/^\s+$/.test(part)) {
                         rotLine.appendChild(document.createTextNode(' '));
@@ -1451,7 +1452,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ── wrapWords: pecah text node biasa jadi <span class="w"> ──
-    // Tidak skip BR — cukup skip elemen yang sudah punya class .w atau #hero-rotating-line
+    // Tidak skip BR - cukup skip elemen yang sudah punya class .w atau #hero-rotating-line
     function wrapWords(el) {
         [...el.childNodes].forEach(node => {
             if (node.nodeType === Node.TEXT_NODE) {
@@ -1513,10 +1514,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function resetStatic() {
-        // Tidak reset static words — hanya rotating line yang berubah
+        // Tidak reset static words - hanya rotating line yang berubah
     }
 
-    // ── Loop utama — hanya rotating line yang berganti ──
+    // ── Loop utama - hanya rotating line yang berganti ──
     function runLoop() {
         // Render phrase berikutnya
         renderPhrase(PHRASES[phraseIndex]);
@@ -1542,7 +1543,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ═══════════════════════════════════════════════════════
-    //  SCROLL ANIMATION — section di bawah hero
+    //  SCROLL ANIMATION - section di bawah hero
     // ═══════════════════════════════════════════════════════
     const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
@@ -1558,7 +1559,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // ══════════════════════════════════════════════════════════
-    //  POPUP EVENT DINAMIS — tampil 1.2 detik setelah halaman siap
+    //  POPUP EVENT DINAMIS - tampil 1.2 detik setelah halaman siap
     //  Disimpan di sessionStorage: tidak muncul lagi 1 hari penuh
     // ══════════════════════════════════════════════════════════
     (function () {

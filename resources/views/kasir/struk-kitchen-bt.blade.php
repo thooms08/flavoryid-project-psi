@@ -9,7 +9,7 @@
     @php
         $width = 32; // Standar 58mm
 
-        // 1. Header Dapur — tampilkan nama outlet & nomor meja agar koki tahu dari mana pesanan
+        // 1. Header Dapur - tampilkan nama outlet & nomor meja agar koki tahu dari mana pesanan
         $namaOutlet = strtoupper($outlet->nama_outlet ?? 'OUTLET');
         $header  = str_repeat("=", $width) . "\n";
         $header .= str_pad("** PESANAN DAPUR **", $width, " ", STR_PAD_BOTH) . "\n";

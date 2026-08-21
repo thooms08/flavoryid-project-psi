@@ -144,13 +144,15 @@
                     <label class="w-100 h-100">
                         <input type="radio" name="paket" value="super" class="d-none package-radio">
                         <div class="package-card p-4 text-center h-100 d-flex flex-column justify-content-center" id="card-super">
-                            <h4 class="fw-bold text-dark mb-2 mt-2">SUPER</h4>
+                            <span class="badge bg-warning text-dark mb-2 align-self-center px-3 py-1 rounded-pill" style="font-size: 0.7rem; letter-spacing: 0.5px;">TERBAIK</span>
+                            <h4 class="fw-bold text-dark mb-2">SUPER</h4>
                             <h2 class="fw-extrabold mb-0 text-orange">Rp 880.000</h2>
-                            <span class="text-muted small">/ tahun</span>
+                            <span class="text-muted small">/ selamanya</span>
                             <hr class="w-50 mx-auto my-3 text-muted opacity-25">
                             <ul class="list-unstyled small text-muted text-start mb-0 px-md-3">
                                 <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Semua Fitur Paket Eksklusif</li>
-                                <li><i class="bi bi-check-circle-fill text-success me-2"></i> Bebas Biaya Admin Transaksi</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Bebas Biaya Admin Transaksi</li>
+                                <li><i class="bi bi-infinity text-orange me-2"></i> Bayar Sekali, Aktif Selamanya</li>
                             </ul>
                         </div>
                     </label>

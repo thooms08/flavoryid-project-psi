@@ -39,7 +39,12 @@ class ExpenseController extends Controller
             $galleryBukti = BuktiPengeluaran::whereIn('pengeluaran_id', $pengeluarans->pluck('id'))
                 ->get()
                 ->unique('path_bukti')
-                ->pluck('path_bukti');
+                ->values()
+                ->map(fn($b) => [
+                    'path_bukti'  => $b->path_bukti,
+                    'kode'        => $b->kode,
+                    'created_at'  => $b->created_at,
+                ]);
 
             return response()->json([
                 'success' => true,
@@ -66,6 +71,7 @@ class ExpenseController extends Controller
                 $kategori = $request->kategori;
 
                 $pathBukti = null;
+                $kodeBukti = null;
                 // Logika Penyimpanan Gambar
                 if ($request->hasFile('bukti')) {
                     $file = $request->file('bukti');
@@ -74,6 +80,8 @@ class ExpenseController extends Controller
                     // Disk 'local' root-nya sudah storage/app/private — cukup subfolder langsung
                     $file->storeAs('pengeluaran', $filename);
                     $pathBukti = $filename;
+                    // Generate kode unik 6 karakter (alfanumerik uppercase) sebagai label penanda
+                    $kodeBukti = strtoupper(substr(str_replace(['+', '/', '='], '', base64_encode(random_bytes(6))), 0, 6));
                 }
 
                 // Decode JSON dari flutter ke array PHP
@@ -95,7 +103,8 @@ class ExpenseController extends Controller
                         if ($pathBukti) {
                             BuktiPengeluaran::create([
                                 'pengeluaran_id' => $pengeluaran->id,
-                                'path_bukti'     => $pathBukti
+                                'path_bukti'     => $pathBukti,
+                                'kode'           => $kodeBukti,
                             ]);
                         }
                     }

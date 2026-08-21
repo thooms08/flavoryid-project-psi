@@ -184,10 +184,15 @@
                                     </button>
                                 </div>
 
-                                <form action="{{ route('admin.partner.set_jatuh_tempo', $partner->uuid) }}" method="POST" class="flex-grow-1">
-                                    @csrf @method('PATCH')
-                                    <button type="submit" class="btn btn-cyber-warning btn-sm w-100 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">JATUH TEMPO</button>
-                                </form>
+                                <button type="button"
+                                    class="btn btn-cyber-warning btn-sm flex-grow-1 fw-bold btn-confirm-status"
+                                    style="font-size: 0.75rem; letter-spacing: 1px;"
+                                    data-action="{{ route('admin.partner.set_jatuh_tempo', $partner->uuid) }}"
+                                    data-name="{{ $partner->nama_manager }}"
+                                    data-paket="{{ $partner->outlet->mediaQr->paket ?? '' }}"
+                                    data-target="jatuh_tempo">
+                                    JATUH TEMPO
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -232,8 +237,8 @@
                         </div>
                         <div class="form-check p-3 rounded mb-0" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,229,255,0.1); cursor: pointer;" onclick="document.getElementById('paketSuper').click();">
                             <input class="form-check-input ms-0 me-2 pkg-checkbox" type="checkbox" name="paket" id="paketSuper" value="super">
-                            <label class="form-check-label text-white fw-bold" for="paketSuper" onclick="event.stopPropagation();">Super (Tahunan)</label>
-                            <small class="d-block text-secondary mt-1">Akses penuh tahunan untuk fitur-fitur terlengkap.</small>
+                            <label class="form-check-label text-white fw-bold" for="paketSuper" onclick="event.stopPropagation();">Super (Selamanya)</label>
+                            <small class="d-block text-secondary mt-1">Akses penuh selamanya, bayar sekali untuk fitur terlengkap.</small>
                         </div>
                     </div>
                 </div>
@@ -250,6 +255,7 @@
 @stack('scripts')
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -339,7 +345,57 @@
             });
         });
 
-        // 6. LOGIKA MODAL AKTIFKAN & CHECKBOX EKSKLUSIF
+        // 6. SWEETALERT KONFIRMASI JATUH TEMPO + PROTEKSI PAKET SUPER
+        document.querySelectorAll('.btn-confirm-status').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const action = this.dataset.action;
+                const name   = this.dataset.name;
+                const paket  = (this.dataset.paket || '').toLowerCase();
+
+                // --- BLOKIR jika paket super ---
+                if (paket === 'super') {
+                    Swal.fire({
+                        background: '#0B1120',
+                        color: '#F8FAFC',
+                        icon: 'error',
+                        iconColor: '#00E5FF',
+                        title: '<span style="color:#00E5FF;letter-spacing:1px;">AKSI DITOLAK</span>',
+                        html: `<span style="color:#94A3B8;">Partner <strong style="color:#F8FAFC;">${name}</strong> menggunakan <span style="color:#00E5FF;font-weight:700;">Paket Super (Selamanya)</span>.<br>Status tidak dapat diubah menjadi jatuh tempo.</span>`,
+                        confirmButtonText: 'MENGERTI',
+                        confirmButtonColor: '#00E5FF',
+                        customClass: { confirmButton: 'fw-bold' }
+                    });
+                    return;
+                }
+
+                // --- Konfirmasi normal ---
+                Swal.fire({
+                    background: '#0B1120',
+                    color: '#F8FAFC',
+                    icon: 'warning',
+                    iconColor: '#FCD34D',
+                    title: '<span style="color:#FCD34D;letter-spacing:1px;">KONFIRMASI JATUH TEMPO</span>',
+                    html: `<span style="color:#94A3B8;">Apakah Anda yakin ingin mengubah status partner <strong style="color:#F8FAFC;">${name}</strong> menjadi <strong style="color:#FCD34D;">JATUH TEMPO</strong>?</span>`,
+                    showCancelButton: true,
+                    confirmButtonText: 'YA, JATUH TEMPO',
+                    cancelButtonText: 'BATAL',
+                    confirmButtonColor: '#F59E0B',
+                    cancelButtonColor: 'rgba(148,163,184,0.2)',
+                    customClass: { confirmButton: 'fw-bold', cancelButton: 'fw-bold' }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = action;
+                        form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}"><input type="hidden" name="_method" value="PATCH">';
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // 7. LOGIKA MODAL AKTIFKAN & CHECKBOX EKSKLUSIF
         const triggerBtns = document.querySelectorAll('.btn-trigger-aktif');
         const modalElement = document.getElementById('activationModal');
         if (modalElement && triggerBtns.length > 0) {

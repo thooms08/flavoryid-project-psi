@@ -275,7 +275,8 @@
       if (_refCount === 0) window.showLoading('Memuat halaman…');
     });
 
-    document.addEventListener('submit', function () {
+    document.addEventListener('submit', function (e) {
+      if (e.target && e.target.hasAttribute('data-no-loading')) return;
       if (_refCount === 0) window.showLoading('Memproses…');
     });
 

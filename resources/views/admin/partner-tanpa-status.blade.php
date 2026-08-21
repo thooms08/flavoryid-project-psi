@@ -234,8 +234,8 @@
                         </div>
                         <div class="form-check p-3 rounded mb-0" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,229,255,0.1); cursor: pointer;" onclick="document.getElementById('paketSuper').click();">
                             <input class="form-check-input ms-0 me-2 pkg-checkbox" type="checkbox" name="paket" id="paketSuper" value="super">
-                            <label class="form-check-label text-white fw-bold" for="paketSuper" onclick="event.stopPropagation();">Super (Tahunan)</label>
-                            <small class="d-block text-secondary mt-1">Akses penuh tahunan untuk fitur-fitur terlengkap.</small>
+                            <label class="form-check-label text-white fw-bold" for="paketSuper" onclick="event.stopPropagation();">Super (Selamanya)</label>
+                            <small class="d-block text-secondary mt-1">Akses penuh selamanya, bayar sekali untuk fitur terlengkap.</small>
                         </div>
                     </div>
                 </div>

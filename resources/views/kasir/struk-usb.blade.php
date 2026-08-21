@@ -168,6 +168,21 @@
                     <td class="text-right" style="padding-bottom: 4px;">-{{ number_format($potongan, 0, ',', '.') }}</td>
                 </tr>
             @endif
+
+            @if(!empty($order->kode_voucher) && $order->nilai_voucher > 0)
+                @if(!(isset($order->nominal_diskon) && $order->nominal_diskon > 0))
+                    {{-- Tampilkan subtotal hanya jika blok diskon belum menampilkannya --}}
+                    <tr style="font-weight: normal; font-size: 12px;">
+                        <td>SUBTOTAL</td>
+                        <td class="text-right">{{ number_format($subTotalRaw, 0, ',', '.') }}</td>
+                    </tr>
+                @endif
+                <tr style="font-weight: normal; font-size: 12px; color: #198754;">
+                    <td style="padding-bottom: 4px;">VOUCHER</td>
+                    <td class="text-right" style="padding-bottom: 4px;">-{{ number_format($order->nilai_voucher, 0, ',', '.') }}</td>
+                </tr>
+            @endif
+
             <tr class="fw-bold">
                 <td>TOTAL</td>
                 <td class="text-right">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>

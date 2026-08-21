@@ -378,7 +378,7 @@
                         </ul>
                     </li>
 
-                    {{-- Event — halaman standalone, relevan untuk akuisisi --}}
+                    {{-- Event - halaman standalone, relevan untuk akuisisi --}}
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('event.*') ? 'active' : '' }}"
                            href="{{ route('event.index') }}">

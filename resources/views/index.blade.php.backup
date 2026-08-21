@@ -66,7 +66,7 @@
         will-change: opacity, filter, transform;
     }
 
-    /* Rotating line — container tidak berubah, konten di dalamnya yang swap */
+    /* Rotating line - container tidak berubah, konten di dalamnya yang swap */
     #hero-rotating-line {
         display: block;
         min-height: 1.5em;   /* lebih tinggi agar frasa panjang tidak shift layout */
@@ -92,7 +92,7 @@
         transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
     }
 
-    /* State visible — ditambah JS per kata */
+    /* State visible - ditambah JS per kata */
     .w.visible {
         opacity: 1;
         filter: blur(0);
@@ -104,7 +104,7 @@
         transform: translateY(0);
     }
 
-    /* State exit — transisi keluar lebih cepat */
+    /* State exit - transisi keluar lebih cepat */
     .w.hidden {
         opacity: 0;
         filter: blur(6px);
@@ -948,7 +948,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // ═══════════════════════════════════════════════════════
-    //  WORD BLUR REVEAL  +  ROTATING PHRASES  — looping
+    //  WORD BLUR REVEAL  +  ROTATING PHRASES  - looping
     // ═══════════════════════════════════════════════════════
 
     const col      = document.querySelector('.hero-reveal-col');
@@ -990,7 +990,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-                // Misal <span> untuk warna — bungkus seluruh elemennya
+                // Misal <span> untuk warna - bungkus seluruh elemennya
                 node.textContent.split(/(\s+)/).forEach(part => {
                     if (/^\s+$/.test(part)) {
                         rotLine.appendChild(document.createTextNode(' '));
@@ -1026,7 +1026,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ── wrapWords: pecah text node biasa jadi <span class="w"> ──
-    // Tidak skip BR — cukup skip elemen yang sudah punya class .w atau #hero-rotating-line
+    // Tidak skip BR - cukup skip elemen yang sudah punya class .w atau #hero-rotating-line
     function wrapWords(el) {
         [...el.childNodes].forEach(node => {
             if (node.nodeType === Node.TEXT_NODE) {
@@ -1088,10 +1088,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function resetStatic() {
-        // Tidak reset static words — hanya rotating line yang berubah
+        // Tidak reset static words - hanya rotating line yang berubah
     }
 
-    // ── Loop utama — hanya rotating line yang berganti ──
+    // ── Loop utama - hanya rotating line yang berganti ──
     function runLoop() {
         // Render phrase berikutnya
         renderPhrase(PHRASES[phraseIndex]);
@@ -1117,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ═══════════════════════════════════════════════════════
-    //  SCROLL ANIMATION — section di bawah hero
+    //  SCROLL ANIMATION - section di bawah hero
     // ═══════════════════════════════════════════════════════
     const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {

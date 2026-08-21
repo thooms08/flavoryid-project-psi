@@ -108,7 +108,7 @@
 
                 <div class="d-flex justify-content-end mt-4">
                     <button type="submit" id="btnSubmitAdd" class="btn btn-orange btn-lg rounded-4 px-5 fw-bold shadow hover-scale d-flex align-items-center gap-2">
-                        SIMPAN SEMUA MENU <i class="bi bi-send-check-fill"></i>
+                        SIMPAN SEMUA MENU <i class="bi bi-save"></i>
                     </button>
                 </div>
             </div>

@@ -111,10 +111,13 @@
     <div class="row g-4 mb-5 align-items-stretch">
         <div class="col-lg-6">
             <div class="img-outlet-wrapper">
-                @if($outlet->foto_outlet)
-                   <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
+                @if($outlet->foto_outlet && file_exists(public_path('assets/outlet/' . $outlet->foto_outlet)))
+                    <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
                 @else
-                    <div class="d-flex justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 350px;"><i class="bi bi-images text-secondary" style="font-size: 5rem; opacity: 0.5;"></i></div>
+                    <div class="d-flex flex-column justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 350px;">
+                        <i class="bi bi-shop text-secondary" style="font-size: 5rem; opacity: 0.4;"></i>
+                        <span class="text-muted mt-2" style="font-size: 0.85rem; opacity: 0.6;">Foto outlet belum tersedia</span>
+                    </div>
                 @endif
             </div>
         </div>
@@ -277,9 +280,29 @@
                 </div>
             @endif
 
-            <div class="d-flex justify-content-between align-items-center mb-3 pt-2 border-top">
-                <span class="fw-bold text-muted small">TOTAL</span>
-                <span class="fs-4 fw-bolder text-orange" id="cartTotalView">Rp 0</span>
+            @if(isset($pengaturan) && $pengaturan->voucher)
+                <div class="mb-3">
+                    <input type="text" id="custVoucher" class="form-control form-control-sm form-control-custom"
+                        maxlength="6" placeholder="Kode Voucher 6 Digit"
+                        autocomplete="off"
+                        style="text-transform:uppercase;letter-spacing:3px;font-family:'Courier New',monospace;font-weight:700;font-size:1rem;">
+                    <div id="voucher-alert-outlet" class="mt-1" style="font-size:0.78rem;display:none;"></div>
+                </div>
+            @endif
+
+            <div class="d-flex flex-column mb-3 pt-2 border-top gap-1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold text-muted small">Subtotal</span>
+                    <span class="fw-bold text-dark small" id="cartSubtotalView">Rp 0</span>
+                </div>
+                <div id="voucher-summary-outlet" class="d-flex justify-content-between align-items-center" style="display:none!important;">
+                    <span class="small text-muted">Voucher <span id="voucher-kode-outlet" class="fw-bold text-success" style="font-family:'Courier New',monospace;letter-spacing:1px;font-size:0.8rem;"></span></span>
+                    <span class="fw-bold text-success small" id="voucher-potongan-outlet">- Rp 0</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-muted small">TOTAL</span>
+                    <span class="fs-4 fw-bolder text-orange" id="cartTotalView">Rp 0</span>
+                </div>
             </div>
 
             <button type="button" class="btn btn-orange w-100 py-3 rounded-pill" onclick="prosesPesanan()">
@@ -297,14 +320,110 @@
     let cart = [];
     let tempSelectedMenu = null; // Menyimpan sementara menu yang sedang dipilih variannya
     let variantModalInstance = null;
-    
-    const assetUrl = "{{ asset('') }}"; 
+
+    // --- STATE VOUCHER ---
+    window.activeVoucherOutlet = null; // { kode, jenis_potongan, nominal_potongan }
+
+    const assetUrl = "{{ asset('') }}";
     const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka).replace('Rp', 'Rp ').trim();
+
+    // URL apply voucher — gunakan route helper agar tidak salah path
+    const VOUCHER_APPLY_URL = "{{ route('outlet.voucher.apply', $outlet->page_name) }}";
 
     document.addEventListener("DOMContentLoaded", function () {
         // Inisialisasi modal BS
         variantModalInstance = new bootstrap.Modal(document.getElementById('variantModal'));
+
+        // ── Real-time AJAX cek voucher (debounce 500ms setelah 6 karakter) ─────
+        const custVoucher = document.getElementById('custVoucher');
+        if (custVoucher) {
+            let voucherTimer = null;
+
+            custVoucher.addEventListener('input', function () {
+                const pos = this.selectionStart;
+                this.value = this.value.toUpperCase();
+                this.setSelectionRange(pos, pos);
+
+                const kode = this.value.trim();
+
+                // Reset state jika kode berubah
+                if (window.activeVoucherOutlet && window.activeVoucherOutlet.kode !== kode) {
+                    window.activeVoucherOutlet = null;
+                    renderCart();
+                }
+                hideVoucherAlertOutlet();
+                clearTimeout(voucherTimer);
+
+                if (kode.length === 0) return;
+
+                if (kode.length < 6) {
+                    showVoucherAlertOutlet('secondary', 'Ketik ' + (6 - kode.length) + ' karakter lagi...');
+                    return;
+                }
+
+                // Tepat 6 karakter — cek setelah 500ms diam
+                voucherTimer = setTimeout(() => {
+                    applyVoucherOutlet(kode);
+                }, 500);
+            });
+        }
     });
+
+    function applyVoucherOutlet(kode) {
+        showVoucherAlertOutlet('secondary', '<span class="spinner-border spinner-border-sm me-1"></span> Memeriksa kode voucher...');
+
+        fetch(VOUCHER_APPLY_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ kode_voucher: kode })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.valid) {
+                window.activeVoucherOutlet = {
+                    kode: data.kode_voucher,
+                    jenis_potongan: data.jenis_potongan,
+                    nominal_potongan: data.nominal_potongan,
+                };
+                showVoucherAlertOutlet('success', '<i class="bi bi-check-circle-fill me-1"></i>' + data.message);
+            } else {
+                window.activeVoucherOutlet = null;
+                showVoucherAlertOutlet('danger', '<i class="bi bi-x-circle-fill me-1"></i>' + data.message);
+            }
+            renderCart();
+        })
+        .catch(() => {
+            window.activeVoucherOutlet = null;
+            showVoucherAlertOutlet('danger', 'Tidak dapat memeriksa voucher. Periksa koneksi internet Anda.');
+            renderCart();
+        });
+    }
+
+    function removeVoucherOutlet() {
+        window.activeVoucherOutlet = null;
+        const kodeEl = document.getElementById('custVoucher');
+        if (kodeEl) { kodeEl.value = ''; kodeEl.readOnly = false; }
+        hideVoucherAlertOutlet();
+        renderCart();
+    }
+
+    function showVoucherAlertOutlet(type, html) {
+        const el = document.getElementById('voucher-alert-outlet');
+        if (!el) return;
+        el.className = 'alert alert-' + type + ' py-1 px-2 mt-1';
+        el.style.fontSize = '0.78rem';
+        el.style.borderRadius = '8px';
+        el.innerHTML = html;
+        el.style.display = 'block';
+    }
+    function hideVoucherAlertOutlet() {
+        const el = document.getElementById('voucher-alert-outlet');
+        if (el) el.style.display = 'none';
+    }
 
     // --- LOGIC KLIK MENU ---
     function handleMenuClick(menu) {
@@ -483,10 +602,35 @@
         }
 
         badge.innerText = totalItem;
-        totalView.innerText = formatRupiah(totalHarga);
-    }
 
-    // --- PROSES SIMPAN ORDER KE BACKEND ---
+        // Update subtotal view
+        const subtotalEl = document.getElementById('cartSubtotalView');
+        if (subtotalEl) subtotalEl.innerText = formatRupiah(totalHarga);
+
+        // Hitung potongan voucher
+        let nilaiVoucher = 0;
+        const voucherRow   = document.getElementById('voucher-summary-outlet');
+        const voucherKode  = document.getElementById('voucher-kode-outlet');
+        const voucherPot   = document.getElementById('voucher-potongan-outlet');
+
+        if (window.activeVoucherOutlet && totalHarga > 0) {
+            const v = window.activeVoucherOutlet;
+            if (v.jenis_potongan === '%') {
+                nilaiVoucher = (totalHarga * Math.min(v.nominal_potongan, 100)) / 100;
+            } else {
+                nilaiVoucher = Math.min(v.nominal_potongan, totalHarga);
+            }
+            if (voucherRow)  voucherRow.style.display = 'flex';
+            if (voucherKode) voucherKode.textContent = v.kode;
+            if (voucherPot)  voucherPot.innerText = '- ' + formatRupiah(nilaiVoucher);
+        } else {
+            if (voucherRow)  voucherRow.style.display = 'none';
+            if (voucherKode) voucherKode.textContent = '';
+            if (voucherPot)  voucherPot.innerText = '- Rp 0';
+        }
+
+        totalView.innerText = formatRupiah(totalHarga - nilaiVoucher);
+    }
     async function prosesPesanan() {
         if (cart.length === 0) return Swal.fire('Oops', 'Keranjang masih kosong', 'error');
 
@@ -502,6 +646,7 @@
             no_meja: document.getElementById('custTable') ? document.getElementById('custTable').value : '',
             no_whatsapp: document.getElementById('custWa') ? document.getElementById('custWa').value : '',
             keterangan: document.getElementById('custNotes') ? document.getElementById('custNotes').value : '',
+            kode_voucher: window.activeVoucherOutlet ? window.activeVoucherOutlet.kode : null,
             cart: cart // Mengirim array keranjang yang sekarang sudah berisi properti variant_name & variant_harga
         };
 

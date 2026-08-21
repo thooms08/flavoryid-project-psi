@@ -347,7 +347,7 @@
                                     <select name="paket" x-model="paket" class="w-full p-3 md:p-4 bg-white border-2 border-slate-100 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 font-bold text-slate-700 text-sm md:text-base cursor-pointer">
                                         <option value="gratis">Coba Gratis 30 Hari (Rp 0)</option>
                                         <option value="eksklusif">★ Paket Eksklusif (Rp 70.000 / Bulan)</option>
-                                        <option value="super">♛ Paket Super (Rp  840.000 / Tahun)</option>
+                                        <option value="super">♛ Paket Super (Rp 880.000 / Selamanya)</option>
                                     </select>
                                 </div>
 

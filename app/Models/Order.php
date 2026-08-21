@@ -12,7 +12,8 @@ class Order extends Model
     protected $fillable = [
         'partner_id', 'offline_id', 'kode_struk','nomor_pesanan', 'nama_pelanggan', 'no_whatsapp', 
         'no_meja', 'keterangan', 'total_harga', 'uang_bayar', 
-        'metode_bayar', 'kembalian', 'status','bukti_bayar', 'nominal_diskon', 'jenis_diskon'
+        'metode_bayar', 'kembalian', 'status','bukti_bayar', 'nominal_diskon', 'jenis_diskon',
+        'kode_voucher', 'nilai_voucher'
     ];
 
     public function partner(): BelongsTo {

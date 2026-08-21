@@ -20,10 +20,10 @@
         $namaOutlet = strtoupper($outlet->nama_outlet ?? 'OUTLET');
         $alamatOutlet = $outlet->alamat ?? '';
 
-        // Baris nama outlet — di-center
+        // Baris nama outlet - di-center
         $header = str_pad($namaOutlet, $width, " ", STR_PAD_BOTH) . "\n";
 
-        // Baris alamat (hanya jika ada) — potong agar muat 32 karakter
+        // Baris alamat (hanya jika ada) - potong agar muat 32 karakter
         if (!empty($alamatOutlet)) {
             $alamatTrimmed = substr($alamatOutlet, 0, $width);
             $header .= str_pad($alamatTrimmed, $width, " ", STR_PAD_BOTH) . "\n";
@@ -79,6 +79,16 @@
             
             // Tampilkan baris Diskon
             $content .= $formatLine($labelDiskon, "-" . number_format($potongan, 0, ',', '.')) . "\n";
+        }
+
+        // --- TAMBAHAN LOGIKA VOUCHER ---
+        if (!empty($order->kode_voucher) && $order->nilai_voucher > 0) {
+            if (!(isset($order->nominal_diskon) && $order->nominal_diskon > 0)) {
+                // Tampilkan subtotal jika belum ditampilkan oleh blok diskon
+                $content .= $formatLine("SUBTOTAL", number_format($subTotalRaw, 0, ',', '.')) . "\n";
+            }
+            $labelVoucher = "VOUCHER ";
+            $content .= $formatLine($labelVoucher, "-" . number_format($order->nilai_voucher, 0, ',', '.')) . "\n";
         }
         // ------------------------------
 

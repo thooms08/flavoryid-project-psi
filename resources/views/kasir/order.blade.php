@@ -501,6 +501,16 @@
                     </div>
                     @endif
 
+                    @if($pengaturan->voucher)
+                    <div class="col-12 mb-3">
+                        <label class="form-label-custom">Kode Voucher</label>
+                        <input type="text" id="cust_voucher" class="form-control form-control-custom"
+                            placeholder="Ketik 6 digit kode" maxlength="6"
+                            autocomplete="off" style="text-transform:uppercase;letter-spacing:3px;font-family:'Courier New',monospace;font-weight:700;font-size:1.05rem;">
+                        <div id="voucher-alert" class="mt-2" style="font-size:0.82rem;display:none;"></div>
+                    </div>
+                    @endif
+
                     @if($pengaturan->meja)
                     <div class="col-6 mb-3">
                         <label class="form-label-custom">No. Meja</label>
@@ -532,9 +542,15 @@
                     <span class="text-muted small">Total Harga</span>
                     <span class="fw-bold text-dark small" id="subtotal-view">Rp 0</span>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
                     <span class="text-muted small">Diskon <span id="discount-label-view" class="text-danger fw-bold"></span></span>
                     <span class="fw-bold text-danger small" id="discount-view">- Rp 0</span>
+                </div>
+                @endif
+                @if($pengaturan->voucher)
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" id="voucher-summary-row" style="display:none!important;">
+                    <span class="text-muted small">Voucher <span id="voucher-kode-view" class="fw-bold text-success" style="font-family:'Courier New',monospace;letter-spacing:1px;"></span></span>
+                    <span class="fw-bold text-success small" id="voucher-view">- Rp 0</span>
                 </div>
                 @endif
                 <div class="d-flex justify-content-between align-items-center">
@@ -632,11 +648,97 @@
 <script>
     let cart = [];
     let editData = null;
-    window.editOrderId = null; 
+    window.editOrderId = null;
+
+    // ─── State voucher aktif ─────────────────────────────────────────────────
+    window.activeVoucher = null; // { kode, jenis_potongan, nominal_potongan }
 
     // Event listener dinamis untuk kolom diskon
     document.getElementById('cust_discount')?.addEventListener('input', renderCart);
     document.getElementById('cust_discount_type')?.addEventListener('change', renderCart);
+
+    // ─── Real-time AJAX cek voucher (debounce 500ms setelah 6 karakter) ──────
+    let voucherDebounceTimer = null;
+
+    document.getElementById('cust_voucher')?.addEventListener('input', function () {
+        const pos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(pos, pos);
+
+        const kode = this.value.trim();
+
+        // Reset state jika kode berubah
+        if (window.activeVoucher && window.activeVoucher.kode !== kode) {
+            window.activeVoucher = null;
+            renderCart();
+        }
+        hideVoucherAlert();
+        clearTimeout(voucherDebounceTimer);
+
+        if (kode.length === 0) return;
+
+        if (kode.length < 6) {
+            showVoucherAlert('secondary', 'Ketik ' + (6 - kode.length) + ' karakter lagi...');
+            return;
+        }
+
+        // Tepat 6 karakter — fetch setelah 500ms diam
+        voucherDebounceTimer = setTimeout(() => {
+            applyVoucherKasir(kode);
+        }, 500);
+    });
+
+    function applyVoucherKasir(kode) {
+        showVoucherAlert('secondary', '<span class="spinner-border spinner-border-sm me-1"></span> Memeriksa kode voucher...');
+
+        fetch('{{ route("kasir.voucher.apply") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+            body: JSON.stringify({ kode_voucher: kode })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.valid) {
+                window.activeVoucher = {
+                    kode: data.kode_voucher,
+                    jenis_potongan: data.jenis_potongan,
+                    nominal_potongan: data.nominal_potongan,
+                };
+                showVoucherAlert('success', '<i class="bi bi-check-circle-fill me-1"></i>' + data.message);
+            } else {
+                window.activeVoucher = null;
+                showVoucherAlert('danger', '<i class="bi bi-x-circle-fill me-1"></i>' + data.message);
+            }
+            renderCart();
+        })
+        .catch(() => {
+            window.activeVoucher = null;
+            showVoucherAlert('danger', 'Tidak dapat memeriksa voucher. Periksa koneksi internet Anda.');
+            renderCart();
+        });
+    }
+
+    function removeVoucher() {
+        window.activeVoucher = null;
+        const kodeEl = document.getElementById('cust_voucher');
+        if (kodeEl) { kodeEl.value = ''; kodeEl.readOnly = false; }
+        hideVoucherAlert();
+        renderCart();
+    }
+
+    function showVoucherAlert(type, html) {
+        const el = document.getElementById('voucher-alert');
+        if (!el) return;
+        el.className = 'alert alert-' + type + ' py-1 px-2 mt-2';
+        el.style.fontSize = '0.82rem';
+        el.style.borderRadius = '8px';
+        el.innerHTML = html;
+        el.style.display = 'block';
+    }
+    function hideVoucherAlert() {
+        const el = document.getElementById('voucher-alert');
+        if (el) el.style.display = 'none';
+    }
 
     const localEditStr = localStorage.getItem('edit_order_data');
     if (localEditStr) {
@@ -646,6 +748,31 @@
         // Isi form discount agar langsung dibaca oleh fungsi renderCart()
         if (document.getElementById('cust_discount')) document.getElementById('cust_discount').value = editData.nominal_diskon || '';
         if (document.getElementById('cust_discount_type')) document.getElementById('cust_discount_type').value = editData.jenis_diskon || 'Rp';
+
+        // Restore voucher jika ada
+        if (editData.kode_voucher && document.getElementById('cust_voucher')) {
+            document.getElementById('cust_voucher').value = editData.kode_voucher;
+            // Validasi ulang voucher via AJAX untuk pastikan masih aktif
+            fetch('{{ route("kasir.voucher.apply") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                body: JSON.stringify({ kode_voucher: editData.kode_voucher })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.valid) {
+                    window.activeVoucher = {
+                        kode: data.kode_voucher,
+                        jenis_potongan: data.jenis_potongan,
+                        nominal_potongan: data.nominal_potongan,
+                    };
+                    if (typeof showVoucherAlert === 'function')
+                        showVoucherAlert('success', '<i class="bi bi-check-circle-fill me-1"></i>Voucher <strong>' + data.kode_voucher + '</strong> aktif.');
+                    renderCart();
+                }
+            })
+            .catch(() => {});
+        }
 
         setTimeout(() => {
             if (document.getElementById('cust_name')) document.getElementById('cust_name').value = editData.nama_pelanggan || '';
@@ -884,12 +1011,36 @@
             }
         }
 
-        let total = subtotal - nilaiDiskon;
+        // -- Logika Voucher UI --
+        let nilaiVoucherUI = 0;
+        const voucherSummaryRow = document.getElementById('voucher-summary-row');
+        const voucherKodeView   = document.getElementById('voucher-kode-view');
+        const voucherView       = document.getElementById('voucher-view');
+
+        const afterDiskon = subtotal - nilaiDiskon;
+
+        if (window.activeVoucher && afterDiskon > 0) {
+            const v = window.activeVoucher;
+            if (v.jenis_potongan === '%') {
+                nilaiVoucherUI = (afterDiskon * Math.min(v.nominal_potongan, 100)) / 100;
+            } else {
+                nilaiVoucherUI = Math.min(v.nominal_potongan, afterDiskon);
+            }
+            if (voucherSummaryRow) voucherSummaryRow.style.display = 'flex';
+            if (voucherKodeView)   voucherKodeView.textContent = v.kode;
+            if (voucherView)       voucherView.innerText = '- Rp ' + nilaiVoucherUI.toLocaleString('id-ID');
+        } else {
+            if (voucherSummaryRow) voucherSummaryRow.style.display = 'none';
+            if (voucherKodeView)   voucherKodeView.textContent = '';
+            if (voucherView)       voucherView.innerText = '- Rp 0';
+        }
+
+        let total = afterDiskon - nilaiVoucherUI;
 
         subtotalView.innerText = `Rp ${subtotal.toLocaleString('id-ID')}`;
         discountView.innerText = `- Rp ${nilaiDiskon.toLocaleString('id-ID')}`;
         discountLabel.innerText = labelDiskonStr;
-        
+
         const formattedTotal = `Rp ${total.toLocaleString('id-ID')}`;
         totalView.innerText = formattedTotal;
         mCount.innerText = count;
@@ -930,7 +1081,8 @@
             keterangan: notes,
             cart: cart,
             nominal_diskon: discountVal,
-            jenis_diskon: discountType
+            jenis_diskon: discountType,
+            kode_voucher: window.activeVoucher ? window.activeVoucher.kode : null,
         };
 
         const editId = window.editOrderId;

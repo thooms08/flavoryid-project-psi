@@ -155,7 +155,7 @@
         }
         .session-date{ font-size:.65rem; color:var(--muted); margin-top:1px; }
 
-        /* Delete button — selalu visible */
+        /* Delete button - selalu visible */
         .btn-del-session{
             width:26px; height:26px; border-radius:7px; border:1px solid var(--border);
             background:var(--surface); color:var(--muted); font-size:.75rem;
@@ -673,7 +673,7 @@
                 <div id="quotaBar">
                     <span class="quota-label"><i class="bi bi-lightning-charge-fill me-1"></i>Kuota</span>
                     <div class="quota-track"><div class="quota-fill" id="quotaFill"></div></div>
-                    <span class="quota-count" id="quotaCount">— / 500</span>
+                    <span class="quota-count" id="quotaCount">- / 500</span>
                 </div>
                 {{-- Limit Banner --}}
                 <div id="limitBanner">
@@ -764,7 +764,7 @@ function updateQuotaUI(used){
 
     count.textContent = used + ' / ' + DAILY_LIMIT;
 
-    // Limit tercapai — disable input
+    // Limit tercapai - disable input
     if(used >= DAILY_LIMIT){
         banner.classList.add('show');
         input.disabled = true;
@@ -1076,7 +1076,7 @@ document.getElementById('chatInput').addEventListener('input',function(){
 });
 
 /* ════════════════════════════════════════════
-   VOICE TO TEXT — Web Speech API
+   VOICE TO TEXT - Web Speech API
    ════════════════════════════════════════════ */
 (function(){
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1181,7 +1181,7 @@ document.getElementById('chatInput').addEventListener('input',function(){
         recognition.start();
     });
 
-    /* Selesai — stop recognition, tunggu onend */
+    /* Selesai - stop recognition, tunggu onend */
     window.stopVoice = function(){
         if(isRecognizing) recognition.stop();
     };

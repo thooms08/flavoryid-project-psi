@@ -340,7 +340,7 @@
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 border-bottom pb-3 gap-3">
     
     <h4 class="fw-bold mb-0" style="color: var(--dark-orange);">
-        <i class="bi bi-pc-display-horizontal me-2"></i> DASHBOARD KASIR
+        <i class="bi bi-pc-display-horizontal me-2"></i> BERANDA KASIR
     </h4>
     
     <div class="d-flex align-items-center flex-wrap gap-3 bg-white px-4 py-2 rounded-4 shadow-sm border mb-0">
@@ -389,7 +389,7 @@
         </button>
     </div>
 
-    {{-- CTA Sinkronisasi Manual — muncul hanya jika ada offline orders yang belum tersinkron --}}
+    {{-- CTA Sinkronisasi Manual - muncul hanya jika ada offline orders yang belum tersinkron --}}
     <div id="sync-banner" style="display: none; background-color: #fff3cd; border: 2px dashed #ffc107;" class="alert mb-4 shadow-sm flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
         <div class="d-flex align-items-center gap-3">
             <i class="bi bi-cloud-upload-fill fs-3 text-warning"></i>
@@ -705,7 +705,7 @@
         localStorage.removeItem('offline_pending_edits');
         if (window.hideLoading) window.hideLoading();
 
-        // 4. Perbarui banner sync — sembunyikan jika semua berhasil tersinkron
+        // 4. Perbarui banner sync - sembunyikan jika semua berhasil tersinkron
         await updateSyncBanner();
     });
 
@@ -719,7 +719,7 @@
             if (orderModalObj) orderModalObj.hide();
             await refreshOfflineUI();
             
-            // Perbarui banner sync — pesanan baru masuk ke antrean lokal
+            // Perbarui banner sync - pesanan baru masuk ke antrean lokal
             await updateSyncBanner();
             
             Swal.fire({
@@ -938,33 +938,24 @@
             return;
         }
         
-        window.toggleServing = function(orderId, status) {
-    const cbBelum = document.getElementById(`belum-${orderId}`);
-    const cbSudah = document.getElementById(`sudah-${orderId}`);
-    const badgeContainer = document.getElementById(`badge-serving-${orderId}`);
-    
-    // Logika mutually exclusive (hanya boleh centang salah satu)
-    if (status === 'belum') {
-        cbBelum.checked = true; // Paksa tetap checked jika user iseng meng-klik lagi
-        cbSudah.checked = false;
-    } else {
-        cbSudah.checked = true;
-        cbBelum.checked = false;
-    }
+        window.toggleServing = function(orderId) {
+    const toggleEl = document.getElementById(`toggle-serving-${orderId}`);
+    const labelEl  = document.getElementById(`label-serving-${orderId}`);
+    if (!toggleEl || !labelEl) return;
 
-    const isSudah = cbSudah.checked;
-    
-    // Update label visual (badge)
+    const isSudah = toggleEl.checked;
+
+    // Update label visual secara instan
     if (isSudah) {
-        badgeContainer.innerHTML = `<span class="badge bg-success px-3 py-2 fs-6 shadow-sm w-100 text-center"><i class="bi bi-check-circle-fill me-1"></i> Sudah Disajikan</span>`;
+        labelEl.innerHTML = `<i class="bi bi-check-circle-fill text-success me-1"></i><span class="text-success fw-bold">Sudah Disajikan</span>`;
     } else {
-        badgeContainer.innerHTML = `<span class="badge bg-danger px-3 py-2 fs-6 shadow-sm w-100 text-center"><i class="bi bi-x-circle-fill me-1"></i> Belum Disajikan</span>`;
+        labelEl.innerHTML = `<i class="bi bi-hourglass-split text-warning me-1"></i><span class="text-warning fw-bold">Belum Disajikan</span>`;
     }
 
     // Simpan state di browser secara instan
     localStorage.setItem(`serving_status_${orderId}`, isSudah ? 'sudah' : 'belum');
 
-    // Opsional: Kirim data ke server (berjalan senyap di background)
+    // Kirim ke server dan tampilkan toast jika gagal
     if (navigator.onLine && !String(orderId).startsWith('offline-')) {
         fetch(`/kasir/order/${orderId}/status-penyajian`, {
             method: 'POST',
@@ -974,7 +965,14 @@
                 'Accept': 'application/json'
             },
             body: JSON.stringify({ status_penyajian: isSudah ? 'sudah' : 'belum' })
-        }).catch(e => console.log('Pembaruan di server tertunda (aman via local state).'));
+        }).catch(() => {
+            // Rollback visual + informasikan user jika request gagal
+            toggleEl.checked = !isSudah;
+            window.toggleServing(orderId); // rerender label sesuai state asli
+            Swal.fire({ toast: true, position: 'bottom-end', icon: 'warning',
+                title: 'Gagal sinkron ke server', text: 'Status tersimpan lokal saja.',
+                showConfirmButton: false, timer: 3000 });
+        });
     }
 };
 
@@ -989,13 +987,13 @@
             const isOffline = !navigator.onLine || order.is_offline;
             const btnEditHtml = isOffline 
                 ? '' 
-                : `<button class="btn btn-sm btn-light border" onclick="editOrder('${order.id}')" title="Edit">
+                : `<button class="btn btn-light border d-flex align-items-center justify-content-center" onclick="editOrder('${order.id}')" title="Edit" style="width:38px; height:38px; border-radius:10px;">
                         <i class="bi bi-pencil-square"></i>
                    </button>`;
 
             const btnHapusHtml = isOffline 
                 ? '' 
-                : `<button class="btn btn-sm btn-danger border ms-1" onclick="deleteOrder('${order.id}')" title="Hapus">
+                : `<button class="btn btn-danger d-flex align-items-center justify-content-center ms-1" onclick="deleteOrder('${order.id}')" title="Hapus" style="width:38px; height:38px; border-radius:10px;">
                         <i class="bi bi-trash"></i>
                    </button>`;
 
@@ -1024,27 +1022,22 @@
             
             const savedStatus = localStorage.getItem(`serving_status_${order.id}`) || 'belum';
             const isSudah = savedStatus === 'sudah';
-            const isBelum = savedStatus === 'belum';
 
-            const servingBadgeHtml = isSudah 
-                ? `<span class="badge bg-success px-3 py-2 fs-6 shadow-sm w-100 text-center"><i class="bi bi-check-circle-fill me-1"></i> Sudah Disajikan</span>`
-                : `<span class="badge bg-danger px-3 py-2 fs-6 shadow-sm w-100 text-center"><i class="bi bi-x-circle-fill me-1"></i> Belum Disajikan</span>`;
+            const servingLabelHtml = isSudah
+                ? `<i class="bi bi-check-circle-fill text-success me-1"></i><span class="text-success fw-bold">Sudah Disajikan</span>`
+                : `<i class="bi bi-hourglass-split text-warning me-1"></i><span class="text-warning fw-bold">Belum Disajikan</span>`;
 
             const servingHtml = `
-                <div class="mt-3 p-3 rounded-3" style="background-color: #f8f9fa; border: 1px solid #e9ecef;">
-                    <span class="d-block small text-muted text-uppercase fw-bold ls-wide mb-2">Status Penyajian</span>
-                    <div class="d-flex gap-3 align-items-center mb-3">
-                        <div class="form-check mb-0">
-                            <input class="form-check-input border-secondary" type="checkbox" id="belum-${order.id}" value="belum" onchange="toggleServing('${order.id}', 'belum')" ${isBelum ? 'checked' : ''} style="cursor:pointer; transform: scale(1.2);">
-                            <label class="form-check-label fw-bold text-danger ms-1" for="belum-${order.id}" style="cursor:pointer;">Belum Disajikan</label>
-                        </div>
-                        <div class="form-check mb-0">
-                            <input class="form-check-input border-secondary" type="checkbox" id="sudah-${order.id}" value="sudah" onchange="toggleServing('${order.id}', 'sudah')" ${isSudah ? 'checked' : ''} style="cursor:pointer; transform: scale(1.2);">
-                            <label class="form-check-label fw-bold text-success ms-1" for="sudah-${order.id}" style="cursor:pointer;">Sudah Disajikan</label>
-                        </div>
+                <div class="d-flex align-items-center justify-content-between mt-2 pt-2 border-top border-light">
+                    <div id="label-serving-${order.id}" class="small d-flex align-items-center gap-1">
+                        ${servingLabelHtml}
                     </div>
-                    <div id="badge-serving-${order.id}">
-                        ${servingBadgeHtml}
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                            id="toggle-serving-${order.id}"
+                            onchange="toggleServing('${order.id}')"
+                            ${isSudah ? 'checked' : ''}
+                            style="cursor: pointer; width: 2.5em; height: 1.3em;">
                     </div>
                 </div>
             `;
@@ -1125,6 +1118,14 @@
                                             </span>
                                         </div>
                                     ` : ''}
+                                    ${order.kode_voucher ? `
+                                        <div class="mb-1">
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle px-2 py-1" style="font-size: 0.7rem;">
+                                                <i class="bi bi-ticket-perforated-fill me-1"></i>Voucher <span style="font-family:'Courier New',monospace;letter-spacing:1px;">${order.kode_voucher}</span>
+                                                ${order.nilai_voucher ? ' &minus; Rp ' + parseInt(order.nilai_voucher).toLocaleString('id-ID') : ''}
+                                            </span>
+                                        </div>
+                                    ` : ''}
                                     <span class="fw-bold fs-3 text-orange lh-1 d-block" style="color: #fd7e14">
                                         Rp ${Math.ceil(parseFloat(order.total_harga)).toLocaleString('id-ID')}
                                     </span>
@@ -1139,7 +1140,7 @@
                                 <a href="/kasir/print-kitchen-bt/${order.id}" 
                                    class="btn btn-outline-secondary w-100 shadow-sm d-flex align-items-center justify-content-center gap-2 py-2">
                                     <i class="bi bi-bluetooth"></i>
-                                    <span class="fw-bold" style="font-size: 0.8rem;">STRUK KITCHEN</span>
+                                    <span class="fw-bold" style="font-size: 0.8rem;">STRUK DAPUR</span>
                                 </a>
 
                                 <button class="btn btn-orange btn-pay-now w-100 shadow-sm d-flex align-items-center justify-content-center gap-2 py-3" style="background-color: #fd7e14; color: white;"

@@ -246,9 +246,9 @@
                     <span class="badge bg-white border border-danger-subtle px-3 py-2 rounded-pill mb-3 shadow-sm">
                         <span class="mine-text-gradient"><i class="bi bi-stars me-1" aria-hidden="true"></i> Kecerdasan Buatan (AI)</span>
                     </span>
-                    <h1>Panduan Lengkap MineAI — Konsultan Bisnis AI Flavory.id</h1>
+                    <h1>Panduan Lengkap MineAI - Konsultan Bisnis AI Flavory.id</h1>
                     <p class="text-muted mt-3 fs-5">
-                        MineAI bukan sekadar dashboard statis yang menampilkan angka. MineAI adalah <strong>asisten AI interaktif</strong> yang membaca data transaksi nyata outlet kamu, memberikan insight otomatis, lalu bisa <strong>diajak ngobrol langsung via chatbox</strong> — layaknya konsultan bisnis pribadi yang selalu siap kapan saja.
+                        MineAI bukan sekadar dashboard statis yang menampilkan angka. MineAI adalah <strong>asisten AI interaktif</strong> yang membaca data transaksi nyata outlet kamu, memberikan insight otomatis, lalu bisa <strong>diajak ngobrol langsung via chatbox</strong> - layaknya konsultan bisnis pribadi yang selalu siap kapan saja.
                     </p>
                     <div class="d-flex flex-wrap gap-3 mt-4">
                         <span class="guide-chip"><i class="bi bi-graph-up-arrow" style="color:var(--mine-orange)"></i> Insight Otomatis dari Data Real</span>
@@ -266,7 +266,7 @@
                                 <div class="explain-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
                                 <h3 class="h6 fw-bold text-dark mb-2">Mode 1: Insight Otomatis</h3>
                                 <p class="text-muted small mb-0">
-                                    Klik <strong>"Minta Insight MineAI"</strong> di halaman Performa Bisnis. MineAI langsung membaca data 30 hari terakhir — omzet, menu terlaris, jam puncak, tren pertumbuhan — lalu menyusun analisis lengkap dalam hitungan detik. Tidak perlu input manual apapun.
+                                    Klik <strong>"Minta Insight MineAI"</strong> di halaman Performa Bisnis. MineAI langsung membaca data 30 hari terakhir - omzet, menu terlaris, jam puncak, tren pertumbuhan - lalu menyusun analisis lengkap dalam hitungan detik. Tidak perlu input manual apapun.
                                 </p>
                             </div>
                         </div>
@@ -275,7 +275,7 @@
                                 <div class="explain-icon" style="color:var(--mine-pink);"><i class="bi bi-chat-dots-fill"></i></div>
                                 <h3 class="h6 fw-bold text-dark mb-2">Mode 2: Chat AI Interaktif</h3>
                                 <p class="text-muted small mb-0">
-                                    Setelah insight muncul, klik <strong>"Mulai Ngobrol dengan MineAI"</strong>. Kamu bisa tanya apa saja — strategi promo, cara atasi penurunan omzet, analisa menu, bahkan sekadar curhat soal bisnis. MineAI ingat konteks bisnismu dan menjawab secara personal, bukan jawaban generik.
+                                    Setelah insight muncul, klik <strong>"Mulai Ngobrol dengan MineAI"</strong>. Kamu bisa tanya apa saja - strategi promo, cara atasi penurunan omzet, analisa menu, bahkan sekadar curhat soal bisnis. MineAI ingat konteks bisnismu dan menjawab secara personal, bukan jawaban generik.
                                 </p>
                             </div>
                         </div>

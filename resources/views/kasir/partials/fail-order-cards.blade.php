@@ -121,6 +121,17 @@
                         <span class="small text-muted">Total</span>
                         <span class="fw-bold text-dark">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
                     </div>
+                    @if(!empty($order->kode_voucher) && $order->nilai_voucher > 0)
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small text-muted">Voucher
+                            <span class="fw-bold text-success" style="font-family:'Courier New',monospace;letter-spacing:1px;font-size:0.75rem;">{{ $order->kode_voucher }}</span>
+                        </span>
+                        <span class="small text-success fw-bold bg-success bg-opacity-10 px-2 rounded">
+                            <i class="bi bi-ticket-perforated-fill me-1"></i>
+                            - Rp {{ number_format($order->nilai_voucher, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="mt-3 pt-3 border-top">
