@@ -1,8 +1,8 @@
 {{-- resources/views/faq.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'FAQ & Pusat Bantuan - Aplikasi Flavory.id')
-@section('meta_description', 'Punya pertanyaan seputar Flavory.id? Temukan jawaban lengkap mengenai fitur kasir, harga paket, cara penggunaan, hingga dukungan teknis di sini.')
+@section('title', 'FAQ & Pusat Bantuan - Aplikasi Kasir & HRMS Flavory.id')
+@section('meta_description', 'Punya pertanyaan seputar Flavory.id? Temukan jawaban lengkap mengenai fitur kasir POS, HRMS (Key.Flavory.id), harga paket, cara penggunaan, hingga dukungan teknis di sini.')
 @section('meta_og_type', 'website')
 @section('meta_og_url', route('faq'))
 @section('meta_image', secure_url('assets/preview.jpg'))
@@ -180,6 +180,9 @@
                                     <a class="nav-link" href="#fitur"><i class="bi bi-laptop me-2"></i> Fitur & Operasional</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" href="#hrms"><i class="bi bi-people-fill me-2"></i> HRMS & Manager</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="#harga"><i class="bi bi-tag me-2"></i> Harga & Pembayaran</a>
                                 </li>
                                 <li class="nav-item">
@@ -268,6 +271,74 @@
                                     <div id="collapseFitur3" class="accordion-collapse collapse" data-bs-parent="#accordionFitur">
                                         <div class="accordion-body">
                                             Bisa. Sistem kami mendukung pencetakan struk melalui printer thermal berbasis USB (untuk PC/Laptop) maupun printer Bluetooth (untuk akses melalui Tablet/Smartphone). Selain struk fisik, kami juga mendukung pengiriman e-struk (struk digital) melalui WhatsApp pelanggan.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5" id="hrms">
+                            <h3 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 text-white" style="width:40px;height:40px;background:#198754;"><i class="bi bi-people-fill"></i></span>
+                                HRMS & Fitur Manager (Key.Flavory.id)
+                            </h3>
+                            <div class="accordion faq-accordion" id="accordionHrms">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHrms1">
+                                            Apa itu Key.Flavory.id dan apa bedanya dengan Flavory.id?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseHrms1" class="accordion-collapse collapse" data-bs-parent="#accordionHrms">
+                                        <div class="accordion-body">
+                                            <strong>Flavory.id</strong> adalah aplikasi kasir (POS) untuk karyawan kasir - digunakan untuk mencatat pesanan, mencetak struk, dan mengelola transaksi harian. <br><br>
+                                            <strong>Key.Flavory.id</strong> adalah platform <em>Human Resource Management System (HRMS)</em> yang dirancang khusus untuk <strong>owner dan manager outlet</strong>. Di sini Anda bisa mengelola data karyawan, jadwal shift, rekap absensi, modal usaha, laporan bisnis, dan berkonsultasi dengan MineAI Manager - semua terintegrasi dengan data kasir secara real-time.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHrms2">
+                                            Apakah fitur HRMS (Key.Flavory.id) sudah termasuk dalam harga paket?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseHrms2" class="accordion-collapse collapse" data-bs-parent="#accordionHrms">
+                                        <div class="accordion-body">
+                                            Ya, <strong>semua paket Flavory.id</strong> - termasuk masa percobaan gratis - sudah mencakup akses ke fitur HRMS di Key.Flavory.id tanpa biaya tambahan. Tidak ada biaya tersembunyi.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHrms3">
+                                            Fitur apa saja yang tersedia di dasbor manager (Key.Flavory.id)?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseHrms3" class="accordion-collapse collapse" data-bs-parent="#accordionHrms">
+                                        <div class="accordion-body">
+                                            Dasbor manager Key.Flavory.id menyediakan modul berikut:
+                                            <ul class="mt-2">
+                                                <li><strong>Data Karyawan</strong> - Kelola profil, biodata, karyawan aktif & nonaktif</li>
+                                                <li><strong>Manajemen Shift</strong> - Buat kategori shift, atur rotasi jadwal kerja</li>
+                                                <li><strong>Rekap Absensi</strong> - Pantau kehadiran, izin, dan keterlambatan</li>
+                                                <li><strong>Akun Akses Kasir</strong> - Buat & kelola akun login untuk setiap karyawan</li>
+                                                <li><strong>Modal Usaha</strong> - Catat dan pantau setoran modal dengan grafik</li>
+                                                <li><strong>Laporan Bisnis</strong> - Omzet, untung-rugi, pengeluaran real-time</li>
+                                                <li><strong>Performa Bisnis</strong> - Analisis komparasi & prediksi tren</li>
+                                                <li><strong>MineAI Manager</strong> - Konsultasi AI bisnis khusus dasbor manager</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHrms4">
+                                            Bagaimana cara mengakses dasbor manager Key.Flavory.id?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseHrms4" class="accordion-collapse collapse" data-bs-parent="#accordionHrms">
+                                        <div class="accordion-body">
+                                            Setelah mendaftar di Flavory.id, Anda akan mendapatkan akses ke Key.Flavory.id melalui tautan yang diberikan. Klik tombol <strong>"Masuk Beranda Manager"</strong> di navbar Flavory.id, atau langsung kunjungi <strong>key.flavory.id</strong> dan login menggunakan akun manager Anda.
                                         </div>
                                     </div>
                                 </div>

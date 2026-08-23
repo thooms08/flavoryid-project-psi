@@ -408,12 +408,49 @@
                 </ul>
                 
                 <div class="navbar-cta-wrapper d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
-                    @auth
-                        <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+
+                    {{-- Tombol BERANDA MANAGER — muncul jika cookie manager_active aktif (session key.flavory.id) --}}
+                    @if(request()->cookie('manager_active') === '1')
+                        <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001')), '/') }}/manager"
+                           class="btn w-100 w-lg-auto fw-semibold d-flex align-items-center justify-content-center gap-2"
+                           style="background:#6f42c1;color:#fff;border-radius:50px;padding:8px 20px;border:none;white-space:nowrap;transition:all .3s ease;box-shadow:0 4px 15px rgba(111,66,193,.3);"
+                           onmouseover="this.style.background='#5a32a3';this.style.transform='translateY(-2px)'"
+                           onmouseout="this.style.background='#6f42c1';this.style.transform='translateY(0)'">
+                            <i class="bi bi-person-badge"></i> Beranda Manager
                         </a>
+                    @endif
+
+                    @auth
+                        {{-- Sudah login: tampilkan tombol beranda sesuai role --}}
+                        @if(auth()->user()->role === 'kasir')
+                            <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
+                                <i class="bi bi-speedometer2 me-1"></i> Beranda Kasir
+                            </a>
+                        @elseif(auth()->user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
+                                <i class="bi bi-speedometer2 me-1"></i> Beranda Admin
+                            </a>
+                        @else
+                            <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
+                                <i class="bi bi-speedometer2 me-1"></i> Beranda
+                            </a>
+                        @endif
+                        {{-- Tombol logout --}}
+                        <form action="{{ route('logout') }}" method="POST" class="m-0 w-100 w-lg-auto">
+                            @csrf
+                            <button type="submit"
+                                    class="btn btn-outline-orange w-100"
+                                    style="border-radius:50px;">
+                                <i class="bi bi-box-arrow-right me-1"></i> Keluar
+                            </button>
+                        </form>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-orange w-100 w-lg-auto ">Masuk</a>
+                        {{-- Belum login: tombol Masuk buka modal pilihan, Coba Gratis tetap --}}
+                        <button type="button"
+                                class="btn btn-outline-orange w-100 w-lg-auto"
+                                onclick="document.getElementById('modalPilihMasuk').showModal()">
+                            Masuk
+                        </button>
                         <a href="{{ route('register') }}" class="btn btn-orange w-100 w-lg-auto">Coba Gratis</a>
                     @endauth
                 </div>
@@ -592,5 +629,160 @@
     @stack('scripts')
     @include('layouts.wa')
     <script src="{{ asset('js/loading.js') }}"></script>
+
+    {{-- ══════════════════════════════════════════════
+         Modal Pilih Beranda - muncul saat klik "Masuk"
+         Menggunakan <dialog> native (sama dengan pola modalCobaGratis di index.blade.php)
+    ══════════════════════════════════════════════ --}}
+    @guest
+    <style>
+        /* ── Modal Pilih Masuk ── */
+        #modalPilihMasuk {
+            border: none;
+            border-radius: 24px;
+            padding: 0;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 24px 80px rgba(0,0,0,.18);
+            overflow: hidden;
+        }
+        #modalPilihMasuk::backdrop {
+            background: rgba(0,0,0,.45);
+            backdrop-filter: blur(4px);
+        }
+        .pilih-masuk-header {
+            background: #ff6a00;
+            padding: 28px 28px 22px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+        }
+        .pilih-masuk-header img {
+            width: 72px; height: 72px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: #fff;
+            padding: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.15);
+        }
+        .pilih-masuk-header h5 {
+            font-weight: 800;
+            font-size: 1.15rem;
+            margin: 0 0 4px;
+        }
+        .pilih-masuk-header p {
+            font-size: .82rem;
+            margin: 0;
+            opacity: .85;
+        }
+        .pilih-masuk-body {
+            padding: 24px 24px 20px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-pilih-masuk {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid transparent;
+            text-decoration: none;
+            transition: all .22s ease;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+        .btn-pilih-masuk:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,.1);
+        }
+        .btn-pilih-masuk.kasir {
+            border-color: rgba(255,106,0,.3);
+        }
+        .btn-pilih-masuk.kasir:hover {
+            background: #fff4ee;
+            border-color: #ff6a00;
+        }
+        .btn-pilih-masuk.manager {
+            border-color: rgba(111,66,193,.3);
+        }
+        .btn-pilih-masuk.manager:hover {
+            background: #f5f0ff;
+            border-color: #6f42c1;
+        }
+        .pilih-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .pilih-icon.kasir   { background: #fff0e6; color: #ff6a00; }
+        .pilih-icon.manager { background: #ede9ff; color: #6f42c1; }
+        .pilih-text strong  { display: block; font-size: .92rem; font-weight: 700; color: #1e293b; }
+        .pilih-text span    { font-size: .77rem; color: #64748b; }
+        .btn-tutup-pilih {
+            background: none; border: none;
+            color: #94a3b8; font-size: .8rem;
+            cursor: pointer; padding: 0 0 8px;
+            text-align: center; display: block;
+            width: 100%; transition: color .2s;
+        }
+        .btn-tutup-pilih:hover { color: #1e293b; }
+    </style>
+
+    <dialog id="modalPilihMasuk">
+        <div class="pilih-masuk-header">
+            <button onclick="document.getElementById('modalPilihMasuk').close()"
+                    style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;cursor:pointer;line-height:1;">
+                <i class="bi bi-x"></i>
+            </button>
+            <img src="{{ asset('assets/logo-bg.png') }}" alt="Flavory.id"
+                 onerror="this.style.display='none'">
+            <h5>Masuk ke Flavory.id</h5>
+            <p>Pilih beranda yang ingin kamu tuju</p>
+        </div>
+        <div class="pilih-masuk-body">
+            {{-- Kasir --}}
+            <a href="{{ route('login') }}" class="btn-pilih-masuk kasir">
+                <div class="pilih-icon kasir"><i class="bi bi-shop"></i></div>
+                <div class="pilih-text">
+                    <strong>Masuk Beranda Kasir</strong>
+                    <span>Login ke dasbor kasir & manajemen outlet</span>
+                </div>
+                <i class="bi bi-arrow-right ms-auto text-muted" style="font-size:.85rem;"></i>
+            </a>
+            {{-- Manager --}}
+            @if(request()->cookie('manager_active') === '1')
+            {{-- Sudah ada session manager: langsung ke dashboard --}}
+            <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001')), '/') }}/manager"
+               class="btn-pilih-masuk manager">
+                <div class="pilih-icon manager"><i class="bi bi-person-badge"></i></div>
+                <div class="pilih-text">
+                    <strong>Beranda Manager</strong>
+                    <span>Kembali ke dasbor manajemen tim & laporan</span>
+                </div>
+                <i class="bi bi-arrow-right ms-auto text-muted" style="font-size:.85rem;"></i>
+            </a>
+            @else
+            {{-- Belum login: arahkan ke halaman login key.flavory.id --}}
+            <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001')), '/') }}/login"
+               class="btn-pilih-masuk manager">
+                <div class="pilih-icon manager"><i class="bi bi-person-badge"></i></div>
+                <div class="pilih-text">
+                    <strong>Masuk Beranda Manager</strong>
+                    <span>Login ke dasbor manajemen tim & laporan</span>
+                </div>
+                <i class="bi bi-arrow-right ms-auto text-muted" style="font-size:.85rem;"></i>
+            </a>
+            @endif
+            <button class="btn-tutup-pilih"
+                    onclick="document.getElementById('modalPilihMasuk').close()">
+                Tutup
+            </button>
+        </div>
+    </dialog>
+    @endguest
 </body>
 </html>

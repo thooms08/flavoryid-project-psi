@@ -95,8 +95,7 @@
         font-weight: 700;
     }
 
-    /* * PERBAIKAN 1: Hamburger Menu Animation 
-     */
+    /* Hamburger Menu Animation */
     .navbar-toggler { 
         border: none; 
         padding: 0; 
@@ -119,10 +118,9 @@
         width: 100%;
         border-radius: 3px;
         background-color: var(--primary-orange);
-        transition: all 0.3s ease-in-out; /* Animasi smooth transisi ke bentuk X */
+        transition: all 0.3s ease-in-out;
     }
 
-    /* Transformasi menjadi 'X' saat navbar dibuka (aria-expanded="true") */
     .navbar-toggler[aria-expanded="true"] .toggler-icon .line-1 {
         transform: translateY(8.5px) rotate(45deg);
     }
@@ -131,6 +129,26 @@
     }
     .navbar-toggler[aria-expanded="true"] .toggler-icon .line-3 {
         transform: translateY(-8.5px) rotate(-45deg);
+    }
+
+    /* Tombol Absen & Shift (BARU) */
+    .btn-absen {
+        background: var(--primary-orange);
+        border: 2px solid var(--primary-orange);
+        color: white;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 6px 15px;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .btn-absen:hover {
+        background: var(--soft-orange);
+        color: var(--primary-orange);
     }
 
     /* Logout Button */
@@ -161,28 +179,20 @@
     .status-dot-danger { background-color: #dc3545; border: 2px solid white; }
     
     .nav-indicator { position: absolute; top: 8px; right: 12px; }
-    
-    /* Penyesuaian posisi indikator pada hamburger menu baru */
     .toggler-indicator { position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; border: 2px solid white; }
-
    
     .arrow-icon {
         font-size: 0.8rem;
-        transition: transform 0.3s ease; /* Durasi putaran 0.3 detik */
+        transition: transform 0.3s ease;
     }
-
-    /* Saat dropdown dibuka (Bootstrap otomatis menambah class .show pada parent .nav-item) */
     .nav-item.dropdown .nav-link.show .arrow-icon {
-        transform: rotate(-180deg); /* Memutar ke atas */
+        transform: rotate(-180deg);
     }
-
-    /* Menghilangkan panah default bawaan Bootstrap (opsional agar tidak double) */
     .dropdown-toggle::after {
         display: none !important;
     }
 
-    /* * PERBAIKAN 2 & 3: Fokus Mobile & Posisi Profile Top-Left
-     */
+    /* Fokus Mobile */
     @media (max-width: 991.98px) {
         .navbar-collapse {
             background: white;
@@ -194,19 +204,16 @@
         
         .profile-container-nav { 
             order: -1;
-            /* Biarkan profile box mengambil sisa ruang tapi tidak mendorong tombol lain */
             flex: 1 1 0;
             min-width: 0;
         }
 
-        /* Batasi lebar profile box agar tidak overflow di mobile */
         .profile-outlet-nav {
             max-width: 100%;
             min-width: 0;
             overflow: hidden;
         }
 
-        /* Potong teks nama outlet yang terlalu panjang */
         .profile-text-nav {
             max-width: 130px;
             white-space: nowrap;
@@ -215,8 +222,8 @@
             display: block;
         }
 
-        /* Opsi tambahan agar tombol logout rapi di mobile */
-        .btn-logout {
+        /* Penyesuaian Tombol Absen & Logout di HP */
+        .btn-absen, .btn-logout {
             width: 100%;
             margin-top: 0.5rem;
             display: flex;
@@ -226,7 +233,6 @@
     }
 
     @media (max-width: 400px) {
-        /* Layar sangat kecil: kurangi padding navbar & kecilkan sedikit */
         .navbar-flavory {
             padding: 0.6rem 1rem;
         }
@@ -239,7 +245,7 @@
         }
     }
 
-    /* ── MineAI menu item - animated highlight ── */
+    /* MineAI Menu Highlight */
     @keyframes mineGlow {
         0%   { background-position: 0% 50%; box-shadow: 0 0 0 rgba(255,106,0,0); }
         50%  { background-position: 100% 50%; box-shadow: 0 0 12px rgba(238,9,121,.25); }
@@ -258,7 +264,6 @@
         border-color: rgba(238,9,121,.3) !important;
     }
 
-    /* Badge "BARU" */
     .badge-mineai-baru {
         display: inline-flex;
         align-items: center;
@@ -279,13 +284,12 @@
 </style>
 
 @php
-    $statusLisensi = 'aktif'; // Default aktif
+    $statusLisensi = 'aktif'; 
     $dotClass = '';
 
     if (auth()->check() && auth()->user()->role === 'kasir') {
         $user = auth()->user();
         
-        // Ambil status dari relasi yang ada (User -> Partner -> InformasiOutlet -> MediaQr)
         $partner = \App\Models\Partner::where('user_id', $user->id)->first();
         if ($partner) {
             $outletInfo = \App\Models\InformasiOutlet::where('partner_id', $partner->id)->first();
@@ -305,7 +309,6 @@
     }
 @endphp
 
-
 <nav class="navbar navbar-expand-lg navbar-flavory sticky-top shadow-sm">
     <div class="container-fluid">
         <div class="profile-container-nav">
@@ -324,7 +327,7 @@
             </a>
         </div>
 
-        {{-- Bantuan & CS - tampil di mobile saja (di luar collapse) --}}
+        {{-- Bantuan & CS - mobile --}}
         <a href="{{ route('panduan.menu') }}"
            class="d-lg-none text-muted me-1"
            style="font-size: 1.35rem; line-height:1;"
@@ -398,7 +401,7 @@
                                 <span><i class="bi bi-graph-down-arrow me-2"></i>Pengeluaran</span>
                             </a>
                         </li>
-                        <li>
+                        <!--<li>
                             <a class="dropdown-item" href="{{ route('kasir.modal.index') }}">
                                 <span><i class="bi bi-cash-coin me-2"></i>Modal Usaha</span>
                             </a>
@@ -428,7 +431,7 @@
                                     <span class="badge-mineai-baru">BARU</span>
                                 </span>
                             </a>
-                        </li>
+                        </li>!-->
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('kasir.pengaturan.index') ? 'active-dropdown' : '' }}" href="{{ route('kasir.pengaturan.index') }}">
@@ -454,7 +457,7 @@
             </ul>
 
             <div class="d-lg-flex align-items-center gap-3">
-                {{-- Bantuan & CS - tampil di desktop/tablet (d-none d-lg-inline-flex) --}}
+                {{-- Bantuan & CS - desktop/tablet --}}
                 <a href="{{ route('panduan.menu') }}"
                    class="d-none d-lg-inline-flex align-items-center text-muted"
                    style="font-size: 1.35rem; line-height:1;"
@@ -468,6 +471,12 @@
                    title="Hubungi Customer Service via WhatsApp">
                     <i class="bi bi-headset"></i>
                 </a>
+                
+                {{-- TOMBOL ABSEN & SHIFT BARU --}}
+                <a href="http://key.flavory.id/login" target="_blank" class="btn-absen">
+                    <i class="bi bi-fingerprint me-1"></i> ABSEN & SHIFT
+                </a>
+
                 <form action="{{ route('logout') }}" method="POST" class="m-0" id="form-logout">
                     @csrf
                     <button type="button" class="btn-logout" onclick="konfirmasiLogout()">

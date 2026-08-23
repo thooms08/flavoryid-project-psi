@@ -78,7 +78,7 @@
         background-color: #f8f9fa !important;
         font-weight: bold;
     }
-    /* Input kode voucher — uppercase monospace */
+    /* Input kode voucher - uppercase monospace */
     #kode_voucher {
         text-transform: uppercase;
         letter-spacing: 3px;
@@ -192,7 +192,7 @@
                                         id="toggle-voucher" data-field="voucher" {{ $pengaturan->voucher ? 'checked' : '' }}>
                                 </div>
                             </div>
-                            {{-- Tombol Atur Kode Voucher — muncul saat toggle aktif --}}
+                            {{-- Tombol Atur Kode Voucher - muncul saat toggle aktif --}}
                             <div id="btn-atur-voucher-wrapper" class="{{ $pengaturan->voucher ? '' : 'd-none' }} mt-3">
                                 <button type="button" class="btn btn-sm btn-outline-warning rounded-3 fw-semibold"
                                     data-bs-toggle="modal" data-bs-target="#modalVoucher" id="btn-atur-voucher">
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         if (!kodeValid) {
-            showFormError('Periksa kembali kode voucher — pastikan tersedia (berwarna hijau).');
+            showFormError('Periksa kembali kode voucher - pastikan tersedia (berwarna hijau).');
             kodeInput.focus();
             return;
         }

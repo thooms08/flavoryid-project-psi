@@ -327,7 +327,7 @@
     const assetUrl = "{{ asset('') }}";
     const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka).replace('Rp', 'Rp ').trim();
 
-    // URL apply voucher — gunakan route helper agar tidak salah path
+    // URL apply voucher - gunakan route helper agar tidak salah path
     const VOUCHER_APPLY_URL = "{{ route('outlet.voucher.apply', $outlet->page_name) }}";
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -361,7 +361,7 @@
                     return;
                 }
 
-                // Tepat 6 karakter — cek setelah 500ms diam
+                // Tepat 6 karakter - cek setelah 500ms diam
                 voucherTimer = setTimeout(() => {
                     applyVoucherOutlet(kode);
                 }, 500);

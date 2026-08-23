@@ -56,6 +56,14 @@ Route::prefix('panduan')->name('panduan.')->group(function () {
     Route::view('/laporan-bisnis', 'panduan.laporan-bisnis')->name('laporan-bisnis');
     Route::view('/performa-bisnis', 'panduan.performa-bisnis')->name('performa-bisnis');
     Route::view('/mineai', 'panduan.mineai')->name('mineai');
+    Route::view('/hrms', 'panduan.hrms')->name('hrms');
+    Route::view('/hrms/akses-dasbor', 'panduan.hrms.akses-dasbor')->name('hrms.akses-dasbor');
+    Route::view('/hrms/data-karyawan', 'panduan.hrms.data-karyawan')->name('hrms.data-karyawan');
+    Route::view('/hrms/shift', 'panduan.hrms.shift')->name('hrms.shift');
+    Route::view('/hrms/absensi', 'panduan.hrms.absensi')->name('hrms.absensi');
+    Route::view('/hrms/modal-usaha', 'panduan.hrms.modal-usaha')->name('hrms.modal-usaha');
+    Route::view('/hrms/laporan-bisnis', 'panduan.hrms.laporan-bisnis')->name('hrms.laporan-bisnis');
+    Route::view('/hrms/mineai-manager', 'panduan.hrms.mineai-manager')->name('hrms.mineai-manager');
 });
 
 Route::get('/lupa-password', [AuthController::class, 'showLupaPassword'])->name('lupa-password');

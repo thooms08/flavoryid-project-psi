@@ -682,7 +682,7 @@
             return;
         }
 
-        // Tepat 6 karakter — fetch setelah 500ms diam
+        // Tepat 6 karakter - fetch setelah 500ms diam
         voucherDebounceTimer = setTimeout(() => {
             applyVoucherKasir(kode);
         }, 500);

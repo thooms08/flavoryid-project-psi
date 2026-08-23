@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // URL key.flavory.id (manager app)
+    'key_flavory_url' => env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

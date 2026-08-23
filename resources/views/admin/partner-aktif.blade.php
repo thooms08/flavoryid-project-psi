@@ -502,7 +502,7 @@
             });
         });
 
-        // 6. TOMBOL UBAH PAKET — buka modal
+        // 6. TOMBOL UBAH PAKET - buka modal
         const modalEl      = document.getElementById('modalUbahPaket');
         const bsModal      = new bootstrap.Modal(modalEl);
         let pendingAction  = null;
@@ -566,7 +566,7 @@
                     customClass: { confirmButton: 'fw-bold text-dark', cancelButton: 'fw-bold' }
                 }).then(result => {
                     if (result.isConfirmed) {
-                        // Buat form baru di memori — pola yang sama dengan tombol jatuh tempo/nonaktif
+                        // Buat form baru di memori - pola yang sama dengan tombol jatuh tempo/nonaktif
                         const form = document.createElement('form');
                         form.method = 'POST';
                         form.action = snapshotAction;

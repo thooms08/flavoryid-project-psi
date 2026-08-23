@@ -13,7 +13,7 @@ class ModalSeeder extends Seeder
      *
      * Jalankan: php artisan db:seed --class=ModalSeeder
      */
-    const PARTNER_ID = 1;
+    const PARTNER_ID = 2;
     const TOTAL      = 100;
     const RANGE_DAYS = 30; // 1 bulan ke belakang dari hari ini
 

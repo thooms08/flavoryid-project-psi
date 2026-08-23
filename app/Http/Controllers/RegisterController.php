@@ -99,6 +99,9 @@ class RegisterController extends Controller {
 
             DB::commit();
 
+            // Sinkronisasi akun ke key.flavory.id agar manager bisa login di sana
+            $this->syncToKeyFlavory($request->username, $user->password, $partner);
+
             // Jika Gratis, langsung ke verifikasi tanpa email
             if ($amount == 0) {
                 return redirect()->route('verifikasi.show', ['id' => $partner->uuid]);
@@ -173,6 +176,41 @@ class RegisterController extends Controller {
             'invoice' => $invoice,
             'partner_id' => $partner->uuid,
         ]);
+    }
+
+    /**
+     * Sinkronisasi akun baru ke key.flavory.id agar manager bisa login di sana.
+     * Kegagalan sinkronisasi tidak menggagalkan proses register.
+     */
+    private function syncToKeyFlavory(string $username, string $passwordHash, $partner): void
+    {
+        $keyUrl      = rtrim(env('KEYFLAVORYID_URL', ''), '/');
+        $internalKey = env('INTERNAL_API_KEY');
+
+        if (!$keyUrl || !$internalKey) {
+            Log::warning('syncToKeyFlavory: KEYFLAVORYID_URL atau INTERNAL_API_KEY tidak dikonfigurasi.');
+            return;
+        }
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['X-Internal-Key' => $internalKey])
+                ->post("{$keyUrl}/api/v1/internal/sync-manager", [
+                    'username'             => $username,
+                    'password_hash'        => $passwordHash,
+                    'nama_manager'         => $partner->nama_manager,
+                    'email'                => $partner->email,
+                    'no_wa'                => $partner->no_wa,
+                    'jenis_bisnis'         => 'Lainnya',
+                    'flavory_partner_uuid' => $partner->uuid,
+                ]);
+
+            if (!$response->successful()) {
+                Log::warning('syncToKeyFlavory gagal: ' . $response->body());
+            }
+        } catch (\Exception $e) {
+            Log::warning('syncToKeyFlavory exception: ' . $e->getMessage());
+        }
     }
 
     private function generateMixedAlphaNumericCode(int $length = 6): string

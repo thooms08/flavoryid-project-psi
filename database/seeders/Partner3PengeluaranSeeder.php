@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class Partner3PengeluaranSeeder extends Seeder
 {
-    const PARTNER_ID = 3;
+    const PARTNER_ID = 2;
 
     public function run(): void
     {

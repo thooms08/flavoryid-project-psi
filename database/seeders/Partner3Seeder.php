@@ -12,7 +12,7 @@ class Partner3Seeder extends Seeder
     // ─────────────────────────────────────────────
     //  CONFIG
     // ─────────────────────────────────────────────
-    const PARTNER_ID  = 3;
+    const PARTNER_ID  = 2;
     const TOTAL_ORDER = 1000;
     const CHUNK_SIZE  = 100;
 

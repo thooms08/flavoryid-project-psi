@@ -1,8 +1,8 @@
 {{-- resources/views/ketentuan-persyaratan.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Syarat & Ketentuan Layanan - Flavory.id')
-@section('meta_description', 'Baca Syarat dan Ketentuan penggunaan Aplikasi Flavory.id. Dengan menggunakan layanan kasir digital dan POS kami, Anda menyetujui kebijakan dan ketentuan operasional yang berlaku.')
+@section('title', 'Syarat & Ketentuan Layanan - Flavory.id & Key.Flavory.id (HRMS)')
+@section('meta_description', 'Baca Syarat dan Ketentuan penggunaan Flavory.id dan Key.Flavory.id. Mencakup layanan kasir digital POS dan HRMS (Human Resource Management System) untuk bisnis kuliner Indonesia.')
 @section('meta_og_type', 'website')
 @section('meta_og_url', route('syarat.ketentuan'))
 @section('meta_image', secure_url('assets/preview.jpg'))
@@ -112,12 +112,19 @@
                                 <span class="last-updated"><i class="bi bi-clock-history me-2"></i>Pembaruan Terakhir: 7 April 2026</span>
                             </div>
 
-                            <p>Selamat datang di <strong>Flavory.id</strong>. Syarat dan Ketentuan ini ("Ketentuan") merupakan perjanjian hukum antara Anda ("Pengguna", "Pelanggan", atau "Pemilik Outlet") dan Flavory.id ("Kami", "Sistem", atau "Aplikasi") mengenai penggunaan perangkat lunak Point of Sale (POS) dan layanan terkait yang kami sediakan.</p>
-                            
-                            <p>Dengan mendaftar, mengakses, atau menggunakan Aplikasi Flavory.id, Anda menyatakan bahwa Anda telah membaca, memahami, dan menyetujui untuk terikat oleh Ketentuan ini. Jika Anda tidak menyetujui Ketentuan ini, Anda tidak diperkenankan menggunakan layanan kami.</p>
+                            <p>Selamat datang di <strong>Flavory.id</strong> dan <strong>Key.Flavory.id</strong>. Syarat dan Ketentuan ini ("Ketentuan") merupakan perjanjian hukum antara Anda ("Pengguna" atau "Pelanggan") dan Flavory.id ("Kami") mengenai penggunaan platform kami yang terdiri dari:</p>
+                            <ul>
+                                <li><strong>Flavory.id</strong> - aplikasi kasir (Point of Sale / POS) untuk operasional outlet F&B.</li>
+                                <li><strong>Key.Flavory.id</strong> - platform HRMS (Human Resource Management System) untuk owner dan manager, mencakup manajemen karyawan, shift, absensi, modal usaha, dan laporan bisnis.</li>
+                            </ul>
+                            <p>Dengan mendaftar atau menggunakan salah satu platform kami, Anda menyatakan telah membaca, memahami, dan menyetujui Ketentuan ini.</p>
 
                             <h2>1. Definisi Layanan</h2>
-                            <p>Flavory.id adalah aplikasi kasir pintar (Point of Sale) berbasis web yang dirancang untuk mendukung digitalisasi UMKM di bidang kuliner (Food & Beverage). Layanan kami mencakup pencatatan transaksi, manajemen stok, pencetakan struk (termasuk via Bluetooth), sinkronisasi data *offline-to-online*, serta pembuatan laporan performa bisnis.</p>
+                            <p>Flavory.id adalah ekosistem digital untuk bisnis kuliner (Food & Beverage) yang terdiri dari dua platform:</p>
+                            <ul>
+                                <li><strong>Flavory.id (POS Kasir)</strong> - Aplikasi kasir berbasis web untuk mencatat transaksi, manajemen stok, mencetak struk, laporan performa, prediksi bisnis, dan MineAI konsultan bisnis.</li>
+                                <li><strong>Key.Flavory.id (HRMS)</strong> - Platform manajemen tim dan bisnis untuk owner/manager: data karyawan, manajemen shift, rekap absensi, modal usaha, laporan bisnis, dan MineAI Manager.</li>
+                            </ul>
 
                             <h2>2. Pendaftaran dan Keamanan Akun</h2>
                             <ol>

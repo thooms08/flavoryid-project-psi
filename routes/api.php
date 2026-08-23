@@ -24,6 +24,8 @@ use App\Http\Controllers\Api\PerformanceController;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\SubscribeController;
+use App\Http\Controllers\Api\InternalController;
+use App\Http\Controllers\Api\InternalLaporanController;
 // Existing webhook & check routes (keep as-is)
 Route::post('/wijayapay/notification', [RegisterController::class, 'wijayapayNotification']);
 Route::get('orders/{uuid}/receipt-digital', [OrderHistoryController::class, 'receiptDigitalData']);
@@ -38,6 +40,15 @@ Route::get('/check-subscription-status/{invoice}', [KasirLanggananController::cl
 Route::get('/check-subscription-status/{invoice}', function($invoice) {
     $status = \App\Models\Subscription::where('invoice_number', $invoice)->value('status');
     return response()->json(['status' => $status ?? 'pending']);
+});
+
+// Internal API — dipanggil oleh key.flavory.id (dilindungi X-Internal-Key header)
+Route::prefix('v1/internal')->group(function () {
+    Route::post('register-manager',   [InternalController::class, 'registerManager']);
+    Route::post('check-credentials',  [InternalController::class, 'checkCredentials']);
+    // Laporan bisnis — diakses oleh dashboard manager key.flavory.id
+    Route::get('laporan-bisnis',       [InternalLaporanController::class, 'index']);
+    Route::get('laporan-bisnis/chart', [InternalLaporanController::class, 'chart']);
 });
 
 // API v1 - structured for mobile apps

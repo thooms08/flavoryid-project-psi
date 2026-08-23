@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Kebijakan Privasi - Flavory.id')
-@section('meta_description', 'Kebijakan Privasi Flavory.id. Kami berkomitmen untuk melindungi data pribadi dan privasi Anda saat menggunakan layanan platform kasir digital kami.')
+@section('title', 'Kebijakan Privasi - Flavory.id & Key.Flavory.id (HRMS)')
+@section('meta_description', 'Kebijakan Privasi Flavory.id dan Key.Flavory.id. Kami berkomitmen melindungi data pribadi, data bisnis, dan data karyawan Anda saat menggunakan layanan POS kasir digital dan HRMS kami.')
 @section('meta_og_type', 'website')
 @section('meta_og_url', route('kebijakan.privasi'))
 @section('meta_image', secure_url('assets/preview.jpg'))
@@ -99,17 +99,23 @@
                         
                         <div class="privacy-section">
                             <h3>1. Pendahuluan</h3>
-                            <p>Selamat datang di <strong>Flavory.id</strong>. Kami sangat menghargai privasi Anda dan berkomitmen penuh untuk melindungi informasi pribadi serta data bisnis Anda. Kebijakan Privasi ini menjelaskan secara transparan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi Anda saat menggunakan platform aplikasi kasir (Point of Sale) kami.</p>
+                            <p>Selamat datang di <strong>Flavory.id</strong> dan <strong>Key.Flavory.id</strong>. Kami sangat menghargai privasi Anda dan berkomitmen penuh untuk melindungi informasi pribadi, data bisnis, serta data karyawan Anda. Kebijakan ini mencakup dua platform kami:
+                            <ul>
+                                <li><strong>Flavory.id</strong> - aplikasi kasir (POS) untuk karyawan dan pemilik outlet.</li>
+                                <li><strong>Key.Flavory.id</strong> - platform HRMS (Human Resource Management System) untuk owner dan manager outlet.</li>
+                            </ul>
+                            </p>
                         </div>
 
                         <div class="privacy-section">
                             <h3>2. Informasi yang Kami Kumpulkan</h3>
-                            <p>Untuk memberikan layanan yang optimal, kami perlu mengumpulkan beberapa jenis informasi dari Anda, antara lain:</p>
+                            <p>Untuk memberikan layanan yang optimal, kami perlu mengumpulkan beberapa jenis informasi, antara lain:</p>
                             <ul>
-                                <li><strong>Data Akun Pribadi:</strong> Nama pengguna (username), alamat email, nomor telepon genggam, dan kata sandi yang dienkripsi.</li>
-                                <li><strong>Data Operasional Bisnis:</strong> Nama outlet, alamat, informasi kontak outlet, dan data produk/menu yang Anda masukkan ke dalam sistem.</li>
-                                <li><strong>Data Transaksi:</strong> Rincian penjualan, data pelanggan (jika Anda mengaktifkan fitur form pelanggan), catatan pesanan, dan laporan keuangan bisnis Anda.</li>
-                                <li><strong>Data Penggunaan Sistem:</strong> Alamat IP, jenis peramban (browser), waktu akses, dan aktivitas Anda di dalam platform untuk keperluan keamanan.</li>
+                                <li><strong>Data Akun Pribadi:</strong> Nama pengguna, alamat email, nomor telepon, dan kata sandi yang dienkripsi.</li>
+                                <li><strong>Data Operasional Bisnis:</strong> Nama outlet, alamat, informasi kontak, dan data produk/menu.</li>
+                                <li><strong>Data Transaksi:</strong> Rincian penjualan, catatan pesanan, dan laporan keuangan bisnis Anda.</li>
+                                <li><strong>Data Karyawan (HRMS):</strong> Nama, biodata, jadwal shift, rekap absensi, izin, dan akun akses sistem yang diinputkan melalui Key.Flavory.id oleh manager/owner.</li>
+                                <li><strong>Data Penggunaan Sistem:</strong> Alamat IP, jenis browser, waktu akses, dan aktivitas di dalam platform untuk keperluan keamanan.</li>
                             </ul>
                         </div>
 
@@ -125,7 +131,7 @@
 
                         <div class="privacy-section">
                             <h3>4. Perlindungan dan Keamanan Data</h3>
-                            <p>Keamanan data bisnis Anda adalah prioritas kami. Flavory.id menggunakan standar keamanan teknologi terkini (seperti enkripsi kata sandi dan protokol aman) untuk mencegah akses yang tidak sah, penyalahgunaan, modifikasi, atau kebocoran informasi. Kami memastikan bahwa hanya Anda dan karyawan yang Anda beri hak akses yang dapat melihat laporan bisnis Anda.</p>
+                            <p>Keamanan data bisnis dan data karyawan Anda adalah prioritas kami. Flavory.id dan Key.Flavory.id menggunakan enkripsi kata sandi dan protokol aman untuk mencegah akses tidak sah. Data karyawan yang dikelola melalui Key.Flavory.id hanya dapat diakses oleh manager/owner yang memiliki hak akses yang sah.</p>
                         </div>
 
                         <div class="privacy-section">

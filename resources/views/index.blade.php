@@ -895,6 +895,226 @@
             </div>
         </section>
 
+        {{-- ===== SECTION HRMS (KEY.FLAVORY.ID) ===== --}}
+        <section id="hrms" class="py-5 bg-white overflow-hidden">
+            @push('styles')
+            <style>
+            /* ── HRMS Section ── */
+            .hrms-badge {
+                display:inline-flex; align-items:center; gap:6px;
+                padding:5px 14px; border-radius:50px;
+                background:linear-gradient(135deg,rgba(25,135,84,.08),rgba(20,108,67,.05));
+                border:1px solid rgba(25,135,84,.2);
+                font-size:.72rem; font-weight:800; letter-spacing:.8px;
+                color:#198754; text-transform:uppercase; margin-bottom:16px;
+            }
+            .hrms-headline { font-size:clamp(1.7rem,3vw,2.4rem); font-weight:900; color:#1e293b; line-height:1.2; }
+            .hrms-headline .hl { color:#198754; }
+            .hrms-desc { font-size:.95rem; color:#64748b; line-height:1.75; }
+            .hrms-link-btn {
+                display:inline-flex; align-items:center; gap:8px;
+                padding:12px 28px; border-radius:50px; border:none; cursor:pointer;
+                font-weight:800; font-size:.9rem; color:#fff; text-decoration:none;
+                background:linear-gradient(135deg,#198754,#20c997);
+                box-shadow:0 8px 24px rgba(25,135,84,.3);
+                transition:transform .25s, box-shadow .25s;
+            }
+            .hrms-link-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(25,135,84,.4); color:#fff; }
+            .hrms-link-ghost {
+                display:inline-flex; align-items:center; gap:8px;
+                padding:12px 24px; border-radius:50px;
+                border:1.5px solid rgba(25,135,84,.4); font-weight:700; font-size:.88rem;
+                color:#198754; text-decoration:none; background:rgba(25,135,84,.05);
+                transition:all .25s;
+            }
+            .hrms-link-ghost:hover { border-color:#198754; background:rgba(25,135,84,.12); color:#198754; }
+
+            /* ── Carousel strip ── */
+            .hrms-carousel-outer {
+                overflow:hidden; position:relative;
+                mask-image:linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+                -webkit-mask-image:linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+            }
+            .hrms-carousel-track {
+                display:flex; gap:16px; width:max-content;
+                animation:hrmsScroll 28s linear infinite;
+            }
+            .hrms-carousel-track:hover { animation-play-state:paused; }
+            @keyframes hrmsScroll {
+                from { transform:translateX(0); }
+                to   { transform:translateX(-50%); }
+            }
+            .hrms-card {
+                flex-shrink:0; width:230px;
+                background:#fff; border:1.5px solid rgba(25,135,84,.15);
+                border-radius:18px; padding:22px 18px;
+                box-shadow:0 4px 16px rgba(25,135,84,.07);
+                transition:box-shadow .2s, border-color .2s;
+                cursor:default;
+            }
+            .hrms-card:hover { border-color:rgba(25,135,84,.4); box-shadow:0 8px 28px rgba(25,135,84,.14); }
+            .hrms-card-icon {
+                width:42px; height:42px; border-radius:12px;
+                background:linear-gradient(135deg,rgba(25,135,84,.1),rgba(32,201,151,.08));
+                display:flex; align-items:center; justify-content:center;
+                font-size:1.2rem; color:#198754; margin-bottom:12px;
+            }
+            .hrms-card h4 { font-size:.88rem; font-weight:800; color:#1e293b; margin-bottom:5px; }
+            .hrms-card p  { font-size:.75rem; color:#64748b; margin:0; line-height:1.5; }
+            </style>
+            @endpush
+
+            <div class="container py-4">
+                <div class="row align-items-center g-5">
+
+                    {{-- Teks kiri --}}
+                    <div class="col-lg-5 animate-slide-up">
+                        <div class="hrms-badge">
+                            <i class="bi bi-people-fill"></i> Fitur HRMS Eksklusif
+                        </div>
+                        <h2 class="hrms-headline mb-3">
+                            Kelola Tim Karyawan<br>dengan <span class="hl">Key.Flavory.id</span>
+                        </h2>
+                        <p class="hrms-desc mb-3">
+                            Flavory.id kini hadir dengan modul <strong>Human Resource Management System (HRMS)</strong> melalui platform <strong>Key.Flavory.id</strong> - solusi lengkap bagi owner & manager untuk mengelola tim, shift, absensi, dan performa outlet dari satu dasbor terpusat.
+                        </p>
+                        <p class="hrms-desc mb-4">
+                            Tidak perlu aplikasi HR terpisah. Semua data karyawan, jadwal kerja, rekap absensi, hingga laporan bisnis outlet terintegrasi langsung dengan data kasir Flavory.id secara <em>real-time</em>.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3">
+                            <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL','http://127.0.0.1:8001')),'/') }}/login"
+                               class="hrms-link-btn">
+                                <i class="bi bi-person-badge-fill"></i> Buka Dasbor Manager
+                            </a>
+                            <a href="{{ route('panduan.hrms') }}" class="hrms-link-ghost">
+                                Panduan HRMS <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- Kanan: stats + tag --}}
+                    <div class="col-lg-7 animate-fade-in">
+                        <div class="row g-3 mb-4">
+                            <div class="col-6 col-md-3">
+                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
+                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">∞</div>
+                                    <div class="text-muted small fw-600">Karyawan</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
+                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">5+</div>
+                                    <div class="text-muted small fw-600">Modul HRMS</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
+                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">24/7</div>
+                                    <div class="text-muted small fw-600">Akses Online</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
+                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">Free</div>
+                                    <div class="text-muted small fw-600">Termasuk Paket</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Carousel card fitur HRMS --}}
+                        <div class="hrms-carousel-outer py-2">
+                            <div class="hrms-carousel-track" id="hrmsTrack">
+                                {{-- 8 card asli --}}
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-person-lines-fill"></i></div>
+                                    <h4>Data Karyawan</h4>
+                                    <p>Kelola profil, biodata, dan arsip karyawan aktif maupun nonaktif.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-calendar-week-fill"></i></div>
+                                    <h4>Manajemen Shift</h4>
+                                    <p>Buat kategori shift, atur rotasi, dan pantau jadwal tim harian.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-fingerprint"></i></div>
+                                    <h4>Rekap Absensi</h4>
+                                    <p>Lacak kehadiran, izin, dan keterlambatan karyawan secara otomatis.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-wallet2"></i></div>
+                                    <h4>Modal Usaha</h4>
+                                    <p>Catat modal yang disetorkan dan pantau riwayatnya dengan grafik.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                                    <h4>Laporan Bisnis</h4>
+                                    <p>Pantau omzet, untung-rugi, dan pengeluaran outlet secara real-time.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                    <h4>Performa Bisnis</h4>
+                                    <p>Analisis komparasi omzet & prediksi tren berbasis data transaksi.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                                    <h4>Akses Akun Kasir</h4>
+                                    <p>Buat dan kelola akun login sistem untuk masing-masing karyawan.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-stars"></i></div>
+                                    <h4>MineAI Manager</h4>
+                                    <p>Konsultasi bisnis AI khusus dasbor manager dengan data outlet.</p>
+                                </div>
+                                {{-- Duplikat untuk seamless loop --}}
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-person-lines-fill"></i></div>
+                                    <h4>Data Karyawan</h4>
+                                    <p>Kelola profil, biodata, dan arsip karyawan aktif maupun nonaktif.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-calendar-week-fill"></i></div>
+                                    <h4>Manajemen Shift</h4>
+                                    <p>Buat kategori shift, atur rotasi, dan pantau jadwal tim harian.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-fingerprint"></i></div>
+                                    <h4>Rekap Absensi</h4>
+                                    <p>Lacak kehadiran, izin, dan keterlambatan karyawan secara otomatis.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-wallet2"></i></div>
+                                    <h4>Modal Usaha</h4>
+                                    <p>Catat modal yang disetorkan dan pantau riwayatnya dengan grafik.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                                    <h4>Laporan Bisnis</h4>
+                                    <p>Pantau omzet, untung-rugi, dan pengeluaran outlet secara real-time.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                    <h4>Performa Bisnis</h4>
+                                    <p>Analisis komparasi omzet & prediksi tren berbasis data transaksi.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                                    <h4>Akses Akun Kasir</h4>
+                                    <p>Buat dan kelola akun login sistem untuk masing-masing karyawan.</p>
+                                </div>
+                                <div class="hrms-card">
+                                    <div class="hrms-card-icon"><i class="bi bi-stars"></i></div>
+                                    <h4>MineAI Manager</h4>
+                                    <p>Konsultasi bisnis AI khusus dasbor manager dengan data outlet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        {{-- ===== END SECTION HRMS ===== --}}
+
         {{-- ===== SECTION MINEAI SPOTLIGHT ===== --}}
         <section id="mineai" class="py-0 overflow-hidden">
             <div class="mineai-section">
@@ -968,87 +1188,153 @@
 
         <section id="paket" class="py-5 bg-white">
             <div class="container py-5">
-                <div class="text-center mb-5 mx-auto animate-slide-up" style="max-width: 700px;">
-                    <h2 class="fw-bold">Investasi Terbaik untuk Masa Depan Bisnis Anda</h2>
-                    <p class="text-muted">Akses <strong class="text-dark">SEMUA FITUR LENGKAP</strong> (termasuk Prediksi & MineAI) tanpa ada biaya tersembunyi. Dapatkan harga promo hari ini!</p>
+                <div class="text-center mb-5 mx-auto animate-slide-up" style="max-width:760px;">
+                    <span class="text-orange fw-bold text-uppercase small"><i class="bi bi-tag-fill me-1"></i> Harga & Paket</span>
+                    <h2 class="fw-bold mt-2">Investasi Terbaik untuk Masa Depan Bisnis Anda</h2>
+                    <p class="text-muted">Semua paket mendapatkan <strong class="text-dark">SELURUH FITUR LENGKAP</strong> - POS Kasir, HRMS (key.flavory.id), MineAI, Prediksi Bisnis, dan masih banyak lagi. Yang berbeda hanya durasi & harga.</p>
                 </div>
 
                 <div class="row justify-content-center align-items-stretch g-4">
-                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.1s;">
+
+                    {{-- Paket Trial --}}
+                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay:.1s">
                         <article class="pricing-card text-center">
                             <h3 class="h4 fw-bold text-dark mb-1">Masa Percobaan</h3>
-                            <p class="text-muted small">Buktikan sendiri kemudahan aplikasi kami</p>
-                            
-                            <div class="my-4">
-                                <span class="fw-bold text-dark mb-0 display-6">Rp 0<span class="fs-6 text-muted fw-normal"> / 30 Hari</span></span>
+                            <p class="text-muted small mb-4">Buktikan sendiri kemudahan aplikasi kami</p>
+                            <div class="mb-4">
+                                <span class="fw-bold text-dark display-6">Rp 0</span>
+                                <span class="text-muted d-block" style="font-size:.85rem;">/ 30 Hari</span>
                             </div>
-                            
-                            <ul class="check-list text-start mb-4 border-top pt-4">
-                                <li><i class="bi bi-check2"></i> Kasir POS lengkap (dine-in, take away, QR)</li>
-                                <li><i class="bi bi-check2"></i> Manajemen menu, stok & pengeluaran</li>
-                                <li><i class="bi bi-check2"></i> Laporan bisnis & analisa performa</li>
-                                <li><i class="bi bi-check2"></i> <strong>MineAI</strong> &ndash; insight &amp; chat AI bisnis</li>
-                                <li><i class="bi bi-check2"></i> Sistem kasir offline/online</li>
-                                <li><i class="bi bi-check2"></i> Cetak struk & kitchen ticket</li>
-                            </ul>
+
+                            <div class="text-start border-top pt-4 mb-4">
+                                <p class="fw-bold text-dark small mb-2" style="letter-spacing:.3px;text-transform:uppercase;"><i class="bi bi-shop me-1 text-orange"></i> Fitur POS Kasir</p>
+                                    <li><i class="bi bi-check2"></i> Diskon nominal/persen + Kode Voucher</li>
+                                    <li><i class="bi bi-check2"></i> Database pelanggan & form pesanan</li>
+                                    <li><i class="bi bi-check2"></i> Cetak struk 5 jalur: bluethoot, USB, QR & WhatsApp</li>
+                                    <li><i class="bi bi-check2"></i> Pesanan offline &amp; sinkronisasi otomatis</li>
+                                    <li><i class="bi bi-check2"></i> Manajemen stok real-time + indikator tipis</li>
+                                    <li><i class="bi bi-check2"></i> Laporan pengeluaran operasional</li>
+                                    <li><i class="bi bi-check2"></i> Ikhtisar bisnis harian (omzet, order, untung)</li>
+                                    <li><i class="bi bi-check2"></i> Laporan bisnis &amp; analisa performa</li>
+                                    <li><i class="bi bi-check2"></i> Prediksi tren penjualan 1 bulan</li>
+                                    <li><i class="bi bi-check2"></i> <strong>MineAI</strong> - konsultan bisnis AI</li>
+                                </ul>
+                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;"><i class="bi bi-people-fill me-1 text-success"></i> Fitur HRMS (key.flavory.id)</p>
+                                <ul class="check-list small">
+                                    <li><i class="bi bi-check2"></i> Manajemen data karyawan (aktif & nonaktif)</li>
+                                    <li><i class="bi bi-check2"></i> Manajemen shift &amp; rotasi jadwal</li>
+                                    <li><i class="bi bi-check2"></i> Rekap absensi &amp; izin karyawan</li>
+                                    <li><i class="bi bi-check2"></i> Modal usaha &amp; riwayat setoran</li>
+                                    <li><i class="bi bi-check2"></i> Laporan bisnis &amp; performa outlet</li>
+                                    <li><i class="bi bi-check2"></i> Akun akses kasir per karyawan</li>
+                                    <li><i class="bi bi-check2"></i> MineAI khusus dasbor manager</li>
+                                </ul>
+                            </div>
                             <div class="mt-auto">
-                                <a href="{{ route('register') }}" class="btn btn-outline-dark w-100 fw-bold py-2">Mulai Gratis Sekarang</a>
+                                <a href="{{ route('register') }}" class="btn btn-outline-dark w-100 fw-bold py-2 rounded-pill">Mulai Gratis Sekarang</a>
                             </div>
                         </article>
                     </div>
 
-                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.2s;">
+                    {{-- Paket Bulanan --}}
+                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay:.2s">
                         <article class="pricing-card popular text-center shadow-lg">
                             <span class="badge-popular">PALING DIMINATI</span>
                             <h3 class="h4 fw-bold text-dark mb-1">Paket Berlangganan</h3>
                             <p class="text-muted small mb-3">Solusi cerdas dengan harga sangat terjangkau</p>
-                            
                             <div class="mb-2">
-                                <span class="promo-tag mb-2 d-inline-block shadow-sm">🔥 PROMO TERBATAS: DISKON 30%</span>
+                                <span class="promo-tag mb-2 d-inline-block shadow-sm"><i class="bi bi-lightning-charge-fill me-1"></i> PROMO TERBATAS: DISKON 30%</span>
                             </div>
                             <div class="mb-4">
                                 <span class="price-strike">Rp 100.000</span>
-                                <span class="fw-bolder text-orange mb-0 display-5 d-block" style="letter-spacing: -1px;">Rp 70.000</span>
+                                <span class="fw-bolder text-orange display-5 d-block" style="letter-spacing:-1px;">Rp 70.000</span>
                                 <span class="text-muted fw-medium">/ Bulan</span>
                             </div>
-                            
-                            <ul class="check-list text-start mb-4 border-top pt-4">
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> Kasir POS lengkap (dine-in, take away, QR)</li>
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen menu, stok & pengeluaran</li>
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan bisnis & analisa performa</li>
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> <strong class="text-dark">MineAI</strong> &ndash; insight &amp; chat AI bisnis</li>
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> Sistem kasir offline/online</li>
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> Cetak struk & kitchen ticket</li>
-                                <li><i class="bi bi-check-circle-fill text-orange"></i> Pembaruan sistem otomatis</li>
-                            </ul>
+
+                            <div class="text-start border-top pt-4 mb-4">
+                                <p class="fw-bold text-dark small mb-2" style="letter-spacing:.3px;text-transform:uppercase;">Fitur POS Kasir</p>
+                                <ul class="check-list small">
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Kasir POS (dine-in, take away, QR order)</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Diskon nominal/persen + Kode Voucher</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Database pelanggan & form pesanan</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Cetak struk 5 jalur: bluethoot, USB, QR & WhatsApp</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Pesanan offline &amp; sinkronisasi otomatis</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen stok real-time + indikator tipis</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan pengeluaran operasional</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Ikhtisar bisnis harian (omzet, order, untung)</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan bisnis &amp; analisa performa</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Prediksi tren penjualan 1 bulan</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> <strong>MineAI</strong> - konsultan bisnis AI</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Pembaruan sistem otomatis (free update)</li>
+                                </ul>
+                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Fitur HRMS (key.flavory.id)</p>
+                                <ul class="check-list small">
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen data karyawan (aktif & nonaktif)</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen shift &amp; rotasi jadwal</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Rekap absensi &amp; izin karyawan</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Modal usaha &amp; riwayat setoran</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan bisnis &amp; performa outlet</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Akun akses kasir per karyawan</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> MineAI khusus dasbor manager</li>
+                                </ul>
+                            </div>
                             <div class="mt-auto">
-                                <a href="{{ route('register') ?? '#' }}" class="btn btn-orange w-100 py-3 fs-5 shadow-sm fw-bold">Ambil Promo Bulanan</a>
+                                <a href="{{ route('register') }}" class="btn btn-orange w-100 py-3 fs-5 shadow-sm fw-bold rounded-pill">Ambil Promo Bulanan</a>
                             </div>
                         </article>
                     </div>
 
-                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay: 0.3s;">
+                    {{-- Paket Selamanya --}}
+                    <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay:.3s">
                         <article class="pricing-card text-center">
                             <h3 class="h4 fw-bold text-dark mb-1">Paket Pebisnis Sukses</h3>
-                            <p class="text-muted small mb-3">Bayar sekali, aktif selamanya</p>
+                            <p class="text-muted small mb-4">Bayar sekali, aktif selamanya</p>
                             <div class="mb-4">
-                                <span class="fw-bold text-dark mb-0 display-6 d-block">Rp 880.000</span>
+                                <span class="fw-bold text-dark display-6 d-block">Rp 880.000</span>
                                 <span class="text-muted">/ Selamanya <span class="badge bg-success-subtle text-success fw-bold ms-1" style="font-size:.65rem;">Bayar Sekali</span></span>
                             </div>
-                            
-                            <ul class="check-list text-start mb-4 border-top pt-4">
-                                <li><i class="bi bi-check2 text-success"></i> Kasir POS lengkap (dine-in, take away, QR)</li>
-                                <li><i class="bi bi-check2 text-success"></i> Manajemen menu, stok & pengeluaran</li>
-                                <li><i class="bi bi-check2 text-success"></i> Laporan bisnis & analisa performa</li>
-                                <li><i class="bi bi-check2 text-success"></i> <strong>MineAI</strong> &ndash; insight &amp; chat AI bisnis</li>
-                                <li><i class="bi bi-check2 text-success"></i> Sistem kasir offline/online</li>
-                                <li><i class="bi bi-check2 text-success"></i> Cetak struk & kitchen ticket</li>
-                                <li><i class="bi bi-check2 text-success"></i> Pembaruan sistem otomatis</li>
-                                <li><i class="bi bi-check2 text-success"></i> Prioritas dukungan teknis CS</li>
-                                <li><i class="bi bi-infinity text-success"></i> <strong>Aktif Selamanya, tidak ada perpanjangan</strong></li>
-                            </ul>
+
+                            <div class="text-start border-top pt-4 mb-4">
+                                <p class="fw-bold text-dark small mb-2" style="letter-spacing:.3px;text-transform:uppercase;"><i class="bi bi-shop me-1 text-orange"></i> Fitur POS Kasir</p>
+                                <ul class="check-list small">
+                                    <li><i class="bi bi-check2 text-success"></i> Kasir POS (dine-in, take away, QR order)</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Diskon nominal/persen + Kode Voucher</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Database pelanggan & form pesanan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Cetak struk 5 jalur:  bluethoot, USB, QR & WhatsApp</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Pesanan offline &amp; sinkronisasi otomatis</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Manajemen stok real-time + indikator tipis</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Laporan pengeluaran operasional</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Ikhtisar bisnis harian (omzet, order, untung)</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Laporan bisnis &amp; analisa performa</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Prediksi tren penjualan 1 bulan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> <strong>MineAI</strong> - konsultan bisnis AI</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Pembaruan sistem otomatis (free update)</li>
+                                </ul>
+                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Fitur HRMS (key.flavory.id)</p>
+                                <ul class="check-list small">
+                                    <li><i class="bi bi-check2 text-success"></i> Manajemen data karyawan (aktif & nonaktif)</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Manajemen shift &amp; rotasi jadwal</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Rekap absensi &amp; izin karyawan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Modal usaha &amp; riwayat setoran</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Laporan bisnis &amp; performa outlet</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Akun akses kasir per karyawan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> MineAI khusus dasbor manager</li>
+                                </ul>
+                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Keistimewaan Paket Ini</p>
+                                <ul class="check-list small">
+                                    <li><i class="bi bi-infinity text-success"></i> <strong>Aktif Selamanya</strong> - tidak ada perpanjangan</li>
+                                    <li><i class="bi bi-headset text-success"></i> Prioritas dukungan teknis CS</li>
+                                </ul>
+                            </div>
                             <div class="mt-auto">
-                                <a href="{{ route('register') ?? '#' }}" class="btn btn-outline-success w-100 fw-bold py-2">Pilih Paket Selamanya</a>
+                                <a href="{{ route('register') }}" class="btn btn-outline-success w-100 fw-bold py-2 rounded-pill">Pilih Paket Selamanya</a>
+                            </div>
+                        </article>
+                    </div>
+
+                </div>
+            </div>
+        </section>
                             </div>
                         </article>
                     </div>
