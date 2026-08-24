@@ -22,9 +22,12 @@ class PublicController extends Controller
     public function index()
     {
         $blogPosts = \Illuminate\Support\Facades\Cache::remember('blog_posts_home', 3600, function () {
+            // URL blog diambil dari .env (BLOG_URL), fallback ke blog.flavory.id
+            $blogUrl = rtrim(env('BLOG_URL', 'https://blog.flavory.id'), '/');
+
             try {
                 $response = \Illuminate\Support\Facades\Http::timeout(5)
-                    ->get('https://blog.flavory.id/api/posts', ['limit' => 3]);
+                    ->get($blogUrl . '/api/posts', ['limit' => 3]);
 
                 if ($response->successful()) {
                     return $response->json();
