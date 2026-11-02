@@ -14,8 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-       $middleware->trustProxies(at: '*'); 
-        
+        // Trust semua proxy headers (diperlukan untuk ngrok, reverse proxy, dll.)
+        // Laravel akan otomatis mendeteksi scheme & host dari X-Forwarded-* headers
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'cek.langganan' => \App\Http\Middleware\CheckSubscriptionStatus::class,

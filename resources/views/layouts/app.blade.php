@@ -394,16 +394,18 @@
                 
                 <div class="navbar-cta-wrapper d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
 
-                    {{-- Tombol BERANDA MANAGER — muncul jika cookie manager_active aktif (session key.flavory.id) --}}
-                    @if(request()->cookie('manager_active') === '1')
-                        <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001')), '/') }}/manager"
+                    {{-- Tombol BERANDA OWNER — muncul jika sudah login sebagai owner --}}
+                    @auth
+                        @if(auth()->user()->role === 'owner')
+                        <a href="{{ route('owner.dashboard') }}"
                            class="btn w-100 w-lg-auto fw-semibold d-flex align-items-center justify-content-center gap-2"
                            style="background:#6f42c1;color:#fff;border-radius:50px;padding:8px 20px;border:none;white-space:nowrap;transition:all .3s ease;box-shadow:0 4px 15px rgba(111,66,193,.3);"
                            onmouseover="this.style.background='#5a32a3';this.style.transform='translateY(-2px)'"
                            onmouseout="this.style.background='#6f42c1';this.style.transform='translateY(0)'">
-                            <i class="bi bi-person-badge"></i> Beranda Manager
+                            <i class="bi bi-person-badge"></i> Beranda Owner
                         </a>
-                    @endif
+                        @endif
+                    @endauth
 
                     @auth
                         {{-- Sudah login: tampilkan tombol beranda sesuai role --}}
@@ -414,6 +416,10 @@
                         @elseif(auth()->user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
                                 <i class="bi bi-speedometer2 me-1"></i> Beranda Admin
+                            </a>
+                        @elseif(auth()->user()->role === 'owner')
+                            <a href="{{ route('owner.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
+                                <i class="bi bi-speedometer2 me-1"></i> Beranda Owner
                             </a>
                         @else
                             <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
@@ -738,25 +744,25 @@
                 <i class="bi bi-arrow-right ms-auto text-muted" style="font-size:.85rem;"></i>
             </a>
             {{-- Manager --}}
-            @if(request()->cookie('manager_active') === '1')
-            {{-- Sudah ada session manager: langsung ke dashboard --}}
-            <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001')), '/') }}/manager"
+            @if(Auth::check() && Auth::user()->role === 'owner')
+            {{-- Sudah login sebagai owner: langsung ke dashboard owner --}}
+            <a href="{{ route('owner.dashboard') }}"
                class="btn-pilih-masuk manager">
                 <div class="pilih-icon manager"><i class="bi bi-person-badge"></i></div>
                 <div class="pilih-text">
-                    <strong>Beranda Manager</strong>
-                    <span>Kembali ke dasbor manajemen tim & laporan</span>
+                    <strong>Beranda Owner / Manager</strong>
+                    <span>Kembali ke dasbor laporan & manajemen bisnis</span>
                 </div>
                 <i class="bi bi-arrow-right ms-auto text-muted" style="font-size:.85rem;"></i>
             </a>
             @else
-            {{-- Belum login: arahkan ke halaman login key.flavory.id --}}
-            <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL', 'http://127.0.0.1:8001')), '/') }}/login"
+            {{-- Belum login sebagai owner: arahkan ke halaman login owner --}}
+            <a href="{{ route('owner.login') }}"
                class="btn-pilih-masuk manager">
                 <div class="pilih-icon manager"><i class="bi bi-person-badge"></i></div>
                 <div class="pilih-text">
-                    <strong>Masuk Beranda Manager</strong>
-                    <span>Login ke dasbor manajemen tim & laporan</span>
+                    <strong>Masuk sebagai Owner / Manager</strong>
+                    <span>Login ke dasbor laporan & manajemen bisnis</span>
                 </div>
                 <i class="bi bi-arrow-right ms-auto text-muted" style="font-size:.85rem;"></i>
             </a>

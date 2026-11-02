@@ -195,9 +195,10 @@ class AuthController extends Controller
     private function getRedirectUrl(string $role): string
     {
         return match ($role) {
-            'kasir'   => route('kasir.dashboard'),
-             'admin'   => route('admin.dashboard'),
-            default   => '/'
+            'kasir'  => route('kasir.dashboard'),
+            'admin'  => route('admin.dashboard'),
+            'owner'  => route('owner.dashboard'),
+            default  => '/'
         };
     }
 

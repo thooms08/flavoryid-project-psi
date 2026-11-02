@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\{User, Partner, InformasiOutlet, MediaQr, Verifikasi};
+use App\Models\{User, Partner, InformasiOutlet, MediaQr, Verifikasi, OwnerKasir};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +18,15 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|max:50|unique:users,username',
+            // Username unik per pasangan (username, role): cek apakah sudah ada di kasir atau owner
+            'username' => [
+                'required', 'string', 'max:50',
+                function ($attribute, $value, $fail) {
+                    if (User::usernameExistsForRegistration($value)) {
+                        $fail('Username sudah digunakan. Silakan pilih username lain.');
+                    }
+                },
+            ],
             'password' => 'required|min:8|confirmed',
             'nama_manager' => 'required|string|max:255',
             'no_wa' => 'required|string|max:25',
@@ -49,6 +57,19 @@ class RegisterController extends Controller
                     'username' => $request->username,
                     'password' => Hash::make($request->password),
                     'role' => 'kasir',
+                ]);
+
+                // ── Otomatis buat akun Owner dengan username & password yang sama ──
+                $ownerUser = User::create([
+                    'username' => $request->username,
+                    'password' => Hash::make($request->password),
+                    'role'     => 'owner',
+                ]);
+
+                // ── Hubungkan akun kasir & owner via tabel pivot ──
+                OwnerKasir::create([
+                    'kasir_id' => $user->id,
+                    'owner_id' => $ownerUser->id,
                 ]);
         
                 $partner = Partner::create([
@@ -164,7 +185,9 @@ class RegisterController extends Controller
         $value = $request->query('value');
 
         if ($type === 'username') {
-            $exists = User::where('username', $value)->exists();
+            // Username dianggap tidak tersedia jika sudah ada di role kasir atau owner
+            // (karena keduanya dibuat bersamaan saat registrasi)
+            $exists = User::usernameExistsForRegistration($value);
             return response()->json(['available' => !$exists]);
         }
 

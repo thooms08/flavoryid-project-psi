@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OwnerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{KasirMenuController, RegisterController, VerifikasiController, 
 KasirController, KasirOrderController, KasirOrderHistoryController, KasirOrderBatalController,
@@ -68,6 +69,57 @@ Route::get('/coba-demo/{token}', [AuthController::class, 'showDemoLogin'])->name
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh-captcha', [AuthController::class, 'refreshCaptcha'])->name('captcha.refresh');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// ─── Owner / Manager Login ───────────────────────────────────────────────────
+Route::get('/login-owner',  [OwnerController::class, 'showLogin'])->name('owner.login');
+Route::post('/login-owner', [OwnerController::class, 'login'])->name('owner.login.post');
+Route::post('/logout-owner', [OwnerController::class, 'logout'])->name('owner.logout');
+
+Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
+    Route::get('/index', [OwnerController::class, 'index'])->name('dashboard');
+
+    // Ikhtisar Bisnis (pakai controller kasir yang sudah ada)
+    Route::get('/laporan-bisnis',          [KasirLaporanBisnisController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan-bisnis/export',   [KasirLaporanBisnisController::class, 'export'])->name('laporan.export');
+    Route::get('/laporan-bisnis/chart',    [KasirLaporanBisnisController::class, 'getChartData'])->name('laporan.chart');
+
+    // Laporan Pengeluaran
+    Route::get('/pengeluaran',             [KasirLaporanPengeluaranController::class, 'index'])->name('pengeluaran.index');
+    Route::post('/pengeluaran',            [KasirLaporanPengeluaranController::class, 'store'])->name('pengeluaran.store');
+    Route::put('/pengeluaran/{id}',        [KasirLaporanPengeluaranController::class, 'update'])->name('pengeluaran.update');
+    Route::delete('/pengeluaran/{id}',     [KasirLaporanPengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
+    Route::patch('/pengeluaran/{id}/restore', [KasirLaporanPengeluaranController::class, 'restore'])->name('pengeluaran.restore');
+    Route::get('/pengeluaran/export',      [KasirLaporanPengeluaranController::class, 'export'])->name('pengeluaran.export');
+
+    // Modal Usaha
+    Route::get('/modal',                   [KasirModalController::class, 'index'])->name('modal.index');
+    Route::post('/modal',                  [KasirModalController::class, 'store'])->name('modal.store');
+    Route::patch('/modal/{id}/restore',    [KasirModalController::class, 'restore'])->name('modal.restore');
+    Route::delete('/modal/{id}',           [KasirModalController::class, 'destroy'])->name('modal.destroy');
+    Route::get('/modal/export',            [KasirModalController::class, 'export'])->name('modal.export');
+
+    // Performa Bisnis
+    Route::get('/performa-bisnis',         [KasirPerformaController::class, 'index'])->name('performa');
+
+    // AI Consultant
+    Route::get('/mineai',                  [\App\Http\Controllers\MineAIController::class, 'index'])->name('mineai');
+    Route::get('/mineai/initial-insight',  [\App\Http\Controllers\MineAIController::class, 'getInitialInsight'])->name('mineai.insight');
+    Route::get('/mineai/daily-usage',      [\App\Http\Controllers\MineAIController::class, 'getDailyUsage'])->name('mineai.daily-usage');
+    Route::post('/mineai/chat',            [\App\Http\Controllers\MineAIController::class, 'chatWithGroq'])->name('mineai.chat');
+    Route::get('/mineai/session/{uuid}',   [\App\Http\Controllers\MineAIController::class, 'loadSession'])->name('mineai.session.load');
+    Route::delete('/mineai/session/{uuid}',[\App\Http\Controllers\MineAIController::class, 'deleteSession'])->name('mineai.session.delete');
+
+    // Pengaturan Form Pesanan
+    Route::get('/pengaturan-form',         [KasirFormController::class, 'index'])->name('pengaturan.index');
+    Route::post('/pengaturan-form/update', [KasirFormController::class, 'update'])->name('pengaturan.update');
+
+    // Langganan
+    Route::get('/langganan',               [KasirLanggananController::class, 'index'])->name('langganan.index');
+    Route::post('/langganan/subscribe',    [KasirLanggananController::class, 'subscribe'])->name('langganan.subscribe');
+    Route::post('/langganan/unsubscribe',  [KasirLanggananController::class, 'unsubscribe'])->name('langganan.unsubscribe');
+    Route::get('/langganan/sukses',        [KasirLanggananController::class, 'sukses'])->name('langganan.sukses');
+});
+// ────────────────────────────────────────────────────────────────────────────
 
 Route::get('/check-availability', [RegisterController::class, 'checkAvailability']);
 

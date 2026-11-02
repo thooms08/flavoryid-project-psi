@@ -1186,6 +1186,34 @@
             <i class="bi bi-arrow-right" style="color:#ff6a00; font-size:1rem;"></i>
         </a>
 
+        {{-- Divider --}}
+        <div style="display:flex; align-items:center; gap:10px; margin: 2px 0;">
+            <div style="flex:1; height:1px; background: rgba(0,0,0,0.07);"></div>
+            <span style="font-size:0.68rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">atau</span>
+            <div style="flex:1; height:1px; background: rgba(0,0,0,0.07);"></div>
+        </div>
+
+        
+        <a href="{{ route('owner.login') }}"
+           style="
+               display:flex; align-items:center; gap:14px;
+               padding:16px 18px; border-radius:16px;
+               background: #fff; border: 1.5px solid rgba(100,116,139,0.2);
+               box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+               text-decoration:none; transition: transform .2s, box-shadow .2s, border-color .2s;
+           "
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 22px rgba(100,116,139,0.14)'; this.style.borderColor='rgba(100,116,139,0.45)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(0,0,0,0.04)'; this.style.borderColor='rgba(100,116,139,0.2)';">
+            <div style="width:40px; height:40px; border-radius:10px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="bi bi-person-badge-fill" style="color:#475569; font-size:1.1rem;"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:0.9rem; font-weight:800; color:#1e293b; margin-bottom:2px;">Log-In sebagai Manager / Owner</div>
+                <div style="font-size:0.73rem; color:#64748b;">Akses dasbor laporan & manajemen bisnis</div>
+            </div>
+            <i class="bi bi-arrow-right" style="color:#475569; font-size:1rem;"></i>
+        </a>
+
         {{-- Tutup --}}
         <button onclick="document.getElementById('modalCobaGratis').close()"
             style="
