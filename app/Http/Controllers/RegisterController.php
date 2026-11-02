@@ -82,8 +82,8 @@ class RegisterController extends Controller {
             // Setup Harga & Invoice
             $invoiceNumber = 'FLY-' . time() . '-' . strtoupper(Str::random(4));
             $amount = 0;
-            if ($request->paket === 'eksklusif') $amount = 70000;
-            if ($request->paket === 'super') $amount = 880000;
+            if ($request->paket === 'eksklusif') $amount = 500;
+            if ($request->paket === 'super') $amount = 500;
 
             $mediaQr = MediaQr::create([
                 'informasi_id' => $outlet->id,
@@ -192,24 +192,44 @@ class RegisterController extends Controller {
             return;
         }
 
-        try {
-            $response = Http::timeout(10)
-                ->withHeaders(['X-Internal-Key' => $internalKey])
-                ->post("{$keyUrl}/api/v1/internal/sync-manager", [
-                    'username'             => $username,
-                    'password_hash'        => $passwordHash,
-                    'nama_manager'         => $partner->nama_manager,
-                    'email'                => $partner->email,
-                    'no_wa'                => $partner->no_wa,
-                    'jenis_bisnis'         => 'Lainnya',
-                    'flavory_partner_uuid' => $partner->uuid,
-                ]);
+        $endpoint = "{$keyUrl}/api/v1/internal/sync-manager";
+        $payload  = [
+            'username'             => $username,
+            'password_hash'        => $passwordHash,
+            'nama_manager'         => $partner->nama_manager,
+            'email'                => $partner->email,
+            'no_wa'                => $partner->no_wa,
+            'jenis_bisnis'         => 'Lainnya',
+            'flavory_partner_uuid' => $partner->uuid,
+        ];
 
-            if (!$response->successful()) {
-                Log::warning('syncToKeyFlavory gagal: ' . $response->body());
+        try {
+            $response = Http::timeout(15)
+                ->withoutVerifying()          // toleran SSL self-signed / mismatch di staging
+                ->withHeaders([
+                    'X-Internal-Key' => $internalKey,
+                    'Accept'         => 'application/json',
+                    'Content-Type'   => 'application/json',
+                ])
+                ->post($endpoint, $payload);
+
+            if ($response->successful()) {
+                Log::info('syncToKeyFlavory berhasil.', [
+                    'username' => $username,
+                    'status'   => $response->status(),
+                ]);
+            } else {
+                Log::warning('syncToKeyFlavory gagal — response tidak sukses.', [
+                    'endpoint' => $endpoint,
+                    'status'   => $response->status(),
+                    'body'     => $response->body(),
+                ]);
             }
         } catch (\Exception $e) {
-            Log::warning('syncToKeyFlavory exception: ' . $e->getMessage());
+            Log::error('syncToKeyFlavory exception: ' . $e->getMessage(), [
+                'endpoint' => $endpoint,
+                'username' => $username,
+            ]);
         }
     }
 
@@ -252,7 +272,7 @@ class RegisterController extends Controller {
 {
     $apiKey = env('WIJAYAPAY_API_KEY');
     $merchantCode = env('WIJAYAPAY_MERCHANT_CODE');
-    $url = "https://wijayapay.com/api/transaction/create";
+    $url = "https://gateway.wijayapay.com/api/transaction/create";
 
     $signature = md5($merchantCode . $apiKey . $invoiceNumber);
 

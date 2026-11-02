@@ -67,7 +67,7 @@ class KasirLanggananController extends Controller
         ]);
 
         $data = $this->getKasirData();
-        $amount = ($request->paket === 'eksklusif') ? 70000 : 880000;
+        $amount = ($request->paket === 'eksklusif') ? 70000 : 689000;
         $invoiceNumber = 'FYS-' . time() . '-' . strtoupper(Str::random(4));
 
         // Generate data mentah dari WijayaPay
@@ -133,7 +133,7 @@ class KasirLanggananController extends Controller
     private function generateWijayaPay($invoiceNumber, $amount, $partner, $method) {
         $apiKey = env('WIJAYAPAY_API_KEY');
         $merchantCode = env('WIJAYAPAY_MERCHANT_CODE');
-        $url = "https://wijayapay.com/api/transaction/create";
+        $url = "https://gateway.wijayapay.com/api/transaction/create";
 
         $signature = md5($merchantCode . $apiKey . $invoiceNumber);
 

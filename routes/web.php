@@ -53,9 +53,9 @@ Route::prefix('panduan')->name('panduan.')->group(function () {
     Route::view('/pesanan', 'panduan.pesanan')->name('pesanan');
     Route::view('/riwayat-pesanan', 'panduan.riwayat-pesanan')->name('riwayat-pesanan');
     Route::view('/pesanan-batal', 'panduan.pesanan-batal')->name('pesanan-batal');
-    Route::view('/laporan-bisnis', 'panduan.laporan-bisnis')->name('laporan-bisnis');
-    Route::view('/performa-bisnis', 'panduan.performa-bisnis')->name('performa-bisnis');
-    Route::view('/mineai', 'panduan.mineai')->name('mineai');
+    Route::view('/ikhtisar-bisnis', 'panduan.ikhtisar-bisnis')->name('ikhtisar-bisnis');
+    Route::view('/laporan-pengeluaran', 'panduan.laporan-pengeluaran')->name('laporan-pengeluaran');
+    Route::view('/modal-usaha', 'panduan.modal-usaha')->name('modal-usaha');
     Route::view('/hrms', 'panduan.hrms')->name('hrms');
     Route::view('/hrms/akses-dasbor', 'panduan.hrms.akses-dasbor')->name('hrms.akses-dasbor');
     Route::view('/hrms/data-karyawan', 'panduan.hrms.data-karyawan')->name('hrms.data-karyawan');

@@ -11,7 +11,7 @@ class DummyDataSeeder extends Seeder
 {
     public function run(): void
     {
-        $partnerId = 2; // partner milik user_id = 1
+        $partnerId = 15; // partner milik user_id = 1
         $timezone  = 'Asia/Jakarta';
 
         // ──────────────────────────────────────────────

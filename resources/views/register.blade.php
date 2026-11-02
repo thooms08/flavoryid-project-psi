@@ -31,7 +31,7 @@
 <body class="bg-orange-50 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center py-8">
 
    <div class="w-full max-w-md md:max-w-3xl px-4 md:px-6" 
-     x-data="{ step: 1, showPass: false, paket: '{{ old('paket', 'gratis') }}', jenis: '{{ old('jenis_outlet', '') }}', imageUrl: null, usernameError: '', pageNameError: '', passwordError: '', confirmPasswordError: '', passwordValue: '' }" x-cloak>
+     x-data="{ step: 1, showPass: false, paket: '{{ old('paket', 'gratis') }}', jenis: '{{ old('jenis_outlet', '') }}', imageUrl: null, usernameError: '', pageNameError: '', passwordError: '', confirmPasswordError: '', passwordValue: '', fotoError: '' }" x-cloak>
         
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-orange-500 rounded-2xl shadow-lg mb-3 transform">
@@ -263,7 +263,10 @@
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block text-xs md:text-sm font-semibold text-slate-700 mb-1">Unggah Foto Outlet</label>
+                            <label class="block text-xs md:text-sm font-semibold text-slate-700 mb-1">
+                                Unggah Foto Outlet
+                                <span class="ml-1 text-[10px] font-normal text-slate-400">(Maks. 2 MB · JPG, PNG, WEBP)</span>
+                            </label>
                             <div class="relative group">
                                 <label class="flex flex-col items-center justify-center w-full h-32 md:h-36 border-2 border-slate-200 border-dashed rounded-[1.5rem] cursor-pointer bg-slate-50 hover:bg-orange-50 hover:border-orange-300 transition-all overflow-hidden relative">
                                     <div x-show="!imageUrl" class="flex flex-col items-center justify-center pt-4 pb-4">
@@ -280,21 +283,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="file" name="foto_outlet" required class="absolute w-[1px] h-[1px] opacity-0" accept="image/*" 
-                                        @change="
-                                            const file = $event.target.files[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onload = (e) => { imageUrl = e.target.result; };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        " />
+                                    <input type="file" name="foto_outlet" required class="absolute w-[1px] h-[1px] opacity-0" accept="image/*"
+                                        @change="handleFotoChange($event, $data)" />
                                 </label>
-                                <button type="button" x-show="imageUrl" @click="imageUrl = null; $refs.fileInput.value = ''" 
+                                <button type="button" x-show="imageUrl" @click="imageUrl = null; fotoError = ''; $refs.fileInput.value = ''" 
                                         class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 md:w-8 md:h-8 rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-colors border-2 border-white z-20 text-xs md:text-base">
                                     <i class="bi bi-x"></i>
                                 </button>
                             </div>
+                            <p x-show="fotoError" x-text="fotoError" class="text-red-500 text-xs mt-1.5 font-semibold flex items-center gap-1" x-transition>
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span x-text="fotoError"></span>
+                            </p>
                         </div>
                         
                         <div class="md:col-span-2">
@@ -347,7 +347,7 @@
                                     <select name="paket" x-model="paket" class="w-full p-3 md:p-4 bg-white border-2 border-slate-100 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 font-bold text-slate-700 text-sm md:text-base cursor-pointer">
                                         <option value="gratis">Coba Gratis 30 Hari (Rp 0)</option>
                                         <option value="eksklusif">★ Paket Eksklusif (Rp 70.000 / Bulan)</option>
-                                        <option value="super">♛ Paket Super (Rp 880.000 / Selamanya)</option>
+                                        <option value="super">♛ Paket Super (Rp 689.000 / Selamanya)</option>
                                     </select>
                                 </div>
 
@@ -398,6 +398,18 @@
                             return;
                         }
 
+                        if (fotoError !== '') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Foto Tidak Valid!',
+                                text: 'Ukuran foto melebihi 2 MB. Silakan pilih foto yang lebih kecil sebelum melanjutkan.',
+                                confirmButtonText: 'Pilih Foto Lain',
+                                confirmButtonColor: '#ea580c',
+                                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl px-6 py-2 font-bold' }
+                            });
+                            return;
+                        }
+
                             let currentStep = document.getElementById('step' + step);
                             let inputs = currentStep.querySelectorAll('[required]');
                             let valid = true;
@@ -429,6 +441,43 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ asset('js/loading.js') }}"></script>
+    <script src="{{ asset('js/loading.js') }}"></script>
+    <script>
+        function handleFotoChange(event, alpineData) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024; // 2 MB
+            if (file.size > maxSize) {
+                // Reset input & preview
+                event.target.value = '';
+                alpineData.imageUrl  = null;
+                alpineData.fotoError = 'Ukuran file terlalu besar (maks. 2 MB).';
+
+                const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Terlalu Besar!',
+                    html:
+                        '<p>Foto yang Anda pilih berukuran <strong>' + sizeMB + ' MB</strong>, ' +
+                        'melebihi batas maksimum <strong>2 MB</strong>.</p>' +
+                        '<p style="margin-top:8px;font-size:0.85rem;color:#64748b;">' +
+                        'Silakan kompres foto terlebih dahulu atau pilih foto lain yang lebih kecil.</p>',
+                    confirmButtonText: 'Pilih Foto Lain',
+                    confirmButtonColor: '#ea580c',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl px-6 py-2 font-bold'
+                    }
+                });
+                return;
+            }
+
+            alpineData.fotoError = '';
+            const reader = new FileReader();
+            reader.onload = (e) => { alpineData.imageUrl = e.target.result; };
+            reader.readAsDataURL(file);
+        }
+    </script>
 </body>
 </html>

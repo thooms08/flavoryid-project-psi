@@ -78,6 +78,7 @@ class AuthController extends Controller
         }
 
         // 4. Proses Login
+        $request->session()->regenerate();
         Auth::login($user, $remember);
 
         // 5. Cek Verifikasi
@@ -89,8 +90,6 @@ class AuthController extends Controller
                 return back()->with('unverified', 'Akun Anda belum terverifikasi!')->withInput();
             }
         }
-
-        $request->session()->regenerate();
 
         // 6. LOGIKA CEK STATUS LANGGANAN
         if ($user->role === 'kasir') {

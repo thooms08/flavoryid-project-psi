@@ -4,8 +4,12 @@
 
     @foreach ($staticUrls as $url)
     <url>
-        <loc>https://flavory.id{{ $url['loc'] }}</loc>
+        <loc>{{ config('app.url') }}{{ $url['loc'] }}</loc>
+        @if(isset($url['lastmod']))
+        <lastmod>{{ $url['lastmod'] }}</lastmod>
+        @else
         <lastmod>{{ now()->toAtomString() }}</lastmod>
+        @endif
         <changefreq>{{ $url['changefreq'] }}</changefreq>
         <priority>{{ $url['priority'] }}</priority>
     </url>
@@ -13,7 +17,7 @@
 
     @foreach ($events as $event)
     <url>
-        <loc>https://flavory.id/event/{{ $event->slug }}</loc>
+        <loc>{{ config('app.url') }}/event/{{ $event->slug }}</loc>
         <lastmod>{{ $event->updated_at->toAtomString() }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>

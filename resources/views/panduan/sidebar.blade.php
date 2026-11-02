@@ -3,8 +3,8 @@
     $isFlavoryRoute = request()->routeIs(
         'panduan.daftar', 'panduan.login', 'panduan.menu', 'panduan.form',
         'panduan.catatan', 'panduan.pesanan', 'panduan.riwayat-pesanan',
-        'panduan.pesanan-batal', 'panduan.laporan-bisnis',
-        'panduan.performa-bisnis', 'panduan.mineai'
+        'panduan.pesanan-batal', 'panduan.ikhtisar-bisnis',
+        'panduan.laporan-pengeluaran', 'panduan.modal-usaha'
     );
     $isHrmsRoute = request()->routeIs('panduan.hrms') || request()->routeIs('panduan.hrms.*');
 @endphp
@@ -245,21 +245,21 @@
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.laporan-bisnis') ? 'active-flavory' : '' }}"
-                           href="{{ route('panduan.laporan-bisnis') }}">
-                            <i class="bi bi-bar-chart-fill"></i> Laporan Bisnis
+                        <a class="sp-link {{ request()->routeIs('panduan.ikhtisar-bisnis') ? 'active-flavory' : '' }}"
+                           href="{{ route('panduan.ikhtisar-bisnis') }}">
+                            <i class="bi bi-bar-chart-fill"></i> Ikhtisar Bisnis
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.performa-bisnis') ? 'active-flavory' : '' }}"
-                           href="{{ route('panduan.performa-bisnis') }}">
-                            <i class="bi bi-graph-up"></i> Performa Bisnis
+                        <a class="sp-link {{ request()->routeIs('panduan.laporan-pengeluaran') ? 'active-flavory' : '' }}"
+                           href="{{ route('panduan.laporan-pengeluaran') }}">
+                            <i class="bi bi-receipt-cutoff"></i> Laporan Pengeluaran
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.mineai') ? 'active-flavory' : '' }}"
-                           href="{{ route('panduan.mineai') }}">
-                            <i class="bi bi-stars"></i> Panduan MineAI
+                        <a class="sp-link {{ request()->routeIs('panduan.modal-usaha') ? 'active-flavory' : '' }}"
+                           href="{{ route('panduan.modal-usaha') }}">
+                            <i class="bi bi-wallet2"></i> Modal Usaha
                         </a>
                     </li>
                 </ul>

@@ -133,7 +133,7 @@ class SubscribeController extends Controller
     private function generateWijayaPay($invoiceNumber, $amount, $partner, $method) {
         $apiKey = env('WIJAYAPAY_API_KEY');
         $merchantCode = env('WIJAYAPAY_MERCHANT_CODE');
-        $url = "https://wijayapay.com/api/transaction/create";
+        $url = "https://gateway.wijayapay.com/api/transaction/create";
 
         $signature = md5($merchantCode . $apiKey . $invoiceNumber);
 

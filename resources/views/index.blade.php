@@ -818,26 +818,6 @@
                     <div class="mx-auto mt-3 mb-4" style="width: 80px; height: 4px; background-color: var(--primary-orange); border-radius: 2px;"></div>
                 </div>
 
-                <div class="row align-items-center mb-5 pb-5 border-bottom">
-                    <div class="col-lg-6 mb-4 mb-lg-0 animate-slide-up">
-                        <h3 class="fw-bold mb-3"><i class="bi bi-bar-chart-line-fill text-orange me-2"></i> Performa, Prediksi & MineAI</h3>
-                        <p class="text-muted mb-4">Jangan menebak-nebak keputusan bisnis Anda. Biarkan data yang berbicara dan asisten AI kami membantu Anda meracik strategi terbaik.</p>
-                        
-                        <div class="d-flex flex-column gap-3">
-                            <div class="feature-highlight-card">
-                                <h4 class="h6 fw-bold mb-1"><i class="bi bi-clock-history text-orange me-2"></i> Analisa Performa Bisnis Otomatis</h4>
-                                <p class="small text-muted mb-0">Ketahui secara pasti di jam berapa atau hari apa outlet Anda paling ramai/sepi. Atur jadwal karyawan dan promo dengan lebih akurat.</p>
-                            </div>
-                            <div class="feature-highlight-card">
-                                <h4 class="h6 fw-bold mb-1"><i class="bi bi-calendar-check text-orange me-2"></i> Prediksi Penjualan Masa Depan</h4>
-                                <p class="small text-muted mb-0">Sistem pintar kami membaca tren usaha Anda dan memprediksi omzet hingga 1 bulan ke depan agar Anda bisa menyiapkan stok bahan baku dengan tepat.</p>
-                            </div>
-                            <div class="feature-highlight-card">
-                                <h4 class="h6 fw-bold mb-1"><i class="bi bi-robot text-orange me-2"></i> Asisten MineAI</h4>
-                                <p class="small text-muted mb-0">Dapatkan insight mendalam tentang laporan bisnis Anda. MineAI memberikan saran pengembangan usaha, analisa risiko, serta memproyeksikan dampak dari setiap keputusan bisnis yang akan Anda ambil.</p>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col-lg-6 ps-lg-5 animate-fade-in">
                         <img src="{{asset('assets/analisis.png')}}" onerror="this.src='https://placehold.co/620x420/fff4ec/ff6a00?text=Laporan+%26+Analisa'" class="img-fluid rounded-4 shadow-lg border" alt="Fitur Analisa Performa Bisnis dan Prediksi Flavory.id">
                     </div>
@@ -862,7 +842,7 @@
                             </li>
                             <li>
                                 <i class="bi bi-check-circle-fill"></i> 
-                                <div><strong>Multi-Printer Support</strong><br><span class="small text-muted">Cetak struk kasir, stiker minuman, dan tiket langsung ke dapur secara bersamaan untuk mempercepat operasional.</span></div>
+                                <div><strong>Multi-Printer Support</strong><br><span class="small text-muted">Cetak struk fisik (via printer bluethoot maupun USB), dan struk digital via QR code maupun tautan whatsapp, serta mendukung struk dapur.</span></div>
                             </li>
                         </ul>
                     </div>
@@ -881,10 +861,6 @@
                             <li>
                                 <i class="bi bi-check-circle-fill"></i> 
                                 <div><strong>Laporan Arus Kas Otomatis</strong><br><span class="small text-muted">Sistem merekap pemasukan dan pengeluaran, serta menghitung keuntungan bersih harian langsung di dalam aplikasi.</span></div>
-                            </li>
-                            <li>
-                                <i class="bi bi-check-circle-fill"></i> 
-                                <div><strong>Hak Akses Karyawan yang Aman</strong><br><span class="small text-muted">Batasi apa yang bisa dilihat kasir, koki, dan admin. Keamanan data operasional usaha Anda terjamin penuh.</span></div>
                             </li>
                         </ul>
                     </div>
@@ -1047,7 +1023,7 @@
                                 </div>
                                 <div class="hrms-card">
                                     <div class="hrms-card-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
-                                    <h4>Laporan Bisnis</h4>
+                                    <h4>Ikhtisar Bisnis</h4>
                                     <p>Pantau omzet, untung-rugi, dan pengeluaran outlet secara real-time.</p>
                                 </div>
                                 <div class="hrms-card">
@@ -1062,7 +1038,7 @@
                                 </div>
                                 <div class="hrms-card">
                                     <div class="hrms-card-icon"><i class="bi bi-stars"></i></div>
-                                    <h4>MineAI Manager</h4>
+                                    <h4>MineAIr</h4>
                                     <p>Konsultasi bisnis AI khusus dasbor manager dengan data outlet.</p>
                                 </div>
                                 {{-- Duplikat untuk seamless loop --}}
@@ -1088,7 +1064,7 @@
                                 </div>
                                 <div class="hrms-card">
                                     <div class="hrms-card-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
-                                    <h4>Laporan Bisnis</h4>
+                                    <h4>Ikhtisar Bisnis</h4>
                                     <p>Pantau omzet, untung-rugi, dan pengeluaran outlet secara real-time.</p>
                                 </div>
                                 <div class="hrms-card">
@@ -1098,12 +1074,12 @@
                                 </div>
                                 <div class="hrms-card">
                                     <div class="hrms-card-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                                    <h4>Akses Akun Kasir</h4>
+                                    <h4>Akses Akun Karyawanr</h4>
                                     <p>Buat dan kelola akun login sistem untuk masing-masing karyawan.</p>
                                 </div>
                                 <div class="hrms-card">
                                     <div class="hrms-card-icon"><i class="bi bi-stars"></i></div>
-                                    <h4>MineAI Manager</h4>
+                                    <h4>MineAI</h4>
                                     <p>Konsultasi bisnis AI khusus dasbor manager dengan data outlet.</p>
                                 </div>
                             </div>
@@ -1163,7 +1139,7 @@
                                 <a href="{{ route('register') }}" class="btn-mineai-cta">
                                     <i class="bi bi-stars me-2"></i> Coba MineAI Gratis
                                 </a>
-                                <a href="{{ route('panduan.mineai') }}" class="btn-mineai-ghost">
+                                <a href="{{ route('panduan.hrms.mineai-manager') }}" class="btn-mineai-ghost">
                                     Pelajari Lebih Lanjut <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
@@ -1199,7 +1175,7 @@
                     {{-- Paket Trial --}}
                     <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay:.1s">
                         <article class="pricing-card text-center">
-                            <h3 class="h4 fw-bold text-dark mb-1">Masa Percobaan</h3>
+                            <h3 class="h4 fw-bold text-dark mb-1">Paket Gratis</h3>
                             <p class="text-muted small mb-4">Buktikan sendiri kemudahan aplikasi kami</p>
                             <div class="mb-4">
                                 <span class="fw-bold text-dark display-6">Rp 0</span>
@@ -1208,16 +1184,17 @@
 
                             <div class="text-start border-top pt-4 mb-4">
                                 <p class="fw-bold text-dark small mb-2" style="letter-spacing:.3px;text-transform:uppercase;"><i class="bi bi-shop me-1 text-orange"></i> Fitur POS Kasir</p>
+                                    <li><i class="bi bi-check2"></i> Kasir POS (dine-in, take away, QR order)</li>
                                     <li><i class="bi bi-check2"></i> Diskon nominal/persen + Kode Voucher</li>
-                                    <li><i class="bi bi-check2"></i> Database pelanggan & form pesanan</li>
+                                    <li><i class="bi bi-check2"></i> Fitur E-Commerce (customer pesen dari rumah)</li>
                                     <li><i class="bi bi-check2"></i> Cetak struk 5 jalur: bluethoot, USB, QR & WhatsApp</li>
                                     <li><i class="bi bi-check2"></i> Pesanan offline &amp; sinkronisasi otomatis</li>
                                     <li><i class="bi bi-check2"></i> Manajemen stok real-time + indikator tipis</li>
                                     <li><i class="bi bi-check2"></i> Laporan pengeluaran operasional</li>
                                     <li><i class="bi bi-check2"></i> Ikhtisar bisnis harian (omzet, order, untung)</li>
-                                    <li><i class="bi bi-check2"></i> Laporan bisnis &amp; analisa performa</li>
-                                    <li><i class="bi bi-check2"></i> Prediksi tren penjualan 1 bulan</li>
-                                    <li><i class="bi bi-check2"></i> <strong>MineAI</strong> - konsultan bisnis AI</li>
+                                    <li><i class="bi bi-check2"></i> Analisis menu paling laris &amp; tidak laris</li>
+                                    <li><i class="bi bi-check2"></i> Modal Usaha &amp; riwayat setoran</li>
+                                    <li><i class="bi bi-check2"></i> Pembaruan sistem otomatis (free update)</li>
                                 </ul>
                                 <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;"><i class="bi bi-people-fill me-1 text-success"></i> Fitur HRMS (key.flavory.id)</p>
                                 <ul class="check-list small">
@@ -1225,9 +1202,9 @@
                                     <li><i class="bi bi-check2"></i> Manajemen shift &amp; rotasi jadwal</li>
                                     <li><i class="bi bi-check2"></i> Rekap absensi &amp; izin karyawan</li>
                                     <li><i class="bi bi-check2"></i> Modal usaha &amp; riwayat setoran</li>
-                                    <li><i class="bi bi-check2"></i> Laporan bisnis &amp; performa outlet</li>
-                                    <li><i class="bi bi-check2"></i> Akun akses kasir per karyawan</li>
-                                    <li><i class="bi bi-check2"></i> MineAI khusus dasbor manager</li>
+                                    <li><i class="bi bi-check2"></i> Ikhtisar bisnis &amp; performa outlet</li>
+                                    <li><i class="bi bi-check2"></i> Akun akses per karyawan</li>
+                                    <li><i class="bi bi-check2"></i> MineAI (Fitur AI konsultan)</li>
                                 </ul>
                             </div>
                             <div class="mt-auto">
@@ -1240,7 +1217,7 @@
                     <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay:.2s">
                         <article class="pricing-card popular text-center shadow-lg">
                             <span class="badge-popular">PALING DIMINATI</span>
-                            <h3 class="h4 fw-bold text-dark mb-1">Paket Berlangganan</h3>
+                            <h3 class="h4 fw-bold text-dark mb-1">Paket Ekslusif</h3>
                             <p class="text-muted small mb-3">Solusi cerdas dengan harga sangat terjangkau</p>
                             <div class="mb-2">
                                 <span class="promo-tag mb-2 d-inline-block shadow-sm"><i class="bi bi-lightning-charge-fill me-1"></i> PROMO TERBATAS: DISKON 30%</span>
@@ -1256,15 +1233,14 @@
                                 <ul class="check-list small">
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Kasir POS (dine-in, take away, QR order)</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Diskon nominal/persen + Kode Voucher</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Database pelanggan & form pesanan</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Fitur E-Commerce (customer pesen dari rumah)</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Cetak struk 5 jalur: bluethoot, USB, QR & WhatsApp</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Pesanan offline &amp; sinkronisasi otomatis</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen stok real-time + indikator tipis</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan pengeluaran operasional</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Ikhtisar bisnis harian (omzet, order, untung)</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan bisnis &amp; analisa performa</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Prediksi tren penjualan 1 bulan</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> <strong>MineAI</strong> - konsultan bisnis AI</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Analisis menu paling laris &amp; tidak laris</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Modal Usaha &amp; riwayat setoran</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Pembaruan sistem otomatis (free update)</li>
                                 </ul>
                                 <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Fitur HRMS (key.flavory.id)</p>
@@ -1273,9 +1249,9 @@
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen shift &amp; rotasi jadwal</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Rekap absensi &amp; izin karyawan</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Modal usaha &amp; riwayat setoran</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Laporan bisnis &amp; performa outlet</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Akun akses kasir per karyawan</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> MineAI khusus dasbor manager</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Ikhtisar bisnis &amp; performa outlet</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Akun akses per karyawan</li>
+                                    <li><i class="bi bi-check-circle-fill text-orange"></i> MineAI (Fitur AI konsultan)</li>
                                 </ul>
                             </div>
                             <div class="mt-auto">
@@ -1287,10 +1263,10 @@
                     {{-- Paket Selamanya --}}
                     <div class="col-md-6 col-lg-4 animate-slide-up" style="transition-delay:.3s">
                         <article class="pricing-card text-center">
-                            <h3 class="h4 fw-bold text-dark mb-1">Paket Pebisnis Sukses</h3>
+                            <h3 class="h4 fw-bold text-dark mb-1">Paket Super</h3>
                             <p class="text-muted small mb-4">Bayar sekali, aktif selamanya</p>
                             <div class="mb-4">
-                                <span class="fw-bold text-dark display-6 d-block">Rp 880.000</span>
+                                <span class="fw-bold text-dark display-6 d-block">Rp 689.000</span>
                                 <span class="text-muted">/ Selamanya <span class="badge bg-success-subtle text-success fw-bold ms-1" style="font-size:.65rem;">Bayar Sekali</span></span>
                             </div>
 
@@ -1299,15 +1275,14 @@
                                 <ul class="check-list small">
                                     <li><i class="bi bi-check2 text-success"></i> Kasir POS (dine-in, take away, QR order)</li>
                                     <li><i class="bi bi-check2 text-success"></i> Diskon nominal/persen + Kode Voucher</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Database pelanggan & form pesanan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Fitur E-Commerce (customer pesen dari rumah)</li>
                                     <li><i class="bi bi-check2 text-success"></i> Cetak struk 5 jalur:  bluethoot, USB, QR & WhatsApp</li>
                                     <li><i class="bi bi-check2 text-success"></i> Pesanan offline &amp; sinkronisasi otomatis</li>
                                     <li><i class="bi bi-check2 text-success"></i> Manajemen stok real-time + indikator tipis</li>
                                     <li><i class="bi bi-check2 text-success"></i> Laporan pengeluaran operasional</li>
                                     <li><i class="bi bi-check2 text-success"></i> Ikhtisar bisnis harian (omzet, order, untung)</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Laporan bisnis &amp; analisa performa</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Prediksi tren penjualan 1 bulan</li>
-                                    <li><i class="bi bi-check2 text-success"></i> <strong>MineAI</strong> - konsultan bisnis AI</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Analisis menu paling laris &amp; tidak laris</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Modal Usaha &amp; riwayat setoran</li>
                                     <li><i class="bi bi-check2 text-success"></i> Pembaruan sistem otomatis (free update)</li>
                                 </ul>
                                 <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Fitur HRMS (key.flavory.id)</p>
@@ -1316,14 +1291,9 @@
                                     <li><i class="bi bi-check2 text-success"></i> Manajemen shift &amp; rotasi jadwal</li>
                                     <li><i class="bi bi-check2 text-success"></i> Rekap absensi &amp; izin karyawan</li>
                                     <li><i class="bi bi-check2 text-success"></i> Modal usaha &amp; riwayat setoran</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Laporan bisnis &amp; performa outlet</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Akun akses kasir per karyawan</li>
-                                    <li><i class="bi bi-check2 text-success"></i> MineAI khusus dasbor manager</li>
-                                </ul>
-                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Keistimewaan Paket Ini</p>
-                                <ul class="check-list small">
-                                    <li><i class="bi bi-infinity text-success"></i> <strong>Aktif Selamanya</strong> - tidak ada perpanjangan</li>
-                                    <li><i class="bi bi-headset text-success"></i> Prioritas dukungan teknis CS</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Ikhtisar Bisnis &amp; performa outlet</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Akun akses per karyawan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> MineAI (Fitur AI konsultan)</li>
                                 </ul>
                             </div>
                             <div class="mt-auto">

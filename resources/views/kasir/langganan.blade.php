@@ -146,7 +146,7 @@
                         <div class="package-card p-4 text-center h-100 d-flex flex-column justify-content-center" id="card-super">
                             <span class="badge bg-warning text-dark mb-2 align-self-center px-3 py-1 rounded-pill" style="font-size: 0.7rem; letter-spacing: 0.5px;">TERBAIK</span>
                             <h4 class="fw-bold text-dark mb-2">SUPER</h4>
-                            <h2 class="fw-extrabold mb-0 text-orange">Rp 880.000</h2>
+                            <h2 class="fw-extrabold mb-0 text-orange">Rp 689.000</h2>
                             <span class="text-muted small">/ selamanya</span>
                             <hr class="w-50 mx-auto my-3 text-muted opacity-25">
                             <ul class="list-unstyled small text-muted text-start mb-0 px-md-3">

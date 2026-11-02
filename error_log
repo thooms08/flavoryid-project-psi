@@ -131,3 +131,10 @@ Stack trace:
 #2 /home/flavoryi/public_html/index.php(14): require('/home/flavoryi/...')
 #3 {main}
   thrown in /home/flavoryi/public_html/vendor/composer/autoload_real.php on line 55
+[24-Aug-2026 15:42:11 Asia/Jakarta] PHP Fatal error:  Uncaught RuntimeException: Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.1". You are running 8.3.33. in /home/thom3998/public_html/test.mysems.my.id/vendor/composer/platform_check.php:26
+Stack trace:
+#0 /home/thom3998/public_html/test.mysems.my.id/vendor/composer/autoload_real.php(25): require()
+#1 /home/thom3998/public_html/test.mysems.my.id/vendor/autoload.php(22): ComposerAutoloaderInit8d3ec235999bf6d4b0830d0459a38090::getLoader()
+#2 /home/thom3998/public_html/test.mysems.my.id/artisan(10): require('/home/thom3998/...')
+#3 {main}
+  thrown in /home/thom3998/public_html/test.mysems.my.id/vendor/composer/platform_check.php on line 26
