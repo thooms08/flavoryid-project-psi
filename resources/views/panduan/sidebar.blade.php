@@ -6,15 +6,15 @@
         'panduan.pesanan-batal', 'panduan.ikhtisar-bisnis',
         'panduan.laporan-pengeluaran', 'panduan.modal-usaha'
     );
-    $isHrmsRoute = request()->routeIs('panduan.hrms') || request()->routeIs('panduan.hrms.*');
+    $isManagerRoute = request()->routeIs('panduan.hrms') || request()->routeIs('panduan.hrms.*');
 @endphp
 
 <style>
     :root {
         --primary-orange: #ff6a00;
         --light-orange:   #fff4e6;
-        --hrms-green:     #198754;
-        --hrms-light:     #f0fdf4;
+        --manager-green:  #198754;
+        --manager-light:  #f0fdf4;
         --text-dark:      #1e293b;
         --text-muted:     #64748b;
     }
@@ -43,9 +43,9 @@
     .sp-group-btn.flavory-btn           { color: var(--primary-orange); }
     .sp-group-btn.flavory-btn.open,
     .sp-group-btn.flavory-btn:hover     { background: var(--light-orange); }
-    .sp-group-btn.hrms-btn              { color: var(--hrms-green); }
-    .sp-group-btn.hrms-btn.open,
-    .sp-group-btn.hrms-btn:hover        { background: var(--hrms-light); }
+    .sp-group-btn.manager-btn              { color: var(--manager-green); }
+    .sp-group-btn.manager-btn.open,
+    .sp-group-btn.manager-btn:hover        { background: var(--manager-light); }
 
     /* Ikon kiri grup */
     .sp-group-icon {
@@ -53,8 +53,8 @@
         display: flex; align-items: center; justify-content: center;
         font-size: .95rem; flex-shrink: 0;
     }
-    .flavory-btn .sp-group-icon { background: rgba(255,106,0,.12); color: var(--primary-orange); }
-    .hrms-btn    .sp-group-icon { background: rgba(25,135,84,.12);  color: var(--hrms-green); }
+    .flavory-btn .sp-group-icon  { background: rgba(255,106,0,.12); color: var(--primary-orange); }
+    .manager-btn .sp-group-icon  { background: rgba(25,135,84,.12);  color: var(--manager-green); }
 
     /* Chevron */
     .sp-chevron {
@@ -110,21 +110,21 @@
         font-weight: 700;
     }
     .sp-link.active-flavory i { color: var(--primary-orange); }
-    /* Active — HRMS */
-    .sp-link.active-hrms {
-        background: var(--hrms-light);
-        color: var(--hrms-green);
+    /* Active — Manager */
+    .sp-link.active-manager {
+        background: var(--manager-light);
+        color: var(--manager-green);
         font-weight: 700;
     }
-    .sp-link.active-hrms i { color: var(--hrms-green); }
+    .sp-link.active-manager i { color: var(--manager-green); }
 
     /* Garis vertikal di samping kiri submenu */
     .sp-submenu ul {
         border-left: 2px solid rgba(0,0,0,.06);
         margin-left: 20px;
     }
-    .flavory-btn ~ .sp-submenu ul { border-left-color: rgba(255,106,0,.18); }
-    .hrms-btn    ~ .sp-submenu ul { border-left-color: rgba(25,135,84,.18); }
+    .flavory-btn  ~ .sp-submenu ul { border-left-color: rgba(255,106,0,.18); }
+    .manager-btn  ~ .sp-submenu ul { border-left-color: rgba(25,135,84,.18); }
 
     /* ── Mobile toggle ── */
     .btn-mobile-toggle {
@@ -266,68 +266,68 @@
             </div>
 
             {{-- ════════════════════════════════
-                 GRUP 2 — HRMS (Key.Flavory.id)
+                 GRUP 2 — Dasbor Manager
             ════════════════════════════════ --}}
             <button type="button"
-                    class="sp-group-btn hrms-btn mt-1 {{ $isHrmsRoute ? 'open' : '' }}"
+                    class="sp-group-btn manager-btn mt-1 {{ $isManagerRoute ? 'open' : '' }}"
                     data-sp-target="submenu-hrms"
-                    aria-expanded="{{ $isHrmsRoute ? 'true' : 'false' }}">
+                    aria-expanded="{{ $isManagerRoute ? 'true' : 'false' }}">
                 <span class="d-flex align-items-center gap-2">
                     <span class="sp-group-icon"><i class="bi bi-people-fill"></i></span>
-                    HRMS (Key.Flavory.id)
+                    Dasbor Manager
                 </span>
                 <i class="bi bi-chevron-down sp-chevron"></i>
             </button>
 
             <div id="submenu-hrms"
-                 class="sp-submenu {{ $isHrmsRoute ? 'open' : '' }}">
+                 class="sp-submenu {{ $isManagerRoute ? 'open' : '' }}">
                 <ul>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms') && !request()->routeIs('panduan.hrms.*') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms') && !request()->routeIs('panduan.hrms.*') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms') }}">
-                            <i class="bi bi-grid-fill"></i> Overview HRMS
+                            <i class="bi bi-grid-fill"></i> Overview Dasbor Manager
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.akses-dasbor') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.akses-dasbor') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.akses-dasbor') }}">
                             <i class="bi bi-box-arrow-in-right"></i> Akses Dasbor Manager
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.data-karyawan') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.data-karyawan') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.data-karyawan') }}">
                             <i class="bi bi-person-lines-fill"></i> Data Karyawan
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.shift') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.shift') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.shift') }}">
                             <i class="bi bi-calendar-week-fill"></i> Manajemen Shift
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.absensi') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.absensi') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.absensi') }}">
                             <i class="bi bi-fingerprint"></i> Rekap Absensi
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.modal-usaha') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.modal-usaha') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.modal-usaha') }}">
                             <i class="bi bi-wallet2"></i> Modal Usaha
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.laporan-bisnis') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.laporan-bisnis') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.laporan-bisnis') }}">
                             <i class="bi bi-bar-chart-line-fill"></i> Laporan Bisnis
                         </a>
                     </li>
                     <li>
-                        <a class="sp-link {{ request()->routeIs('panduan.hrms.mineai-manager') ? 'active-hrms' : '' }}"
+                        <a class="sp-link {{ request()->routeIs('panduan.hrms.mineai-manager') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.mineai-manager') }}">
-                            <i class="bi bi-stars"></i> MineAI Manager
+                            <i class="bi bi-stars"></i> AI Consultant
                         </a>
                     </li>
                 </ul>

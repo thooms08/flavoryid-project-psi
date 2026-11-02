@@ -6,10 +6,10 @@ use App\Http\Controllers\{KasirMenuController, RegisterController, VerifikasiCon
 KasirController, KasirOrderController, KasirOrderHistoryController, KasirOrderBatalController,
 KasirFormController, KasirStokController, KasirProfileController, KasirLaporanBisnisController,
 KasirLaporanPengeluaranController, KasirModalController, PageOutletController, KasirPerformaController,
-KasirNoteController, KasirLanggananController, KasirAkunController, PublicController, PublicEventController,
+KasirNoteController, KasirLanggananController, KasirAkunController, PublicController,
 KasirVoucherController};
 use App\Http\Middleware\CheckSubscriptionStatus;
-use App\Http\Controllers\{AdminController, AdminPartnerController, AdminAkunPartnerController, PartnerResetPasswordController, AdminProfileController, AdminAktivitasController, AdminEventController, AdminPesertaController};
+use App\Http\Controllers\{AdminController, AdminPartnerController, AdminAkunPartnerController, PartnerResetPasswordController, AdminProfileController, AdminAktivitasController};
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 
@@ -31,15 +31,6 @@ Route::get('/kebijakan-privasi', [PublicController::class, 'kebijakanPrivasi'])-
 Route::get('/tentang', [PublicController::class, 'tentang'])->name('tentang');
 Route::get('/faq', [PublicController::class, 'faq'])->name('faq');
 Route::get('/syarat-ketentuan', [PublicController::class, 'SyaratKetentuan'])->name('syarat.ketentuan');
-
-// Public Event Routes (tanpa login)
-Route::prefix('event')->name('event.')->group(function () {
-    Route::get('/',                              [PublicEventController::class, 'index'])->name('index');
-    Route::get('/{identifier}/peserta',          [\App\Http\Controllers\PublicPesertaController::class, 'show'])->name('peserta');
-    Route::get('/{identifier}/peserta/search',   [\App\Http\Controllers\PublicPesertaController::class, 'search'])->name('peserta.search');
-    Route::get('/{identifier}',                  [PublicEventController::class, 'show'])->name('show');
-    Route::post('/{identifier}/daftar',          [PublicEventController::class, 'daftar'])->name('daftar');
-});
 
 Route::get('/verifikasi/{id}', [VerifikasiController::class, 'show'])->name('verifikasi.show');
 Route::post('/verifikasi/{id}', [VerifikasiController::class, 'verify'])->name('verifikasi.submit');
@@ -206,18 +197,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
     Route::get('/aktivitas', [AdminAktivitasController::class, 'index'])->name('aktivitas.index');
     Route::get('/partner/{uuid}/aktivitas', [AdminAktivitasController::class, 'detail'])->name('partner.aktivitas');
-
-    // Event Management Routes
-    Route::get('/event/kelola-event', [AdminEventController::class, 'index'])->name('event.kelola-event');
-    Route::post('/event/store', [AdminEventController::class, 'store'])->name('event.store');
-    Route::post('/event/update/{uuid}', [AdminEventController::class, 'update'])->name('event.update');
-    Route::post('/event/toggle-status/{uuid}', [AdminEventController::class, 'toggleStatus'])->name('event.toggle-status');
-    Route::delete('/event/delete/{uuid}', [AdminEventController::class, 'destroy'])->name('event.destroy');
-
-    // Participant Management Routes
-    Route::get('/event/kelola-peserta', [AdminPesertaController::class, 'index'])->name('event.kelola-peserta');
-    Route::get('/event/data-peserta/{uuid}', [AdminPesertaController::class, 'detail'])->name('event.data-peserta');
-    Route::post('/event/peserta/upload-sertifikat/{uuid}', [AdminPesertaController::class, 'uploadSertifikat'])->name('event.upload-sertifikat');
 });
 Route::get('/reset-password/{token}', [PartnerResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PartnerResetPasswordController::class, 'resetPassword'])->name('password.update');

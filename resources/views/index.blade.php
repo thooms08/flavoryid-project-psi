@@ -80,19 +80,14 @@
     .hero-content-col { position: relative; z-index: 2; }
 
     /* Badge pill */
+    /* Badge text */
     .hero-badge-wrap {
         opacity: 0;
         filter: blur(6px);
         transform: translateY(12px);
         transition: opacity .6s ease, filter .6s ease, transform .6s ease;
         will-change: opacity, filter, transform;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px 16px;
-        background: rgba(255,106,0,.07);
-        border: 1.5px solid rgba(255,106,0,.2);
-        border-radius: 100px;
+        display: inline-block;
         margin-bottom: 20px;
     }
     .hero-badge-wrap.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
@@ -100,18 +95,26 @@
         opacity: 0; filter: blur(4px); transform: translateY(-8px);
         transition: opacity .3s, filter .3s, transform .3s;
     }
-    .hero-badge-dot {
-        width: 7px; height: 7px;
-        background: var(--primary-orange);
-        border-radius: 50%;
-        flex-shrink: 0;
-        animation: dotPulse 2.5s ease-in-out infinite;
+    .hero-badge-text {
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: 1.8px;
+        color: var(--primary-orange);
+        text-transform: uppercase;
+        display: inline-block;
     }
-    @keyframes dotPulse {
-        0%,100% { box-shadow: 0 0 0 0 rgba(255,106,0,.4); }
-        50%      { box-shadow: 0 0 0 5px rgba(255,106,0,0); }
+    .hero-badge-text .wave-char {
+        display: inline-block;
+        animation: waveChar 1.6s ease-in-out infinite;
+        will-change: transform;
     }
-    .hero-badge-text { font-size: .72rem; font-weight: 800; letter-spacing: .4px; color: var(--primary-orange); }
+    /* spasi tidak ikut animasi */
+    .hero-badge-text .wave-char.space { animation: none; }
+    @keyframes waveChar {
+        0%, 100% { transform: translateY(0);    }
+        40%      { transform: translateY(-5px); }
+        60%      { transform: translateY(1px);  }
+    }
 
     /* Title - proporsional */
     .hero-title {
@@ -460,7 +463,7 @@
         color: #94a3b8;
     }
 
-    /* ===== MINEAI SPOTLIGHT SECTION ===== */
+    /* ===== AI CONSULTANT SPOTLIGHT SECTION ===== */
     @keyframes mineShift {
         0%   { background-position: 0% 50%; }
         50%  { background-position: 100% 50%; }
@@ -479,12 +482,12 @@
     .mineai-section {
         position: relative;
         overflow: hidden;
-        background: linear-gradient(135deg, #fff4ec 0%, #fdf0f8 40%, #fff8f0 70%, #fdeef8 100%);
+        background: linear-gradient(135deg, #fff4e0 0%, #fff0d0 30%, #ffe8b0 65%, #ffd98a 100%);
         background-size: 400% 400%;
         animation: mineShift 10s ease infinite;
         padding: 80px 0;
         border-top: 3px solid transparent;
-        border-image: linear-gradient(135deg, #ff6a00, #ee0979) 1;
+        border-image: linear-gradient(135deg, #ff6a00, #ff9a00) 1;
     }
 
     /* Orbs */
@@ -500,13 +503,13 @@
     }
     .mineai-orb2 {
         width: 450px; height: 450px;
-        background: radial-gradient(circle, rgba(238,9,121,.14), transparent 65%);
+        background: radial-gradient(circle, rgba(255,154,0,.15), transparent 65%);
         bottom: -15%; right: -8%;
         animation: mineOrbFloat 13s ease-in-out infinite reverse;
     }
     .mineai-orb3 {
         width: 300px; height: 300px;
-        background: radial-gradient(circle, rgba(255,154,0,.12), transparent 65%);
+        background: radial-gradient(circle, rgba(255,180,0,.12), transparent 65%);
         top: 40%; left: 35%;
         animation: mineOrbFloat 8s ease-in-out infinite 2s;
     }
@@ -524,7 +527,7 @@
         display: inline-block;
         font-size: .68rem; font-weight: 800; letter-spacing: 1.5px;
         text-transform: uppercase;
-        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        background: linear-gradient(135deg, #ff6a00, #ff9a00);
         background-size: 200% 200%;
         animation: mineShift 3s ease infinite;
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -535,7 +538,7 @@
         font-size: 1.6rem; font-weight: 900; color: var(--text-dark); line-height: 1;
     }
     .mineai-name-text span {
-        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        background: linear-gradient(135deg, #ff6a00, #ff9a00);
         background-size: 200% 200%;
         animation: mineShift 3s ease infinite;
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -551,7 +554,7 @@
         margin-bottom: 1.2rem;
     }
     .mineai-grad-text {
-        background: linear-gradient(135deg, #ff6a00, #ee0979, #ff9a00);
+        background: linear-gradient(135deg, #ff6a00, #ff9a00, #ffb300);
         background-size: 300% 300%;
         animation: mineShift 4s ease infinite;
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -574,7 +577,7 @@
         display: flex; align-items: center; gap: 10px;
     }
     .mineai-features li i {
-        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        background: linear-gradient(135deg, #ff6a00, #ff9a00);
         background-size: 200%; animation: mineShift 3s ease infinite;
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -587,7 +590,7 @@
         padding: 13px 28px; border-radius: 50px; border: none;
         font-weight: 800; font-size: .9rem; color: white;
         text-decoration: none; cursor: pointer;
-        background: linear-gradient(135deg, #ff6a00, #ee0979, #ff9a00, #ff6a00);
+        background: linear-gradient(135deg, #ff6a00, #ff9a00, #ffb300, #ff6a00);
         background-size: 300% 300%;
         animation: mineShift 3s ease infinite;
         box-shadow: 0 8px 28px rgba(255,106,0,.4);
@@ -595,7 +598,7 @@
     }
     .btn-mineai-cta:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 36px rgba(238,9,121,.5);
+        box-shadow: 0 12px 36px rgba(255,154,0,.5);
         color: white;
     }
     .btn-mineai-ghost {
@@ -609,9 +612,9 @@
         transition: all .25s;
     }
     .btn-mineai-ghost:hover {
-        border-color: #ee0979;
-        background: rgba(238,9,121,.08);
-        color: #ee0979;
+        border-color: #ff9a00;
+        background: rgba(255,154,0,.08);
+        color: #ff7800;
     }
 
     /* Screenshot */
@@ -622,7 +625,7 @@
     }
     .mineai-screen-glow {
         position: absolute; inset: -20px;
-        background: radial-gradient(ellipse at center, rgba(238,9,121,.25) 0%, transparent 70%);
+        background: radial-gradient(ellipse at center, rgba(255,154,0,.22) 0%, transparent 70%);
         border-radius: 40px;
         pointer-events: none;
         animation: mineOrbFloat 7s ease-in-out infinite;
@@ -630,7 +633,7 @@
     .mineai-screenshot {
         width: 100%;
         border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(255,106,0,.2), 0 4px 20px rgba(238,9,121,.1), 0 0 0 1px rgba(255,106,0,.15);
+        box-shadow: 0 20px 60px rgba(255,106,0,.2), 0 4px 20px rgba(255,154,0,.15), 0 0 0 1px rgba(255,106,0,.15);
         display: block;
         animation: mineScreenFloat 6s ease-in-out infinite;
     }
@@ -644,6 +647,13 @@
 @endpush
 
 @section('content')
+
+<x-robot
+        greeting="Halo! Aku Flavory AI Consultant Ada yang bisa kubantu?"
+        :interval="60"
+        :delay="1.2"
+        size="clamp(140px, 18vw, 240px)"
+    />
     <main>
         <header id="home" class="hero-section">
             {{-- Soft orbs --}}
@@ -657,7 +667,6 @@
                     <div class="col-lg-6 order-2 order-lg-1 hero-content-col hero-reveal-col">
 
                         <div class="hero-badge-wrap">
-                            <div class="hero-badge-dot"></div>
                             <span class="hero-badge-text">APLIKASI POS AI TERBAIK DI INDONESIA</span>
                         </div>
 
@@ -711,22 +720,22 @@
                                 </div>
                                 <div class="hero-float-card fcard-ai">
                                     <div class="hero-float-card-icon">
-                                        {{-- Logo M MineAI --}}
+                                        {{-- Logo AI Consultant --}}
                                         <svg width="18" height="18" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
-                                                <linearGradient id="hero_mineai_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <linearGradient id="hero_ai_consultant_grad" x1="0%" y1="0%" x2="100%" y2="100%">
                                                     <stop offset="0%" style="stop-color:#ff6a00;" />
-                                                    <stop offset="100%" style="stop-color:#ee0979;" />
+                                                    <stop offset="100%" style="stop-color:#ff9a00;" />
                                                 </linearGradient>
                                             </defs>
                                             <path d="M 20,85 L 20,25 L 60,65 L 100,25 L 100,85"
-                                                  stroke="url(#hero_mineai_grad)"
+                                                  stroke="url(#hero_ai_consultant_grad)"
                                                   stroke-width="26"
                                                   stroke-linecap="round"
                                                   stroke-linejoin="round" />
                                         </svg>
                                     </div>
-                                    <div class="hero-float-card-label">MineAI</div>
+                                    <div class="hero-float-card-label">AI Consultant</div>
                                     <div class="hero-float-card-value">95%</div>
                                     <div class="hero-float-card-sub">Akurasi prediksi</div>
                                 </div>
@@ -788,7 +797,7 @@
                     <div class="col-md-6 col-lg-3 animate-slide-up" style="transition-delay: 0.2s;">
                         <article class="feature-card text-center">
                             <div class="feature-icon-box mx-auto"><i class="bi bi-robot"></i></div>
-                            <h3 class="h5 fw-bold">Ditenagai MineAI</h3>
+                            <h3 class="h5 fw-bold">Ditenagai AI Consultant</h3>
                             <p class="text-muted small mb-0">Satu-satunya sistem yang memberikan pandangan objektif dan saran bisnis dari hasil analisa laporan outlet Anda.</p>
                         </article>
                     </div>
@@ -818,8 +827,28 @@
                     <div class="mx-auto mt-3 mb-4" style="width: 80px; height: 4px; background-color: var(--primary-orange); border-radius: 2px;"></div>
                 </div>
 
+                <div class="row align-items-center mb-5 pb-5 border-bottom">
+                    <div class="col-lg-6 mb-4 mb-lg-0 animate-slide-up">
+                        <h3 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow text-orange me-2"></i> Ikhtisar Bisnis & Data Pelanggan</h3>
+                        <p class="text-muted mb-4">Pantau kesehatan bisnis Anda secara menyeluruh — dari tren omzet harian hingga profil pelanggan setia, semua tersaji dalam satu tampilan yang mudah dibaca.</p>
+
+                        <ul class="check-list mt-3">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <div><strong>Ikhtisar Bisnis Real-time</strong><br><span class="small text-muted">Lihat omzet, total order, keuntungan bersih, dan performa menu terlaris setiap hari secara langsung dari dashboard.</span></div>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <div><strong>Database Pelanggan Terintegrasi</strong><br><span class="small text-muted">Simpan data pelanggan otomatis saat transaksi. Kirim struk digital ke WhatsApp dan bangun loyalitas pelanggan dengan mudah.</span></div>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <div><strong>Analisa Performa & Prediksi</strong><br><span class="small text-muted">Grafik interaktif tren penjualan, analisis menu terlaris & jarang terjual, serta prediksi bisnis berbasis data nyata outlet Anda.</span></div>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="col-lg-6 ps-lg-5 animate-fade-in">
-                        <img src="{{asset('assets/analisis.png')}}" onerror="this.src='https://placehold.co/620x420/fff4ec/ff6a00?text=Laporan+%26+Analisa'" class="img-fluid rounded-4 shadow-lg border" alt="Fitur Analisa Performa Bisnis dan Prediksi Flavory.id">
+                        <img src="{{asset('assets/analisis.png')}}" onerror="this.src='https://placehold.co/620x420/fff4ec/ff6a00?text=Laporan+%26+Analisa'" class="img-fluid rounded-4 shadow-lg border" alt="Fitur Ikhtisar Bisnis, Analisa Performa, dan Data Pelanggan Flavory.id">
                     </div>
                 </div>
 
@@ -871,227 +900,7 @@
             </div>
         </section>
 
-        {{-- ===== SECTION HRMS (KEY.FLAVORY.ID) ===== --}}
-        <section id="hrms" class="py-5 bg-white overflow-hidden">
-            @push('styles')
-            <style>
-            /* ── HRMS Section ── */
-            .hrms-badge {
-                display:inline-flex; align-items:center; gap:6px;
-                padding:5px 14px; border-radius:50px;
-                background:linear-gradient(135deg,rgba(25,135,84,.08),rgba(20,108,67,.05));
-                border:1px solid rgba(25,135,84,.2);
-                font-size:.72rem; font-weight:800; letter-spacing:.8px;
-                color:#198754; text-transform:uppercase; margin-bottom:16px;
-            }
-            .hrms-headline { font-size:clamp(1.7rem,3vw,2.4rem); font-weight:900; color:#1e293b; line-height:1.2; }
-            .hrms-headline .hl { color:#198754; }
-            .hrms-desc { font-size:.95rem; color:#64748b; line-height:1.75; }
-            .hrms-link-btn {
-                display:inline-flex; align-items:center; gap:8px;
-                padding:12px 28px; border-radius:50px; border:none; cursor:pointer;
-                font-weight:800; font-size:.9rem; color:#fff; text-decoration:none;
-                background:linear-gradient(135deg,#198754,#20c997);
-                box-shadow:0 8px 24px rgba(25,135,84,.3);
-                transition:transform .25s, box-shadow .25s;
-            }
-            .hrms-link-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(25,135,84,.4); color:#fff; }
-            .hrms-link-ghost {
-                display:inline-flex; align-items:center; gap:8px;
-                padding:12px 24px; border-radius:50px;
-                border:1.5px solid rgba(25,135,84,.4); font-weight:700; font-size:.88rem;
-                color:#198754; text-decoration:none; background:rgba(25,135,84,.05);
-                transition:all .25s;
-            }
-            .hrms-link-ghost:hover { border-color:#198754; background:rgba(25,135,84,.12); color:#198754; }
-
-            /* ── Carousel strip ── */
-            .hrms-carousel-outer {
-                overflow:hidden; position:relative;
-                mask-image:linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-                -webkit-mask-image:linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-            }
-            .hrms-carousel-track {
-                display:flex; gap:16px; width:max-content;
-                animation:hrmsScroll 28s linear infinite;
-            }
-            .hrms-carousel-track:hover { animation-play-state:paused; }
-            @keyframes hrmsScroll {
-                from { transform:translateX(0); }
-                to   { transform:translateX(-50%); }
-            }
-            .hrms-card {
-                flex-shrink:0; width:230px;
-                background:#fff; border:1.5px solid rgba(25,135,84,.15);
-                border-radius:18px; padding:22px 18px;
-                box-shadow:0 4px 16px rgba(25,135,84,.07);
-                transition:box-shadow .2s, border-color .2s;
-                cursor:default;
-            }
-            .hrms-card:hover { border-color:rgba(25,135,84,.4); box-shadow:0 8px 28px rgba(25,135,84,.14); }
-            .hrms-card-icon {
-                width:42px; height:42px; border-radius:12px;
-                background:linear-gradient(135deg,rgba(25,135,84,.1),rgba(32,201,151,.08));
-                display:flex; align-items:center; justify-content:center;
-                font-size:1.2rem; color:#198754; margin-bottom:12px;
-            }
-            .hrms-card h4 { font-size:.88rem; font-weight:800; color:#1e293b; margin-bottom:5px; }
-            .hrms-card p  { font-size:.75rem; color:#64748b; margin:0; line-height:1.5; }
-            </style>
-            @endpush
-
-            <div class="container py-4">
-                <div class="row align-items-center g-5">
-
-                    {{-- Teks kiri --}}
-                    <div class="col-lg-5 animate-slide-up">
-                        <div class="hrms-badge">
-                            <i class="bi bi-people-fill"></i> Fitur HRMS Eksklusif
-                        </div>
-                        <h2 class="hrms-headline mb-3">
-                            Kelola Tim Karyawan<br>dengan <span class="hl">Key.Flavory.id</span>
-                        </h2>
-                        <p class="hrms-desc mb-3">
-                            Flavory.id kini hadir dengan modul <strong>Human Resource Management System (HRMS)</strong> melalui platform <strong>Key.Flavory.id</strong> - solusi lengkap bagi owner & manager untuk mengelola tim, shift, absensi, dan performa outlet dari satu dasbor terpusat.
-                        </p>
-                        <p class="hrms-desc mb-4">
-                            Tidak perlu aplikasi HR terpisah. Semua data karyawan, jadwal kerja, rekap absensi, hingga laporan bisnis outlet terintegrasi langsung dengan data kasir Flavory.id secara <em>real-time</em>.
-                        </p>
-                        <div class="d-flex flex-wrap gap-3">
-                            <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL','http://127.0.0.1:8001')),'/') }}/login"
-                               class="hrms-link-btn">
-                                <i class="bi bi-person-badge-fill"></i> Buka Dasbor Manager
-                            </a>
-                            <a href="{{ route('panduan.hrms') }}" class="hrms-link-ghost">
-                                Panduan HRMS <i class="bi bi-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- Kanan: stats + tag --}}
-                    <div class="col-lg-7 animate-fade-in">
-                        <div class="row g-3 mb-4">
-                            <div class="col-6 col-md-3">
-                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
-                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">∞</div>
-                                    <div class="text-muted small fw-600">Karyawan</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
-                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">5+</div>
-                                    <div class="text-muted small fw-600">Modul HRMS</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
-                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">24/7</div>
-                                    <div class="text-muted small fw-600">Akses Online</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="text-center p-3 rounded-3 border" style="border-color:rgba(25,135,84,.15)!important;background:#f0fdf4;">
-                                    <div class="fw-900 text-success" style="font-size:1.6rem;font-weight:900;">Free</div>
-                                    <div class="text-muted small fw-600">Termasuk Paket</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Carousel card fitur HRMS --}}
-                        <div class="hrms-carousel-outer py-2">
-                            <div class="hrms-carousel-track" id="hrmsTrack">
-                                {{-- 8 card asli --}}
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-person-lines-fill"></i></div>
-                                    <h4>Data Karyawan</h4>
-                                    <p>Kelola profil, biodata, dan arsip karyawan aktif maupun nonaktif.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-calendar-week-fill"></i></div>
-                                    <h4>Manajemen Shift</h4>
-                                    <p>Buat kategori shift, atur rotasi, dan pantau jadwal tim harian.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-fingerprint"></i></div>
-                                    <h4>Rekap Absensi</h4>
-                                    <p>Lacak kehadiran, izin, dan keterlambatan karyawan secara otomatis.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-wallet2"></i></div>
-                                    <h4>Modal Usaha</h4>
-                                    <p>Catat modal yang disetorkan dan pantau riwayatnya dengan grafik.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
-                                    <h4>Ikhtisar Bisnis</h4>
-                                    <p>Pantau omzet, untung-rugi, dan pengeluaran outlet secara real-time.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-graph-up-arrow"></i></div>
-                                    <h4>Performa Bisnis</h4>
-                                    <p>Analisis komparasi omzet & prediksi tren berbasis data transaksi.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                                    <h4>Akses Akun Kasir</h4>
-                                    <p>Buat dan kelola akun login sistem untuk masing-masing karyawan.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-stars"></i></div>
-                                    <h4>MineAIr</h4>
-                                    <p>Konsultasi bisnis AI khusus dasbor manager dengan data outlet.</p>
-                                </div>
-                                {{-- Duplikat untuk seamless loop --}}
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-person-lines-fill"></i></div>
-                                    <h4>Data Karyawan</h4>
-                                    <p>Kelola profil, biodata, dan arsip karyawan aktif maupun nonaktif.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-calendar-week-fill"></i></div>
-                                    <h4>Manajemen Shift</h4>
-                                    <p>Buat kategori shift, atur rotasi, dan pantau jadwal tim harian.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-fingerprint"></i></div>
-                                    <h4>Rekap Absensi</h4>
-                                    <p>Lacak kehadiran, izin, dan keterlambatan karyawan secara otomatis.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-wallet2"></i></div>
-                                    <h4>Modal Usaha</h4>
-                                    <p>Catat modal yang disetorkan dan pantau riwayatnya dengan grafik.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
-                                    <h4>Ikhtisar Bisnis</h4>
-                                    <p>Pantau omzet, untung-rugi, dan pengeluaran outlet secara real-time.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-graph-up-arrow"></i></div>
-                                    <h4>Performa Bisnis</h4>
-                                    <p>Analisis komparasi omzet & prediksi tren berbasis data transaksi.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                                    <h4>Akses Akun Karyawanr</h4>
-                                    <p>Buat dan kelola akun login sistem untuk masing-masing karyawan.</p>
-                                </div>
-                                <div class="hrms-card">
-                                    <div class="hrms-card-icon"><i class="bi bi-stars"></i></div>
-                                    <h4>MineAI</h4>
-                                    <p>Konsultasi bisnis AI khusus dasbor manager dengan data outlet.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-        {{-- ===== END SECTION HRMS ===== --}}
-
-        {{-- ===== SECTION MINEAI SPOTLIGHT ===== --}}
+        {{-- ===== SECTION AI CONSULTANT SPOTLIGHT ===== --}}
         <section id="mineai" class="py-0 overflow-hidden">
             <div class="mineai-section">
 
@@ -1108,24 +917,24 @@
 
                             {{-- Logo + badge --}}
                             <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-3 mb-4">
-                                <img src="{{ asset('assets/logo-mineai.jpg') }}"
-                                     alt="MineAI"
+                                <img src="{{ asset('assets/logo-512.png') }}"
+                                     alt="AI Consultant Flavory.id"
                                      class="mineai-logo-badge"
                                      onerror="this.style.display='none'">
                                 <div>
                                     <span class="mineai-tag">Fitur Eksklusif</span>
-                                    <h2 class="mineai-name-text mb-0">Mine<span>AI</span></h2>
+                                    <h2 class="mineai-name-text mb-0">AI <span>Consultant</span></h2>
                                 </div>
                             </div>
 
                             <h3 class="mineai-headline">
                                 Konsultan Bisnis<br>
                                 <span class="mineai-grad-text">Berbasis AI</span><br>
-                                Pertama di POS Kuliner
+                                Eksklusif di Flavory.id
                             </h3>
 
                             <p class="mineai-desc">
-                                MineAI membaca data transaksi nyata outlet kamu, memberikan insight otomatis, dan bisa diajak ngobrol layaknya konsultan bisnis pribadi, kapan saja, langsung dari dashboard kasir.
+                                AI Consultant Flavory.id membaca data transaksi nyata outlet kamu, memberikan insight otomatis, dan bisa diajak ngobrol layaknya konsultan bisnis pribadi, kapan saja, langsung dari dashboard kasir.
                             </p>
 
                             <ul class="mineai-features list-unstyled">
@@ -1137,9 +946,9 @@
 
                             <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start mt-4">
                                 <a href="{{ route('register') }}" class="btn-mineai-cta">
-                                    <i class="bi bi-stars me-2"></i> Coba MineAI Gratis
+                                    <i class="bi bi-stars me-2"></i> Coba AI Consultant Gratis
                                 </a>
-                                <a href="{{ route('panduan.hrms.mineai-manager') }}" class="btn-mineai-ghost">
+                                <a href="{{ route('panduan.daftar') }}" class="btn-mineai-ghost">
                                     Pelajari Lebih Lanjut <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
@@ -1150,9 +959,9 @@
                             <div class="mineai-screen-wrap">
                                 <div class="mineai-screen-glow"></div>
                                 <img src="{{ asset('assets/ss-mineai.jpg') }}"
-                                     alt="Tampilan MineAI, Konsultan Bisnis AI Flavory.id"
+                                     alt="Tampilan AI Consultant, Fitur Konsultasi Bisnis AI Flavory.id"
                                      class="mineai-screenshot"
-                                     onerror="this.src='https://placehold.co/900x560/1e1e2e/ff6a00?text=MineAI+Preview'">
+                                     onerror="this.src='https://placehold.co/900x560/1e1e2e/ff6a00?text=AI+Consultant+Preview'">
                             </div>
                         </div>
 
@@ -1160,14 +969,14 @@
                 </div>
             </div>
         </section>
-        {{-- ===== END SECTION MINEAI ===== --}}
+        {{-- ===== END SECTION AI CONSULTANT ===== --}}
 
         <section id="paket" class="py-5 bg-white">
             <div class="container py-5">
                 <div class="text-center mb-5 mx-auto animate-slide-up" style="max-width:760px;">
                     <span class="text-orange fw-bold text-uppercase small"><i class="bi bi-tag-fill me-1"></i> Harga & Paket</span>
                     <h2 class="fw-bold mt-2">Investasi Terbaik untuk Masa Depan Bisnis Anda</h2>
-                    <p class="text-muted">Semua paket mendapatkan <strong class="text-dark">SELURUH FITUR LENGKAP</strong> - POS Kasir, HRMS (key.flavory.id), MineAI, Prediksi Bisnis, dan masih banyak lagi. Yang berbeda hanya durasi & harga.</p>
+                    <p class="text-muted">Semua paket mendapatkan <strong class="text-dark">SELURUH FITUR LENGKAP</strong> - POS Kasir, AI Consultant, Prediksi Bisnis, dan masih banyak lagi. Yang berbeda hanya durasi & harga.</p>
                 </div>
 
                 <div class="row justify-content-center align-items-stretch g-4">
@@ -1195,16 +1004,6 @@
                                     <li><i class="bi bi-check2"></i> Analisis menu paling laris &amp; tidak laris</li>
                                     <li><i class="bi bi-check2"></i> Modal Usaha &amp; riwayat setoran</li>
                                     <li><i class="bi bi-check2"></i> Pembaruan sistem otomatis (free update)</li>
-                                </ul>
-                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;"><i class="bi bi-people-fill me-1 text-success"></i> Fitur HRMS (key.flavory.id)</p>
-                                <ul class="check-list small">
-                                    <li><i class="bi bi-check2"></i> Manajemen data karyawan (aktif & nonaktif)</li>
-                                    <li><i class="bi bi-check2"></i> Manajemen shift &amp; rotasi jadwal</li>
-                                    <li><i class="bi bi-check2"></i> Rekap absensi &amp; izin karyawan</li>
-                                    <li><i class="bi bi-check2"></i> Modal usaha &amp; riwayat setoran</li>
-                                    <li><i class="bi bi-check2"></i> Ikhtisar bisnis &amp; performa outlet</li>
-                                    <li><i class="bi bi-check2"></i> Akun akses per karyawan</li>
-                                    <li><i class="bi bi-check2"></i> MineAI (Fitur AI konsultan)</li>
                                 </ul>
                             </div>
                             <div class="mt-auto">
@@ -1243,16 +1042,6 @@
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Modal Usaha &amp; riwayat setoran</li>
                                     <li><i class="bi bi-check-circle-fill text-orange"></i> Pembaruan sistem otomatis (free update)</li>
                                 </ul>
-                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Fitur HRMS (key.flavory.id)</p>
-                                <ul class="check-list small">
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen data karyawan (aktif & nonaktif)</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Manajemen shift &amp; rotasi jadwal</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Rekap absensi &amp; izin karyawan</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Modal usaha &amp; riwayat setoran</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Ikhtisar bisnis &amp; performa outlet</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> Akun akses per karyawan</li>
-                                    <li><i class="bi bi-check-circle-fill text-orange"></i> MineAI (Fitur AI konsultan)</li>
-                                </ul>
                             </div>
                             <div class="mt-auto">
                                 <a href="{{ route('register') }}" class="btn btn-orange w-100 py-3 fs-5 shadow-sm fw-bold rounded-pill">Ambil Promo Bulanan</a>
@@ -1285,16 +1074,6 @@
                                     <li><i class="bi bi-check2 text-success"></i> Modal Usaha &amp; riwayat setoran</li>
                                     <li><i class="bi bi-check2 text-success"></i> Pembaruan sistem otomatis (free update)</li>
                                 </ul>
-                                <p class="fw-bold text-dark small mb-2 mt-3" style="letter-spacing:.3px;text-transform:uppercase;">Fitur HRMS (key.flavory.id)</p>
-                                <ul class="check-list small">
-                                    <li><i class="bi bi-check2 text-success"></i> Manajemen data karyawan (aktif & nonaktif)</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Manajemen shift &amp; rotasi jadwal</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Rekap absensi &amp; izin karyawan</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Modal usaha &amp; riwayat setoran</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Ikhtisar Bisnis &amp; performa outlet</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Akun akses per karyawan</li>
-                                    <li><i class="bi bi-check2 text-success"></i> MineAI (Fitur AI konsultan)</li>
-                                </ul>
                             </div>
                             <div class="mt-auto">
                                 <a href="{{ route('register') }}" class="btn btn-outline-success w-100 fw-bold py-2 rounded-pill">Pilih Paket Selamanya</a>
@@ -1305,103 +1084,6 @@
                 </div>
             </div>
         </section>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- ===== SECTION BLOG FLAVORY ===== --}}
-        @php
-            // Gunakan data dummy sementara jika blog belum live
-            $blogDisplay = !empty($blogPosts) ? $blogPosts : [
-                [
-                    'title'        => 'Tips Meningkatkan Omzet Kafe di Era Digital',
-                    'excerpt'      => 'Pelajari strategi jitu yang digunakan ratusan pemilik kafe sukses untuk menggandakan pendapatan mereka menggunakan teknologi POS modern.',
-                    'category'     => 'Bisnis',
-                    'published_at' => '25 Jun 2026',
-                    'cover_image'  => 'https://placehold.co/640x360/fff4ec/ff6a00?text=Flavory+Blog',
-                    'url'          => 'https://blog.flavory.id',
-                ],
-                [
-                    'title'        => 'Cara Kelola Stok Dapur agar Tidak Boros & Rugi',
-                    'excerpt'      => 'Manajemen stok yang buruk adalah penyebab utama kebocoran dana di restoran kecil. Simak panduan praktis ini untuk mulai kontrol stok dengan benar.',
-                    'category'     => 'Operasional',
-                    'published_at' => '20 Jun 2026',
-                    'cover_image'  => 'https://placehold.co/640x360/fff4ec/ff6a00?text=Kelola+Stok',
-                    'url'          => 'https://blog.flavory.id',
-                ],
-                [
-                    'title'        => 'Kenapa Bisnis Kuliner Anda Butuh Aplikasi Kasir Digital?',
-                    'excerpt'      => 'Masih pakai buku manual? Saatnya beralih ke sistem kasir digital. Temukan keuntungan nyata yang langsung bisa Anda rasakan sejak hari pertama.',
-                    'category'     => 'Teknologi',
-                    'published_at' => '15 Jun 2026',
-                    'cover_image'  => 'https://placehold.co/640x360/fff4ec/ff6a00?text=Kasir+Digital',
-                    'url'          => 'https://blog.flavory.id',
-                ],
-            ];
-        @endphp
-        @if(!empty($blogDisplay))
-        <section id="blog" class="py-5 bg-white">
-            <div class="container py-4">
-                <div class="text-center mb-5 animate-slide-up">
-                    <span class="text-orange fw-bold text-uppercase small tracking-wider">
-                        <i class="bi bi-journal-richtext me-1"></i> Blog Flavory
-                    </span>
-                    <h2 class="fw-bold mt-2">Tips & Insight untuk Bisnis Kuliner Anda</h2>
-                    <p class="text-muted">Artikel terbaru dari tim Flavory, khusus untuk pemilik usaha F&B Indonesia.</p>
-                </div>
-
-                <div class="row g-4 justify-content-center">
-                    @foreach($blogDisplay as $post)
-                    <div class="col-md-6 col-lg-4 animate-slide-up">
-                        <article class="blog-card">
-                            <a href="{{ $post['url'] }}" target="_blank" rel="noopener noreferrer" aria-label="Baca artikel: {{ $post['title'] }}">
-                                <img
-                                    src="{{ $post['cover_image'] }}"
-                                    alt="{{ $post['title'] }}"
-                                    class="blog-card-img"
-                                    loading="lazy"
-                                    onerror="this.src='https://placehold.co/640x360/fff4ec/ff6a00?text=Flavory+Blog'"
-                                >
-                            </a>
-                            <div class="blog-card-body">
-                                @if(!empty($post['category']))
-                                <span class="blog-category-badge">{{ $post['category'] }}</span>
-                                @endif
-                                <h3 class="blog-card-title">
-                                    <a href="{{ $post['url'] }}" target="_blank" rel="noopener noreferrer"
-                                       class="text-decoration-none text-dark stretched-link-off">
-                                        {{ $post['title'] }}
-                                    </a>
-                                </h3>
-                                <p class="blog-card-excerpt">{{ $post['excerpt'] }}</p>
-                                <div class="blog-card-footer">
-                                    <span class="blog-date">
-                                        <i class="bi bi-calendar3 me-1"></i>{{ $post['published_at'] }}
-                                    </span>
-                                    <a href="{{ $post['url'] }}" target="_blank" rel="noopener noreferrer"
-                                       class="blog-read-link">
-                                        Baca <i class="bi bi-arrow-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                    @endforeach
-                </div>
-
-                <div class="text-center mt-5 animate-slide-up">
-                    <a href="https://blog.flavory.id" target="_blank" rel="noopener noreferrer"
-                       class="btn btn-outline-orange px-5 py-2 fw-bold rounded-pill">
-                        <i class="bi bi-journal-richtext me-2"></i> Lihat Semua Artikel
-                    </a>
-                </div>
-            </div>
-        </section>
-        @endif
-        {{-- ===== END SECTION BLOG ===== --}}
 
         <section class="py-5" style="background-color: #f8fafc;">
             <div class="container">
@@ -1444,7 +1126,7 @@
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
             <div style="
                 width:44px; height:44px; border-radius:12px;
-                background: linear-gradient(135deg, #ff6a00, #ee0979);
+                background: linear-gradient(135deg, #ff6a00, #ff9a00);
                 display:flex; align-items:center; justify-content:center;
                 box-shadow: 0 6px 16px rgba(255,106,0,0.3); flex-shrink:0;
             ">
@@ -1529,100 +1211,15 @@
     });
 </script>
 
-{{-- ══ POPUP EVENT DINAMIS ══ --}}
-@if(isset($popupEvent) && $popupEvent)
-<div id="eventPopupOverlay"
-     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:99990;
-            align-items:center; justify-content:center; padding:16px;">
-    <div id="eventPopupCard"
-         style="position:relative; max-width:340px; width:100%; background:#fff;
-                border-radius:18px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.22);
-                animation: popupIn .4s cubic-bezier(.34,1.56,.64,1) both;">
-
-        {{-- Tombol tutup --}}
-        <button id="eventPopupClose"
-                aria-label="Tutup popup"
-                style="position:absolute; top:10px; right:10px; z-index:10;
-                       width:32px; height:32px; border-radius:50%; border:none;
-                       background:rgba(0,0,0,.45); color:#fff; font-size:1rem;
-                       display:flex; align-items:center; justify-content:center;
-                       cursor:pointer; transition:background .2s; backdrop-filter:blur(4px);"
-                onmouseover="this.style.background='rgba(0,0,0,.7)'"
-                onmouseout="this.style.background='rgba(0,0,0,.45)'">
-            <i class="bi bi-x-lg"></i>
-        </button>
-
-        {{-- Poster / gambar event --}}
-        @if($popupEvent->image)
-            <div style="position:relative; background:#f8f9fa; overflow:hidden; max-height:52vh;">
-                <img src="{{ asset('assets/event/' . $popupEvent->image) }}"
-                     alt="{{ $popupEvent->event_name }}"
-                     style="width:100%; height:auto; display:block;"
-                     onerror="this.parentElement.style.display='none'">
-                {{-- Label "Segera Hadir" di atas poster --}}
-                <span style="position:absolute; top:12px; left:12px; background:#ff6a00; color:#fff;
-                             font-size:.7rem; font-weight:800; padding:5px 12px; border-radius:20px;
-                             letter-spacing:.4px; box-shadow:0 4px 12px rgba(255,106,0,.4);">
-                    <i class="bi bi-calendar-event-fill me-1"></i> Segera Hadir
-                </span>
-            </div>
-        @endif
-
-        {{-- Konten --}}
-        <div style="padding:14px 16px 16px;">
-            <p style="font-size:.62rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
-                      color:#ff6a00; margin-bottom:3px;">Event Flavory.id</p>
-            <h3 style="font-size:.92rem; font-weight:800; color:#1e293b; line-height:1.35; margin-bottom:8px;">
-                {{ $popupEvent->event_name }}
-            </h3>
-
-            {{-- Meta: tanggal & lokasi --}}
-            <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:13px;">
-                <div style="font-size:.72rem; color:#64748b; display:flex; align-items:center; gap:6px;">
-                    <i class="bi bi-calendar3" style="color:#ff6a00; flex-shrink:0;"></i>
-                    <span>
-                        {{ \Carbon\Carbon::parse($popupEvent->event_start_date)->translatedFormat('d M Y') }}
-                        @if($popupEvent->event_start_date !== $popupEvent->event_end_date)
-                            &ndash; {{ \Carbon\Carbon::parse($popupEvent->event_end_date)->translatedFormat('d M Y') }}
-                        @endif
-                        @if($popupEvent->event_start_time)
-                            &bull; {{ \Carbon\Carbon::parse($popupEvent->event_start_time)->format('H:i') }} WIB
-                        @endif
-                    </span>
-                </div>
-                @if($popupEvent->location)
-                    <div style="font-size:.72rem; color:#64748b; display:flex; align-items:center; gap:6px;">
-                        <i class="bi bi-geo-alt-fill" style="color:#ff6a00; flex-shrink:0;"></i>
-                        <span>{{ $popupEvent->location }}</span>
-                    </div>
-                @endif
-            </div>
-
-            {{-- Tombol CTA --}}
-            <a href="{{ route('event.show', $popupEvent->slug ?? $popupEvent->uuid) }}"
-               style="display:flex; align-items:center; justify-content:center; gap:7px;
-                      background:linear-gradient(135deg,#ff6a00,#ff8c33); color:#fff;
-                      border-radius:50px; padding:9px 16px; font-size:.8rem; font-weight:700;
-                      text-decoration:none; box-shadow:0 5px 16px rgba(255,106,0,.35);
-                      transition:all .25s; width:100%;"
-               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(255,106,0,.45)'"
-               onmouseout="this.style.transform=''; this.style.boxShadow='0 5px 16px rgba(255,106,0,.35)'">
-                <i class="bi bi-pencil-square"></i> Daftar Sekarang
-            </a>
-            <p style="font-size:.63rem; color:#94a3b8; text-align:center; margin-top:8px; margin-bottom:0;">
-                Klik × untuk menutup. Popup tidak muncul lagi hari ini.
-            </p>
-        </div>
-    </div>
-</div>
-
-<style>
-@keyframes popupIn {
-    from { opacity: 0; transform: scale(.88) translateY(24px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-</style>
-@endif
+<script src="{{ asset('js/robot.js') }}" defer></script>
+<script>
+        window.FlavoryRobotConfig = {
+            greeting: 'Halo! Aku Flavory AI Consultant Senang bertemu denganmu!',
+            interval: 60,
+            firstDelay: 1.2,
+            timing: { greetHold: 4000, dash: 1100 }
+        };
+    </script>
 
 @endsection
 
@@ -1647,7 +1244,7 @@ document.addEventListener("DOMContentLoaded", function () {
         'Bangun Bisnis Kuliner Bersama <span style="color:inherit">Flavory.id</span>',
         'Kelola Pesanan Lebih Cepat &amp; Mudah',
         'Pantau Keuangan Secara Real-Time',
-        '<span style="background:linear-gradient(135deg,#ff6a00,#ee0979);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">MineAI</span> &ndash; Konsultan Bisnis AI Kamu',
+        '<span style="background:linear-gradient(135deg,#ff6a00,#ff9a00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">AI Consultant</span> &ndash; Konsultan Bisnis AI Kamu',
     ];
     let phraseIndex = 0;
 
@@ -1740,6 +1337,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // CTA: tiap tombol = 1 unit .w
     ctaWrap.querySelectorAll('a').forEach(a => a.classList.add('w'));
+
+    // ── Wave effect: split badge text menjadi <span> per karakter ──
+    (function initWaveBadge() {
+        const badgeText = badge && badge.querySelector('.hero-badge-text');
+        if (!badgeText) return;
+        const chars = badgeText.textContent;
+        badgeText.textContent = '';
+        chars.split('').forEach((ch, i) => {
+            const s = document.createElement('span');
+            s.className = 'wave-char' + (ch === ' ' ? ' space' : '');
+            s.textContent = ch === ' ' ? '\u00A0' : ch;
+            s.style.animationDelay = (i * 0.055) + 's';
+            badgeText.appendChild(s);
+        });
+    })();
 
     // Kumpulkan semua elemen untuk animasi masuk/keluar global
     const staticWords = [

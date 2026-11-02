@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Laporan Bisnis & Pengeluaran — Key.Flavory.id HRMS')
+@section('title', 'Panduan Laporan Bisnis & Pengeluaran — Dasbor Manager Flavory.id')
 @push('styles')
-<meta name="description" content="Cara memantau laporan omzet, keuntungan, kerugian, dan pengeluaran outlet dari dasbor manager Key.Flavory.id.">
+<meta name="description" content="Cara memantau laporan omzet, keuntungan, kerugian, dan pengeluaran outlet dari Dasbor Manager Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--hrms-light);color:var(--hrms-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> HRMS — Key.Flavory.id
+                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
                     </span>
                     <h1>Laporan Bisnis & Pengeluaran</h1>
                     <p class="mt-2">Pantau omzet, keuntungan, kerugian, dan pengeluaran outlet secara real-time langsung dari dasbor manager.</p>
@@ -64,7 +64,7 @@
                                     <li>Gunakan filter tanggal untuk melihat pengeluaran pada periode tertentu.</li>
                                     <li>Data pengeluaran sudah terintegrasi otomatis dengan laporan bisnis.</li>
                                 </ul>
-                                <div class="alert-hrms">
+                                <div class="alert-info-box">
                                     <i class="bi bi-bar-chart-line-fill"></i>
                                     <div>
                                         <p>Data laporan bersumber langsung dari kasir Flavory.id.</p>
@@ -78,7 +78,7 @@
 
                 <nav class="guide-nav">
                     <a href="{{ route('panduan.hrms.modal-usaha') }}"><i class="bi bi-arrow-left"></i> Sebelumnya: Modal Usaha</a>
-                    <a href="{{ route('panduan.hrms.mineai-manager') }}">Selanjutnya: MineAI Manager <i class="bi bi-arrow-right"></i></a>
+                    <a href="{{ route('panduan.hrms.mineai-manager') }}">Selanjutnya: AI Consultant <i class="bi bi-arrow-right"></i></a>
                 </nav>
             </div>
         </div>

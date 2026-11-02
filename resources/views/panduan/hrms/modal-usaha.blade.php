@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Modal Usaha — Key.Flavory.id HRMS')
+@section('title', 'Panduan Modal Usaha — Dasbor Manager Flavory.id')
 @push('styles')
-<meta name="description" content="Cara mencatat, memantau, dan mengelola setoran modal usaha outlet melalui dasbor manager Key.Flavory.id.">
+<meta name="description" content="Cara mencatat, memantau, dan mengelola setoran modal usaha outlet melalui Dasbor Manager Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--hrms-light);color:var(--hrms-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> HRMS — Key.Flavory.id
+                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
                     </span>
                     <h1>Modal Usaha</h1>
                     <p class="mt-2">Catat setiap setoran modal dan pantau riwayat lengkapnya dengan grafik yang mudah dipahami.</p>
@@ -63,7 +63,7 @@
                                     <li>Data yang dihapus <strong>tidak hilang permanen</strong> — berpindah ke tab <strong>"Data Terhapus"</strong>.</li>
                                     <li>Untuk memulihkan, buka tab "Data Terhapus" dan klik tombol <strong>"Pulihkan"</strong>.</li>
                                 </ul>
-                                <div class="alert-hrms">
+                                <div class="alert-info-box">
                                     <i class="bi bi-wallet2"></i>
                                     <div>
                                         <p>Modal Usaha beda dengan Laporan Bisnis.</p>

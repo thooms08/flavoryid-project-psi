@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Rekap Absensi Karyawan — Key.Flavory.id HRMS')
+@section('title', 'Panduan Rekap Absensi Karyawan — Dasbor Manager Flavory.id')
 @push('styles')
-<meta name="description" content="Cara memantau rekap kehadiran, izin, dan keterlambatan karyawan outlet melalui Key.Flavory.id.">
+<meta name="description" content="Cara memantau rekap kehadiran, izin, dan keterlambatan karyawan outlet melalui Dasbor Manager Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--hrms-light);color:var(--hrms-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> HRMS — Key.Flavory.id
+                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
                     </span>
                     <h1>Rekap Absensi Karyawan</h1>
                     <p class="mt-2">Pantau kehadiran, keterlambatan, dan pengajuan izin seluruh tim secara real-time.</p>
@@ -62,7 +62,7 @@
                                     <li>Manager dapat <strong>menyetujui</strong> atau <strong>menolak</strong> pengajuan izin dengan klik tombol aksi.</li>
                                     <li>Status izin yang disetujui akan otomatis terekam di rekap absensi karyawan tersebut.</li>
                                 </ul>
-                                <div class="alert-hrms">
+                                <div class="alert-info-box">
                                     <i class="bi bi-info-circle-fill"></i>
                                     <div>
                                         <p>Rekap absensi bisa diunduh untuk keperluan penggajian.</p>

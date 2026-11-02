@@ -15,13 +15,4 @@
     </url>
     @endforeach
 
-    @foreach ($events as $event)
-    <url>
-        <loc>{{ config('app.url') }}/event/{{ $event->slug }}</loc>
-        <lastmod>{{ $event->updated_at->toAtomString() }}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    @endforeach
-
 </urlset>

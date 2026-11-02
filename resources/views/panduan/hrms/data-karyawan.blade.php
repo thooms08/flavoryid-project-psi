@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Mengelola Data Karyawan — Key.Flavory.id HRMS')
+@section('title', 'Panduan Mengelola Data Karyawan — Dasbor Manager Flavory.id')
 @push('styles')
-<meta name="description" content="Cara menambah, mengedit, dan mengelola data karyawan aktif maupun nonaktif di Key.Flavory.id.">
+<meta name="description" content="Cara menambah, mengedit, dan mengelola data karyawan aktif maupun nonaktif di Dasbor Manager Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--hrms-light);color:var(--hrms-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> HRMS — Key.Flavory.id
+                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
                     </span>
                     <h1>Mengelola Data Karyawan</h1>
                     <p class="mt-2">Kelola profil, tambah anggota tim baru, dan atur akses akun kasir untuk setiap karyawan.</p>
@@ -63,7 +63,7 @@
                                     <li>Klik <strong>"Buat Akun Baru"</strong>, pilih karyawan, tentukan username dan password.</li>
                                     <li>Akun ini digunakan karyawan untuk login ke aplikasi kasir <strong>Flavory.id</strong>.</li>
                                 </ul>
-                                <div class="alert-hrms">
+                                <div class="alert-info-box">
                                     <i class="bi bi-shield-lock-fill"></i>
                                     <div>
                                         <p>Satu karyawan = satu akun kasir.</p>

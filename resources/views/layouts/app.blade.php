@@ -378,14 +378,6 @@
                         </ul>
                     </li>
 
-                    {{-- Event - halaman standalone, relevan untuk akuisisi --}}
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('event.*') ? 'active' : '' }}"
-                           href="{{ route('event.index') }}">
-                            Event
-                            <span class="badge-new">BARU</span>
-                        </a>
-                    </li>
                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('tentang') ? 'active' : '' }}"
                            href="{{ route('tentang') }}">
@@ -398,13 +390,6 @@
                             Panduan
                         </a>
                     </li>
-                    {{-- Blog --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://blog.flavory.id" target="_blank" rel="noopener noreferrer">
-                            Blog
-                        </a>
-                    </li>
-
                 </ul>
                 
                 <div class="navbar-cta-wrapper d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
@@ -473,7 +458,6 @@
                     <h5 class="fw-bold mb-3 text-white">Tautan Cepat</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="{{ route('tentang') }}" class="text-secondary text-decoration-none">Tentang</a></li>
-                        <li class="mb-2"><a href="{{ route('event.index') }}" class="text-secondary text-decoration-none">Event</a></li>
                         <li class="mb-2"><a href="{{ route('panduan.daftar') }}" class="text-secondary text-decoration-none">Panduan</a></li>
                         <li class="mb-2"><a href="{{ route('faq') }}" class="text-secondary text-decoration-none">FAQ</a></li>
                         <li class="mb-2"><a href="{{ route('kebijakan.privasi') }}" class="text-secondary text-decoration-none">Kebijakan & Privasi</a></li>

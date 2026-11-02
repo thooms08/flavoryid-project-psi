@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
@@ -19,9 +18,6 @@ class SitemapController extends Controller
             ['loc' => '/register',                      'changefreq' => 'monthly', 'priority' => '0.9'],
             ['loc' => '/login',                         'changefreq' => 'monthly', 'priority' => '0.8'],
             ['loc' => '/lupa-password',                 'changefreq' => 'yearly',  'priority' => '0.4'],
-
-            // Event publik
-            ['loc' => '/event',                         'changefreq' => 'weekly',  'priority' => '0.8'],
 
             // Panduan kasir
             ['loc' => '/panduan/daftar',                'changefreq' => 'monthly', 'priority' => '0.7'],
@@ -51,13 +47,7 @@ class SitemapController extends Controller
             ['loc' => '/syarat-ketentuan',              'changefreq' => 'yearly',  'priority' => '0.5'],
         ];
 
-        // Ambil semua event yang aktif
-        $events = Event::where('status', 'active')
-            ->select('slug', 'updated_at')
-            ->orderBy('event_start_date', 'desc')
-            ->get();
-
-        $xml = view('sitemap', compact('staticUrls', 'events'))->render();
+        $xml = view('sitemap', compact('staticUrls'))->render();
 
         return response($xml, 200)->header('Content-Type', 'application/xml');
     }

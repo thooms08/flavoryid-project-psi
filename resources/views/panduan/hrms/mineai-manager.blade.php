@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan MineAI Manager — Key.Flavory.id HRMS')
+@section('title', 'Panduan AI Consultant — Dasbor Manager Flavory.id')
 @push('styles')
-<meta name="description" content="Cara menggunakan MineAI di dasbor manager Key.Flavory.id untuk mendapatkan insight bisnis dan berkonsultasi dengan asisten AI berbasis data outlet.">
+<meta name="description" content="Cara menggunakan AI Consultant di Dasbor Manager Flavory.id untuk mendapatkan insight bisnis dan berkonsultasi dengan asisten AI berbasis data outlet.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,11 +12,11 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--hrms-light);color:var(--hrms-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> HRMS — Key.Flavory.id
+                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
                     </span>
-                    <h1>MineAI Manager</h1>
-                    <p class="mt-2">Konsultan bisnis AI yang membaca data nyata outlet Anda dan memberikan saran strategis langsung dari dasbor manager.</p>
+                    <h1>AI Consultant</h1>
+                    <p class="mt-2">Konsultan bisnis berbasis AI milik Flavory.id yang membaca data nyata outlet Anda dan memberikan saran strategis langsung dari dasbor manager.</p>
                 </header>
 
                 <section>
@@ -24,10 +24,10 @@
                         <li class="timeline-item">
                             <div class="timeline-icon">1</div>
                             <article class="guide-card">
-                                <h2>Membuka MineAI Manager</h2>
+                                <h2>Membuka AI Consultant</h2>
                                 <ul class="step-list">
-                                    <li>Dari dasbor, klik card atau menu <strong>"MineAI"</strong>.</li>
-                                    <li>Anda akan masuk ke halaman chat MineAI khusus dasbor manager.</li>
+                                    <li>Dari dasbor, klik card atau menu <strong>"AI Consultant"</strong>.</li>
+                                    <li>Anda akan masuk ke halaman chat AI Consultant khusus dasbor manager.</li>
                                     <li>Riwayat sesi chat sebelumnya ditampilkan di sidebar kiri.</li>
                                 </ul>
                             </article>
@@ -37,15 +37,15 @@
                             <article class="guide-card">
                                 <h2>Meminta Insight Awal</h2>
                                 <ul class="step-list">
-                                    <li>Klik tombol <strong>"Minta Insight MineAI"</strong> di halaman utama chat.</li>
-                                    <li>MineAI akan menganalisis data 30 hari terakhir outlet Anda secara otomatis.</li>
+                                    <li>Klik tombol <strong>"Minta Insight"</strong> di halaman utama chat.</li>
+                                    <li>AI Consultant akan menganalisis data 30 hari terakhir outlet Anda secara otomatis.</li>
                                     <li>Insight yang ditampilkan mencakup: omzet, pertumbuhan, menu terlaris, jam puncak, hari tersibuk, dan stok tipis.</li>
                                 </ul>
-                                <div class="alert-hrms">
+                                <div class="alert-info-box">
                                     <i class="bi bi-stars"></i>
                                     <div>
                                         <p>Insight bersumber dari data transaksi kasir yang nyata.</p>
-                                        <span>Semakin lengkap data kasir Flavory.id Anda, semakin akurat insight yang diberikan MineAI.</span>
+                                        <span>Semakin lengkap data kasir Flavory.id Anda, semakin akurat insight yang diberikan AI Consultant.</span>
                                     </div>
                                 </div>
                             </article>
@@ -55,16 +55,16 @@
                             <article class="guide-card">
                                 <h2>Mulai Berkonsultasi</h2>
                                 <ul class="step-list">
-                                    <li>Setelah insight muncul, klik <strong>"Mulai Ngobrol dengan MineAI"</strong>.</li>
+                                    <li>Setelah insight muncul, klik <strong>"Mulai Ngobrol dengan AI Consultant"</strong>.</li>
                                     <li>Ketik pertanyaan Anda di kolom chat, lalu tekan Enter atau klik tombol kirim.</li>
-                                    <li>MineAI akan menjawab berdasarkan data bisnis dan konteks outlet Anda secara spesifik.</li>
+                                    <li>AI Consultant akan menjawab berdasarkan data bisnis dan konteks outlet Anda secara spesifik.</li>
                                 </ul>
                             </article>
                         </li>
                         <li class="timeline-item">
                             <div class="timeline-icon">4</div>
                             <article class="guide-card">
-                                <h2>Contoh Pertanyaan ke MineAI</h2>
+                                <h2>Contoh Pertanyaan ke AI Consultant</h2>
                                 <ul class="step-list">
                                     <li><em>"Menu apa yang paling menguntungkan untuk difokuskan bulan ini?"</em></li>
                                     <li><em>"Bagaimana cara meningkatkan omzet di hari Senin yang biasanya sepi?"</em></li>
@@ -84,10 +84,10 @@
                                     <li>Klik ikon <strong>tempat sampah</strong> pada sesi untuk menghapusnya jika tidak diperlukan.</li>
                                     <li>Klik <strong>"Chat Baru"</strong> untuk memulai sesi konsultasi baru dari awal.</li>
                                 </ul>
-                                <div class="alert-hrms">
+                                <div class="alert-info-box">
                                     <i class="bi bi-lightning-charge-fill"></i>
                                     <div>
-                                        <p>Kuota MineAI Manager: 500 pesan per hari.</p>
+                                        <p>Kuota AI Consultant: 500 pesan per hari.</p>
                                         <span>Kuota direset otomatis setiap hari pukul 00:00 WIB. Indikator kuota tersedia di bagian atas area chat.</span>
                                     </div>
                                 </div>
@@ -97,21 +97,21 @@
 
                     <div class="closing-box mt-5">
                         <i class="bi bi-stars" style="font-size:2.5rem;opacity:.9;" aria-hidden="true"></i>
-                        <h3 class="fw-bold mt-3 mb-2">Siap Kelola Tim & Bisnis Lebih Cerdas?</h3>
+                        <h3 class="fw-bold mt-3 mb-2">Siap Konsultasi Bisnis dengan AI?</h3>
                         <p class="mb-4 text-light" style="font-size:1.05rem;opacity:.9;">
-                            Akses Key.Flavory.id sekarang dan rasakan kemudahan manajemen karyawan terintegrasi penuh dengan data kasir outlet Anda.
+                            Daftar sekarang dan rasakan kemudahan berkonsultasi langsung dengan AI berbasis data kasir outlet Anda.
                         </p>
-                        <a href="{{ rtrim(config('app.key_flavory_url', env('KEYFLAVORYID_URL','http://127.0.0.1:8001')), '/') }}/login"
+                        <a href="{{ route('register') }}"
                            class="btn btn-light fw-bold rounded-pill px-4 py-2 shadow-sm"
-                           style="color:var(--hrms-green);">
-                            <i class="bi bi-person-badge-fill me-1"></i> Buka Dasbor Manager
+                           style="color:var(--manager-green);">
+                            <i class="bi bi-person-plus-fill me-1"></i> Daftar Sekarang
                         </a>
                     </div>
                 </section>
 
                 <nav class="guide-nav">
                     <a href="{{ route('panduan.hrms.laporan-bisnis') }}"><i class="bi bi-arrow-left"></i> Sebelumnya: Laporan Bisnis</a>
-                    <a href="{{ route('panduan.hrms') }}">Kembali ke Overview HRMS <i class="bi bi-arrow-right"></i></a>
+                    <a href="{{ route('panduan.hrms') }}">Kembali ke Overview <i class="bi bi-arrow-right"></i></a>
                 </nav>
             </div>
         </div>

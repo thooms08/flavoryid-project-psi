@@ -207,20 +207,6 @@
                 <a href="{{ route('admin.aktivitas.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.aktivitas.index') || request()->routeIs('admin.partner.aktivitas') ? 'active' : '' }}">
                     <i class="fa-solid fa-chart-line"></i> Aktivitas Partner
                 </a>
-                
-                <!-- Event Section -->
-                <a href="#menuEvent" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request()->routeIs('admin.event.*') ? 'active' : '' }}" aria-expanded="{{ request()->routeIs('admin.event.*') ? 'true' : 'false' }}">
-                    <span class="d-flex align-items-center gap-2"><i class="fa-solid fa-calendar-days"></i> Event</span>
-                    <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;"></i>
-                </a>
-                <div class="collapse {{ request()->routeIs('admin.event.*') ? 'show' : '' }}" id="menuEvent">
-                    <a href="{{ route('admin.event.kelola-event') }}" class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.event.kelola-event') ? 'active' : '' }}">
-                        <i class="fa-solid fa-list-check"></i> Kelola Event
-                    </a>
-                    <a href="{{ route('admin.event.kelola-peserta') }}" class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.event.kelola-peserta') || request()->routeIs('admin.event.data-peserta') ? 'active' : '' }}">
-                        <i class="fa-solid fa-users-gear"></i> Kelola Peserta
-                    </a>
-                </div>
             </div>
             
             <div class="p-3 border-top" style="border-color: rgba(0, 229, 255, 0.1) !important;">
