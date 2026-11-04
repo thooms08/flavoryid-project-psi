@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Laporan Keuangan - Flavory.id</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -78,15 +79,32 @@
 <div class="container-fluid py-4">
     
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
+        <a href="{{ route('owner.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
             <i class="bi bi-arrow-left fs-4"></i>
         </a>
         <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;">Ikhtisar Bisnis</h1>
+
+        {{-- ── Tombol Toggle Visibilitas Kasir ── --}}
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span class="d-none d-sm-inline text-muted" style="font-size: 0.78rem; font-weight: 600;">
+                Tampilkan di Kasir
+            </span>
+            <div class="form-check form-switch mb-0" title="{{ ($showIkhtisarBisnis ?? true) ? 'Klik untuk sembunyikan Ikhtisar Bisnis dari kasir' : 'Klik untuk tampilkan Ikhtisar Bisnis di kasir' }}">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="toggleIkhtisarBisnis"
+                       style="width: 2.8rem; height: 1.5rem; cursor: pointer;"
+                       {{ ($showIkhtisarBisnis ?? true) ? 'checked' : '' }}>
+            </div>
+            <span id="toggleLabel" class="badge rounded-pill fw-semibold"
+                  style="font-size: 0.72rem; {{ ($showIkhtisarBisnis ?? true) ? 'background:#d1fae5; color:#065f46;' : 'background:#fee2e2; color:#991b1b;' }}">
+                {{ ($showIkhtisarBisnis ?? true) ? 'Terlihat' : 'Tersembunyi' }}
+            </span>
+        </div>
     </div>
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <form action="{{ route('kasir.laporan.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
+            <form action="{{ route('owner.laporan.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Dari Tanggal</label>
                     <input type="date" name="start_date" id="start_date" class="form-control rounded-3" value="{{ $startDate }}">
@@ -100,7 +118,7 @@
                     <button type="submit" class="btn btn-orange w-100 fw-bold rounded-3 shadow-sm">
                         <i class="bi bi-search me-1"></i> Terapkan
                     </button>
-                    <a href="{{ route('kasir.laporan.index') }}" class="btn btn-light fw-bold rounded-3 border shadow-sm px-3 d-flex align-items-center" title="Reset ke Default">
+                    <a href="{{ route('owner.laporan.index') }}" class="btn btn-light fw-bold rounded-3 border shadow-sm px-3 d-flex align-items-center" title="Reset ke Default">
                         <i class="bi bi-arrow-clockwise"></i>
                     </a>
                 </div>
@@ -268,7 +286,7 @@
                 <button type="button" id="btnToggleMode" class="btn btn-light border-secondary text-secondary btn-sm fw-medium shadow-sm">
                     <i class="bi bi-view-list me-1"></i> SEDERHANAKAN
                 </button>
-                <form action="{{ route('kasir.laporan.export') }}" method="GET" target="_blank" class="m-0">
+                <form action="{{ route('owner.laporan.export') }}" method="GET" target="_blank" class="m-0">
                     <input type="hidden" name="start_date" value="{{ $startDate }}">
                     <input type="hidden" name="end_date" value="{{ $endDate }}">
                     <input type="hidden" name="mode" id="exportMode" value="lengkap">
@@ -666,7 +684,7 @@ function showBukti(imageUrl) {
         const ctx = document.getElementById('financeLineChart').getContext('2d');
 
         function loadChartData(filterMode, customStart = '', customEnd = '') {
-            let url = `/kasir/laporan-bisnis/chart?filter=${filterMode}&start_date=${customStart}&end_date=${customEnd}`;
+            let url = `/owner/laporan-bisnis/chart?filter=${filterMode}&start_date=${customStart}&end_date=${customEnd}`;
             
             if (window.showLoading) window.showLoading();
             fetch(url, { headers: { 'Accept': 'application/json' } })
@@ -744,6 +762,69 @@ function showBukti(imageUrl) {
             });
         });
     });
+</script>
+
+<script>
+// ── Toggle Visibilitas Ikhtisar Bisnis di Kasir ───────────────────────────
+(function () {
+    const toggle    = document.getElementById('toggleIkhtisarBisnis');
+    const label     = document.getElementById('toggleLabel');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')
+                        ? document.querySelector('meta[name="csrf-token"]').content
+                        : '{{ csrf_token() }}';
+
+    if (!toggle) return;
+
+    toggle.addEventListener('change', function () {
+        const isChecked = this.checked;
+        this.disabled   = true; // cegah double klik
+
+        fetch('{{ route("owner.laporan.toggle") }}', {
+            method : 'POST',
+            headers: {
+                'Content-Type'    : 'application/json',
+                'X-CSRF-TOKEN'    : csrfToken,
+                'Accept'          : 'application/json',
+            },
+            body: JSON.stringify({}),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Sinkronkan state toggle dengan nilai dari server
+                toggle.checked = data.show;
+
+                if (data.show) {
+                    label.textContent = 'Terlihat';
+                    label.style.background = '#d1fae5';
+                    label.style.color      = '#065f46';
+                } else {
+                    label.textContent = 'Tersembunyi';
+                    label.style.background = '#fee2e2';
+                    label.style.color      = '#991b1b';
+                }
+
+                // Toast notifikasi ringan
+                const toast = document.createElement('div');
+                toast.textContent = data.message;
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:.82rem;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:opacity .4s;';
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 2500);
+            } else {
+                // Kembalikan toggle ke posisi semula jika gagal
+                toggle.checked = !isChecked;
+                alert(data.message || 'Terjadi kesalahan, coba lagi.');
+            }
+        })
+        .catch(() => {
+            toggle.checked = !isChecked;
+            alert('Gagal terhubung ke server. Pastikan koneksi internet aktif.');
+        })
+        .finally(() => {
+            toggle.disabled = false;
+        });
+    });
+})();
 </script>
 </body>
 </html>

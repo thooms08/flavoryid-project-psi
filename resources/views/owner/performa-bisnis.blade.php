@@ -486,7 +486,7 @@
                 </div>
 
                 {{-- Tombol utama - redirect ke halaman MineAI --}}
-                <a href="{{ route('kasir.mineai') }}" class="btn-mine" id="btnMineInsight">
+                <a href="{{ route('owner.ai') }}" class="btn-mine" id="btnMineInsight">
                     <i class="bi bi-stars"></i>
                     <span>Minta Insight MineAI</span>
                 </a>

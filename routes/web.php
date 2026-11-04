@@ -79,9 +79,10 @@ Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.
     Route::get('/index', [OwnerController::class, 'index'])->name('dashboard');
 
     // Ikhtisar Bisnis (pakai controller kasir yang sudah ada)
-    Route::get('/laporan-bisnis',          [KasirLaporanBisnisController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan-bisnis/export',   [KasirLaporanBisnisController::class, 'export'])->name('laporan.export');
-    Route::get('/laporan-bisnis/chart',    [KasirLaporanBisnisController::class, 'getChartData'])->name('laporan.chart');
+    Route::get('/laporan-bisnis',          [\App\Http\Controllers\OwnerIkhtisarBisnisController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan-bisnis/export',   [\App\Http\Controllers\OwnerIkhtisarBisnisController::class, 'export'])->name('laporan.export');
+    Route::get('/laporan-bisnis/chart',    [\App\Http\Controllers\OwnerIkhtisarBisnisController::class, 'getChartData'])->name('laporan.chart');
+    Route::post('/laporan-bisnis/toggle',  [\App\Http\Controllers\OwnerIkhtisarBisnisController::class, 'toggleVisibilitas'])->name('laporan.toggle');
 
     // Laporan Pengeluaran
     Route::get('/pengeluaran',             [KasirLaporanPengeluaranController::class, 'index'])->name('pengeluaran.index');
@@ -101,13 +102,8 @@ Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.
     // Performa Bisnis
     Route::get('/performa-bisnis',         [KasirPerformaController::class, 'index'])->name('performa');
 
-    // AI Consultant
-    Route::get('/mineai',                  [\App\Http\Controllers\MineAIController::class, 'index'])->name('mineai');
-    Route::get('/mineai/initial-insight',  [\App\Http\Controllers\MineAIController::class, 'getInitialInsight'])->name('mineai.insight');
-    Route::get('/mineai/daily-usage',      [\App\Http\Controllers\MineAIController::class, 'getDailyUsage'])->name('mineai.daily-usage');
-    Route::post('/mineai/chat',            [\App\Http\Controllers\MineAIController::class, 'chatWithGroq'])->name('mineai.chat');
-    Route::get('/mineai/session/{uuid}',   [\App\Http\Controllers\MineAIController::class, 'loadSession'])->name('mineai.session.load');
-    Route::delete('/mineai/session/{uuid}',[\App\Http\Controllers\MineAIController::class, 'deleteSession'])->name('mineai.session.delete');
+    // AI Consultant (FlavoryAI — route kasir dihapus karena MineAIController tidak ada)
+    // Route kasir.mineai.* dipindahkan — gunakan owner.ai.* untuk akses AI
 
     // Pengaturan Form Pesanan
     Route::get('/pengaturan-form',         [KasirFormController::class, 'index'])->name('pengaturan.index');
@@ -118,6 +114,13 @@ Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.
     Route::post('/langganan/subscribe',    [KasirLanggananController::class, 'subscribe'])->name('langganan.subscribe');
     Route::post('/langganan/unsubscribe',  [KasirLanggananController::class, 'unsubscribe'])->name('langganan.unsubscribe');
     Route::get('/langganan/sukses',        [KasirLanggananController::class, 'sukses'])->name('langganan.sukses');
+
+    // FlavoryAI Consultant
+    Route::get('/ai',                  [\App\Http\Controllers\OwnerAIController::class, 'index'])->name('ai');
+    Route::post('/ai/chat',            [\App\Http\Controllers\OwnerAIController::class, 'chat'])->name('ai.chat');
+    Route::get('/ai/sessions',         [\App\Http\Controllers\OwnerAIController::class, 'listSessions'])->name('ai.sessions');
+    Route::get('/ai/session/{uuid}',   [\App\Http\Controllers\OwnerAIController::class, 'loadSession'])->name('ai.session.load');
+    Route::delete('/ai/session/{uuid}',[\App\Http\Controllers\OwnerAIController::class, 'deleteSession'])->name('ai.session.delete');
 });
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -207,12 +210,6 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::post('/kasir/sync-actions', [KasirController::class, 'syncActions'])->name('kasir.sync-actions');
     Route::post('/kasir/konfirmasi-bulk', [KasirController::class, 'bulkKonfirmasi'])->name('kasir.konfirmasi.bulk');
     Route::get('/kasir/performa-bisnis', [KasirPerformaController::class, 'index'])->name('kasir.performa');
-    Route::get('/kasir/mineai',                    [\App\Http\Controllers\MineAIController::class, 'index'])->name('kasir.mineai');
-    Route::get('/kasir/mineai/initial-insight',    [\App\Http\Controllers\MineAIController::class, 'getInitialInsight'])->name('kasir.mineai.insight');
-    Route::get('/kasir/mineai/daily-usage',        [\App\Http\Controllers\MineAIController::class, 'getDailyUsage'])->name('kasir.mineai.daily-usage');
-    Route::post('/kasir/mineai/chat',              [\App\Http\Controllers\MineAIController::class, 'chatWithGroq'])->name('kasir.mineai.chat');
-    Route::get('/kasir/mineai/session/{uuid}',     [\App\Http\Controllers\MineAIController::class, 'loadSession'])->name('kasir.mineai.session.load');
-    Route::delete('/kasir/mineai/session/{uuid}',  [\App\Http\Controllers\MineAIController::class, 'deleteSession'])->name('kasir.mineai.session.delete');
     Route::get('/kasir/notes', [KasirNoteController::class, 'index'])->name('kasir.notes.index');
     Route::post('/kasir/notes', [KasirNoteController::class, 'store'])->name('kasir.notes.store');
     Route::put('/kasir/notes/{note}', [KasirNoteController::class, 'update'])->name('kasir.notes.update');

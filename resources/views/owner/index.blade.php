@@ -561,7 +561,7 @@
         </a>
 
         {{-- 5. Flavory AI Consultant (special animated card) --}}
-        <a href="{{ route('owner.mineai') }}" class="menu-card menu-card-ai">
+        <a href="{{ route('owner.ai') }}" class="menu-card menu-card-ai">
             <span class="ai-sparkle">✨</span>
             <div class="menu-card-icon icon-ai">
                 <i class="bi bi-stars"></i>
