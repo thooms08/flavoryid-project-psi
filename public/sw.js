@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flavory-pos-v11';
+const CACHE_NAME = 'flavory-pos-v12';
 const URLS_TO_CACHE = [
     '/kasir',
     '/kasir/order/create',
@@ -11,7 +11,7 @@ const URLS_TO_CACHE = [
 ];
 
 // Halaman yang TIDAK BOLEH di-cache (harus selalu fresh dari server)
-const NEVER_CACHE = ['/login'];
+const NEVER_CACHE = ['/login', '/login-owner', '/logout', '/logout-owner'];
 
 self.addEventListener('install', event => {
     event.waitUntil(

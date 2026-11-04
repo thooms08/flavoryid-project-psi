@@ -394,36 +394,23 @@
                 
                 <div class="navbar-cta-wrapper d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 mt-3 mt-lg-0">
 
-                    {{-- Tombol BERANDA OWNER — muncul jika sudah login sebagai owner --}}
                     @auth
-                        @if(auth()->user()->role === 'owner')
-                        <a href="{{ route('owner.dashboard') }}"
-                           class="btn w-100 w-lg-auto fw-semibold d-flex align-items-center justify-content-center gap-2"
-                           style="background:#6f42c1;color:#fff;border-radius:50px;padding:8px 20px;border:none;white-space:nowrap;transition:all .3s ease;box-shadow:0 4px 15px rgba(111,66,193,.3);"
-                           onmouseover="this.style.background='#5a32a3';this.style.transform='translateY(-2px)'"
-                           onmouseout="this.style.background='#6f42c1';this.style.transform='translateY(0)'">
-                            <i class="bi bi-person-badge"></i> Beranda Owner
-                        </a>
-                        @endif
-                    @endauth
-
-                    @auth
-                        {{-- Sudah login: tampilkan tombol beranda sesuai role --}}
+                        {{-- Sudah login: tampilkan tombol Dashboard sesuai role --}}
                         @if(auth()->user()->role === 'kasir')
                             <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
-                                <i class="bi bi-speedometer2 me-1"></i> Beranda Kasir
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>
                         @elseif(auth()->user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
-                                <i class="bi bi-speedometer2 me-1"></i> Beranda Admin
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>
-                        @elseif(auth()->user()->role === 'owner')
+                        @elseif(in_array(auth()->user()->role, ['owner', 'manager']))
                             <a href="{{ route('owner.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
-                                <i class="bi bi-speedometer2 me-1"></i> Beranda Owner
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>
                         @else
                             <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
-                                <i class="bi bi-speedometer2 me-1"></i> Beranda
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>
                         @endif
                         {{-- Tombol logout --}}

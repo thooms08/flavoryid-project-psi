@@ -427,7 +427,7 @@
             })
             .then(function () {
                 self._set({ expression: 'happy', arms: 'wave' });
-                self._showBubble('hehehehe');
+                self._showBubble('Haaiiiii...');
                 return sleep(t.greetHold);
             })
             .then(function () {

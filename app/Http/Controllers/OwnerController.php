@@ -14,8 +14,8 @@ class OwnerController extends Controller
     // ─── Halaman login owner ──────────────────────────────────────────────────
     public function showLogin()
     {
-        // Sudah login sebagai owner → langsung ke dashboard
-        if (Auth::check() && Auth::user()->role === 'owner') {
+        // Sudah login sebagai owner atau manager → langsung ke dashboard
+        if (Auth::check() && in_array(Auth::user()->role, ['owner', 'manager'])) {
             return redirect()->route('owner.dashboard');
         }
 
@@ -35,12 +35,14 @@ class OwnerController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Cari user
-        $user = User::where('username', $request->input('username'))->first();
+        // Cari user berdasarkan username dengan role owner atau manager
+        $user = User::where('username', $request->input('username'))
+            ->whereIn('role', ['owner', 'manager'])
+            ->first();
 
         if (!$user) {
             return back()->withErrors([
-                'username' => 'Username tidak ditemukan.',
+                'username' => 'Username tidak ditemukan atau bukan akun Owner/Manager.',
             ])->withInput();
         }
 
@@ -50,14 +52,7 @@ class OwnerController extends Controller
             ])->withInput();
         }
 
-        // Pastikan role adalah owner
-        if ($user->role !== 'owner') {
-            return back()->withErrors([
-                'username' => 'Akun ini bukan akun Owner/Manager. Gunakan halaman login yang sesuai.',
-            ])->withInput();
-        }
-
-        // Cek verifikasi partner (jika owner punya partner)
+        // Cek verifikasi partner (jika owner/manager punya partner)
         $partner = Partner::where('user_id', $user->id)->first();
         if ($partner) {
             $isVerified = $partner->verifikasi?->konfirmasi ?? false;
@@ -66,8 +61,9 @@ class OwnerController extends Controller
             }
         }
 
-        $request->session()->regenerate();
+        // Login terlebih dahulu, baru regenerate session
         Auth::login($user, $request->boolean('remember'));
+        $request->session()->regenerate();
 
         return redirect()->route('owner.dashboard');
     }

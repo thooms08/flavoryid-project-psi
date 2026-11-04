@@ -75,7 +75,7 @@ Route::get('/login-owner',  [OwnerController::class, 'showLogin'])->name('owner.
 Route::post('/login-owner', [OwnerController::class, 'login'])->name('owner.login.post');
 Route::post('/logout-owner', [OwnerController::class, 'logout'])->name('owner.logout');
 
-Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
+Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/index', [OwnerController::class, 'index'])->name('dashboard');
 
     // Ikhtisar Bisnis (pakai controller kasir yang sudah ada)

@@ -14,30 +14,10 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .bg-mesh {
-            background-color: #f8fafc;
+            background-color: #fff7ed;
             background-image:
-                radial-gradient(at 0% 0%,   rgba(71,85,105,.08) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(71,85,105,.05) 0px, transparent 50%);
-        }
-        /* animated gradient border pada card */
-        .owner-card {
-            position: relative;
-        }
-        .owner-card::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: calc(2.5rem + 2px);
-            background: linear-gradient(135deg, #ff6a00, #ff9a00, #64748b, #ff6a00);
-            background-size: 300% 300%;
-            animation: borderShift 6s ease infinite;
-            z-index: -1;
-            opacity: 0.35;
-        }
-        @keyframes borderShift {
-            0%   { background-position: 0%   50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0%   50%; }
+                radial-gradient(at 0% 0%,   rgba(251,146,60,.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(251,146,60,.1) 0px, transparent 50%);
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .animate-spin { animation: spin .8s linear infinite; }
@@ -61,8 +41,7 @@
 
     {{-- Header --}}
     <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl shadow-xl shadow-slate-200 mb-4"
-             style="background: linear-gradient(135deg, #334155, #475569);">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl shadow-xl shadow-orange-200 mb-4">
             <i class="bi bi-person-badge-fill text-white text-3xl"></i>
         </div>
         <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -76,7 +55,7 @@
     </div>
 
     {{-- Card --}}
-    <div class="owner-card bg-white/90 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-100 border border-white">
+    <div class="owner-card bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-orange-100 border border-white">
 
         {{-- Pesan error server --}}
         @if ($errors->any())
@@ -150,10 +129,7 @@
             {{-- Submit --}}
             <div class="pt-2">
                 <button type="submit" id="btnLogin"
-                    class="w-full text-white font-black py-4 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 tracking-widest text-sm"
-                    style="background: linear-gradient(135deg, #334155, #475569); box-shadow: 0 8px 24px rgba(51,65,85,0.25);"
-                    onmouseover="this.style.background='linear-gradient(135deg, #1e293b, #334155)'"
-                    onmouseout="this.style.background='linear-gradient(135deg, #334155, #475569)'">
+                    class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-2 tracking-widest text-sm">
                     <span id="btnText">MASUK SEBAGAI OWNER</span>
                     <i class="bi bi-box-arrow-in-right text-lg" id="btnIcon"></i>
                     <svg id="btnSpinner" class="hidden w-5 h-5 animate-spin"
@@ -187,6 +163,22 @@ ownerLoginForm.addEventListener('submit', function() {
     btnText.textContent = 'Memproses...';
     btnIcon.classList.add('hidden');
     btnSpinner.classList.remove('hidden');
+});
+
+// ── Auto-refresh halaman saat koneksi pulih ──────────────────────────────
+// Jika halaman ini diambil dari cache SW (CSRF token kadaluarsa),
+// reload otomatis ketika internet kembali agar token selalu fresh.
+let wasOffline = !navigator.onLine;
+
+window.addEventListener('online', function () {
+    if (wasOffline) {
+        // Paksa reload dari network, abaikan cache browser & SW
+        window.location.reload(true);
+    }
+});
+
+window.addEventListener('offline', function () {
+    wasOffline = true;
 });
 </script>
 
