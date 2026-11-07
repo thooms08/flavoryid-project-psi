@@ -1,20 +1,12 @@
-{{--
-    owner/ai/sidebar.blade.php
-    Sidebar riwayat sesi FlavoryAI Consultant.
-    Di-include oleh owner/ai/index.blade.php.
-    Variabel yang dibutuhkan: $sessions (Collection MineAiSession), $activeSession (nullable)
 
-    CATATAN: semua event (tutup sidebar, chat baru, klik riwayat, hapus)
-    di-handle oleh JavaScript di index.blade.php. Elemen di bawah ini
-    hanya boleh mempertahankan id / class / data-uuid yang dipakai JS.
---}}
 
 <aside class="ai-sidebar" id="aiSidebar">
 
     {{-- ── Brand ── --}}
     <div class="sidebar-brand">
         <div class="sidebar-brand-icon">
-            <i class="bi bi-stars"></i>
+            {{-- Wajah robot: markup SVG diisi oleh JS (hydrateFaces) di index.blade.php --}}
+            <span class="fa-face" data-global data-fa-hydrate data-exp="smile"></span>
         </div>
         <div class="sidebar-brand-text">
             <span class="sidebar-brand-name">FlavoryAI</span>

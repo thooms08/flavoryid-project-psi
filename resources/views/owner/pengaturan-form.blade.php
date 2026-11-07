@@ -101,7 +101,7 @@
         <div class="col-md-8 col-lg-6">
 
             <div class="d-flex align-items-center gap-3 mb-4">
-                <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <a href="{{ route('owner.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                     <i class="bi bi-arrow-left fs-4"></i>
                 </a>
                 <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;"></h1>
@@ -295,11 +295,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     const CSRF = '{{ csrf_token() }}';
-    const routeUpdate      = '{{ route("kasir.pengaturan.update") }}';
-    const routeVoucherList = '{{ route("kasir.voucher.index") }}';
-    const routeVoucherStore= '{{ route("kasir.voucher.store") }}';
-    const routeVoucherCheck= '{{ route("kasir.voucher.check-kode") }}';
-    const routeVoucherDel  = '{{ url("kasir/voucher") }}'; // + /{id} DELETE
+    const routeUpdate      = '{{ route("owner.pengaturan.update") }}';
+    const routeVoucherList = '{{ route("owner.voucher.index") }}';
+    const routeVoucherStore= '{{ route("owner.voucher.store") }}';
+    const routeVoucherCheck= '{{ route("owner.voucher.check-kode") }}';
+    const routeVoucherDel  = '{{ url("owner/voucher") }}'; // + /{id} DELETE
 
     const alertNotif        = document.getElementById('alert-notif');
     const toggleVoucher     = document.getElementById('toggle-voucher');

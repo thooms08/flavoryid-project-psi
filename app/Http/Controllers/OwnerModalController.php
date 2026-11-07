@@ -3,28 +3,46 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Modal;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Models\{Modal, OwnerKasir, Partner};
 use App\Exports\ModalExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Carbon\Carbon;
 
-class KasirModalController extends Controller
+class OwnerModalController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Ambil partner kasir yang terhubung ke owner yang sedang login.
+     */
+    private function getKasirPartner(): Partner
     {
-        $user = $request->user();
-        if (!$user || !$user->partner) {
-            abort(403, 'Akses ditolak: Akun tidak memiliki relasi Partner.');
+        $owner      = Auth::user();
+        $ownerKasir = OwnerKasir::where('owner_id', $owner->id)->first();
+
+        if (!$ownerKasir) {
+            abort(403, 'Tidak ada akun kasir yang terhubung dengan akun owner ini.');
         }
 
-        $partnerId   = $user->partner->id;
+        $kasirUser = \App\Models\User::find($ownerKasir->kasir_id);
+
+        if (!$kasirUser || !$kasirUser->partner) {
+            abort(403, 'Data partner kasir tidak ditemukan.');
+        }
+
+        return $kasirUser->partner;
+    }
+
+    public function index(Request $request)
+    {
+        $partner   = $this->getKasirPartner();
+        $partnerId = $partner->id;
+
         $status      = $request->input('status', 'save');
         $quickFilter = $request->input('quick_filter');
 
-        // Tentukan rentang tanggal berdasarkan quick_filter atau input manual
         if ($quickFilter) {
             $endDate   = Carbon::today('Asia/Jakarta')->toDateString();
-            $startDate = match($quickFilter) {
+            $startDate = match ($quickFilter) {
                 '1_hari'   => Carbon::today('Asia/Jakarta')->toDateString(),
                 '1_minggu' => Carbon::today('Asia/Jakarta')->subWeek()->toDateString(),
                 '1_bulan'  => Carbon::today('Asia/Jakarta')->subMonth()->toDateString(),
@@ -39,20 +57,19 @@ class KasirModalController extends Controller
         $startTs = $startDate . ' 00:00:00';
         $endTs   = $endDate   . ' 23:59:59';
 
-        // Data tabel (sesuai status tab)
         $modals = Modal::where('partner_id', $partnerId)
             ->where('status', $status)
             ->whereBetween('created_at', [$startTs, $endTs])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Total modal (selalu dari status 'save' agar angka akurat)
+        // Summary
         $totalModal = Modal::where('partner_id', $partnerId)
             ->where('status', 'save')
             ->whereBetween('created_at', [$startTs, $endTs])
             ->sum('nominal');
 
-        // Chart — groupBy hari / minggu / bulan sesuai panjang range
+        // Chart
         $diffDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
 
         $summaryBase = Modal::where('partner_id', $partnerId)
@@ -89,7 +106,7 @@ class KasirModalController extends Controller
         }
         $chartData = $chartRaw->pluck('jumlah')->map(fn($v) => (float) $v)->toArray();
 
-        return view('kasir.modal', compact(
+        return view('owner.modal', compact(
             'modals', 'startDate', 'endDate', 'status',
             'totalModal', 'chartLabels', 'chartData', 'quickFilter'
         ));
@@ -98,33 +115,43 @@ class KasirModalController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nominal' => 'required|numeric|min:1',
-            'keterangan' => 'nullable|string|max:255',
+            'nominal'     => 'required|numeric|min:1',
+            'keterangan'  => 'nullable|string|max:255',
         ]);
+
+        $partner = $this->getKasirPartner();
 
         Modal::create([
-            'partner_id' => $request->user()->partner->id,
-            'nominal' => $request->nominal,
-            'keterangan' => $request->keterangan,
-            'status' => 'save', // Default status disimpan di save
+            'partner_id'  => $partner->id,
+            'nominal'     => $request->nominal,
+            'keterangan'  => $request->keterangan,
+            'status'      => 'save',
         ]);
 
-        return redirect()->back()->with('success', 'Modal berhasil ditambahkan.');
+        return redirect()->back()->with('success', 'Modal usaha berhasil ditambahkan.');
     }
 
     public function destroy($id)
     {
-        $modal = Modal::findOrFail($id);
-        // Pindahkan ke tab terhapus (Soft delete simulasi)
+        $partner = $this->getKasirPartner();
+
+        $modal = Modal::where('id', $id)
+            ->where('partner_id', $partner->id)
+            ->firstOrFail();
+
         $modal->update(['status' => 'delete']);
 
-        return redirect()->back()->with('success', 'Data modal dipindahkan ke tab Terhapus.');
+        return redirect()->back()->with('success', 'Data dipindahkan ke tab Data Terhapus.');
     }
 
     public function restore($id)
     {
-        $modal = Modal::findOrFail($id);
-        // Pulihkan ke tab data tersedia
+        $partner = $this->getKasirPartner();
+
+        $modal = Modal::where('id', $id)
+            ->where('partner_id', $partner->id)
+            ->firstOrFail();
+
         $modal->update(['status' => 'save']);
 
         return redirect()->back()->with('success', 'Data modal berhasil dipulihkan.');
@@ -132,20 +159,14 @@ class KasirModalController extends Controller
 
     public function export(Request $request)
     {
-        $partnerId = $request->user()->partner->id;
-        $today = Carbon::today('Asia/Jakarta')->toDateString();
-        
-        $startDate = $request->input('start_date', $today);
-        $endDate = $request->input('end_date', $today);
-        
-        // Format penamaan file sesuai instruksi
-        $dateStr = Carbon::parse($startDate)->format('d-m-Y');
-        $fileName = "modal_usaha_{$dateStr}.xlsx";
+        $partner   = $this->getKasirPartner();
+        $startDate = $request->input('start_date', Carbon::today('Asia/Jakarta')->toDateString());
+        $endDate   = $request->input('end_date', Carbon::today('Asia/Jakarta')->toDateString());
+        $fileName  = 'laporan_modal_usaha_' . date('d-m-Y') . '.xlsx';
 
-        // Membersihkan buffer untuk mencegah file excel corrupt
         ob_end_clean();
         ob_start();
 
-        return Excel::download(new ModalExport($partnerId, $startDate, $endDate), $fileName);
+        return Excel::download(new ModalExport($partner->id, $startDate, $endDate), $fileName);
     }
 }

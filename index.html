@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Class Diagram — Flavory.id</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #c8c8c8;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #222;
+    margin-bottom: 14px;
+  }
+  .wrap {
+    background: white;
+    border: 1.5px solid #111;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.25);
+    display: inline-block;
+    overflow: auto;
+    max-width: 100%;
+  }
+  svg text { font-family: Arial, Helvetica, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Class Diagram &mdash; Flavory.id</h1>
+<div class="wrap">
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1700" height="1200"
+     viewBox="0 0 1700 1200">
+
+<defs>
+  <!-- open arrowhead (association / navigability) -->
+  <marker id="arr" markerWidth="10" markerHeight="8"
+          refX="9" refY="4" orient="auto">
+    <polyline points="0,0 9,4 0,8" fill="none" stroke="#111" stroke-width="1.3"/>
+  </marker>
+  <!-- filled diamond: composition (child cannot exist without parent) -->
+  <marker id="comp" markerWidth="14" markerHeight="10"
+          refX="14" refY="5" orient="auto">
+    <polygon points="0,5 7,0 14,5 7,10" fill="#111" stroke="#111" stroke-width="1"/>
+  </marker>
+</defs>
+
+<rect x="0" y="0" width="1700" height="1200" fill="white"/>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CLASS BOXES
+     Each box: header (black fill, white bold text) |
+               attributes section | methods section
+     Sizes are computed to fit content neatly.
+     Line height inside box = 17px
+═══════════════════════════════════════════════════════════ -->
+
+<!-- ┌──────────────────────────────────────────────────────────
+     │  ROW 1  (y=60)
+     │  User(60,60)   Partner(350,60)   InformasiOutlet(680,60)   MediaQr(1030,60)
+     └────────────────────────────────────────────────────────── -->
+
+<!-- ── User  x=60  y=60  w=240 ── -->
+<rect x="60"  y="60"  width="240" height="28" fill="#111"/>
+<text x="180" y="79"  text-anchor="middle" fill="white" font-weight="bold" font-size="12">User</text>
+<!-- attributes -->
+<rect x="60"  y="88"  width="240" height="85" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="72"  y="104" font-size="10.5">- id : Integer</text>
+<text x="72"  y="121" font-size="10.5">- username : String</text>
+<text x="72"  y="138" font-size="10.5">- password : String</text>
+<text x="72"  y="155" font-size="10.5">- role : Enum(kasir|owner|admin)</text>
+<line x1="60" y1="173" x2="300" y2="173" stroke="#111" stroke-width="1"/>
+<!-- methods -->
+<rect x="60"  y="173" width="240" height="51" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="72"  y="189" font-size="10.5">+ Login() : Boolean</text>
+<text x="72"  y="206" font-size="10.5">+ Logout() : Boolean</text>
+<text x="72"  y="223" font-size="10.5">+ CheckRole() : String</text>
+
+<!-- ── Partner  x=350  y=60  w=260 ── -->
+<rect x="350" y="60"  width="260" height="28" fill="#111"/>
+<text x="480" y="79"  text-anchor="middle" fill="white" font-weight="bold" font-size="12">Partner</text>
+<rect x="350" y="88"  width="260" height="119" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="362" y="104" font-size="10.5">- id : Integer</text>
+<text x="362" y="121" font-size="10.5">- user_id : Integer (FK)</text>
+<text x="362" y="138" font-size="10.5">- nama_manager : String</text>
+<text x="362" y="155" font-size="10.5">- no_wa : String</text>
+<text x="362" y="172" font-size="10.5">- email : String</text>
+<text x="362" y="189" font-size="10.5">- uuid : String</text>
+<text x="362" y="206" font-size="10.5">- show_ikhtisar_bisnis : Boolean</text>
+<line x1="350" y1="207" x2="610" y2="207" stroke="#111" stroke-width="1"/>
+<rect x="350" y="207" width="260" height="34" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="362" y="223" font-size="10.5">+ GetOutletInfo() : Object</text>
+<text x="362" y="240" font-size="10.5">+ GetMenuList() : List</text>
+
+<!-- ── InformasiOutlet  x=680  y=60  w=290 ── -->
+<rect x="680" y="60"  width="290" height="28" fill="#111"/>
+<text x="825" y="79"  text-anchor="middle" fill="white" font-weight="bold" font-size="12">InformasiOutlet</text>
+<rect x="680" y="88"  width="290" height="187" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="692" y="104" font-size="10.5">- id : Integer</text>
+<text x="692" y="121" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="692" y="138" font-size="10.5">- jenis_outlet : Enum(cafe|restoran|lainnya)</text>
+<text x="692" y="155" font-size="10.5">- nama_outlet : String</text>
+<text x="692" y="172" font-size="10.5">- foto_outlet : String</text>
+<text x="692" y="189" font-size="10.5">- page_name : String</text>
+<text x="692" y="206" font-size="10.5">- deskripsi : Text</text>
+<text x="692" y="223" font-size="10.5">- alamat_lengkap : Text</text>
+<text x="692" y="240" font-size="10.5">- kota : String</text>
+<text x="692" y="257" font-size="10.5">- provinsi : String</text>
+<text x="692" y="274" font-size="10.5">- maps : String</text>
+<line x1="680" y1="275" x2="970" y2="275" stroke="#111" stroke-width="1"/>
+<rect x="680" y="275" width="290" height="17" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="692" y="288" font-size="10.5">+ GetSosialMedia() : Object</text>
+
+<!-- ── MediaQr  x=1030  y=60  w=270 ── -->
+<rect x="1030" y="60"  width="270" height="28" fill="#111"/>
+<text x="1165" y="79"  text-anchor="middle" fill="white" font-weight="bold" font-size="12">MediaQr</text>
+<rect x="1030" y="88"  width="270" height="153" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1042" y="104" font-size="10.5">- id : Integer</text>
+<text x="1042" y="121" font-size="10.5">- informasi_id : Integer (FK)</text>
+<text x="1042" y="138" font-size="10.5">- paket : Enum(gratis|eksklusif|…)</text>
+<text x="1042" y="155" font-size="10.5">- status : String</text>
+<text x="1042" y="172" font-size="10.5">- facebook : String</text>
+<text x="1042" y="189" font-size="10.5">- instagram : String</text>
+<text x="1042" y="206" font-size="10.5">- youtube : String</text>
+<text x="1042" y="223" font-size="10.5">- tiktok : String</text>
+<text x="1042" y="240" font-size="10.5">- payment_status : String</text>
+<line x1="1030" y1="241" x2="1300" y2="241" stroke="#111" stroke-width="1"/>
+<rect x="1030" y="241" width="270" height="17" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1042" y="254" font-size="10.5">+ isPremium() : Boolean</text>
+
+
+<!-- ┌──────────────────────────────────────────────────────────
+     │  ROW 2  (y=380)
+     │  Menu(60,380)  VariantLevel(60,650)
+     │  Order(350,380)  OrderDetail(350,670)
+     │  StokBarang(700,380)  StokHarian(700,650)
+     │  Pengeluaran(1000,380)
+     │  Modal(1320,380)  Voucher(1320,650)
+     └────────────────────────────────────────────────────────── -->
+
+<!-- ── Menu  x=60  y=380  w=260 ── -->
+<rect x="60"  y="380" width="260" height="28" fill="#111"/>
+<text x="190" y="399" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Menu</text>
+<rect x="60"  y="408" width="260" height="170" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="72"  y="424" font-size="10.5">- id : Integer</text>
+<text x="72"  y="441" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="72"  y="458" font-size="10.5">- nama_menu : String</text>
+<text x="72"  y="475" font-size="10.5">- deskripsi : Text</text>
+<text x="72"  y="492" font-size="10.5">- kategori : String</text>
+<text x="72"  y="509" font-size="10.5">- gambar : String</text>
+<text x="72"  y="526" font-size="10.5">- harga : Decimal</text>
+<text x="72"  y="543" font-size="10.5">- tipe_menu : Enum(utama|best_seller)</text>
+<text x="72"  y="560" font-size="10.5">- status_menu : Enum(tersedia|habis)</text>
+<text x="72"  y="577" font-size="10.5">- stok_menu : Integer</text>
+<line x1="60"  y1="578" x2="320" y2="578" stroke="#111" stroke-width="1"/>
+<rect x="60"  y="578" width="260" height="51" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="72"  y="594" font-size="10.5">+ CreateMenu() : void</text>
+<text x="72"  y="611" font-size="10.5">+ EditMenu() : void</text>
+<text x="72"  y="628" font-size="10.5">+ DeleteMenu() : void</text>
+
+<!-- ── VariantLevel  x=60  y=700  w=260 ── -->
+<rect x="60"  y="700" width="260" height="28" fill="#111"/>
+<text x="190" y="719" text-anchor="middle" fill="white" font-weight="bold" font-size="12">VariantLevel</text>
+<rect x="60"  y="728" width="260" height="68" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="72"  y="744" font-size="10.5">- id : Integer</text>
+<text x="72"  y="761" font-size="10.5">- menu_id : Integer (FK)</text>
+<text x="72"  y="778" font-size="10.5">- variant : String</text>
+<text x="72"  y="795" font-size="10.5">- harga : Decimal</text>
+<line x1="60"  y1="796" x2="320" y2="796" stroke="#111" stroke-width="1"/>
+<rect x="60"  y="796" width="260" height="17" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="72"  y="809" font-size="10.5">+ GetVariantsByMenu() : List</text>
+
+<!-- ── Order  x=360  y=380  w=280 ── -->
+<rect x="360" y="380" width="280" height="28" fill="#111"/>
+<text x="500" y="399" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Order</text>
+<rect x="360" y="408" width="280" height="221" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="372" y="424" font-size="10.5">- id : Integer</text>
+<text x="372" y="441" font-size="10.5">- uuid : String</text>
+<text x="372" y="458" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="372" y="475" font-size="10.5">- nomor_pesanan : Integer</text>
+<text x="372" y="492" font-size="10.5">- nama_pelanggan : String</text>
+<text x="372" y="509" font-size="10.5">- no_meja : String</text>
+<text x="372" y="526" font-size="10.5">- total_harga : Decimal</text>
+<text x="372" y="543" font-size="10.5">- uang_bayar : Decimal</text>
+<text x="372" y="560" font-size="10.5">- metode_bayar : Enum(qris|transfer|cash)</text>
+<text x="372" y="577" font-size="10.5">- kembalian : Decimal</text>
+<text x="372" y="594" font-size="10.5">- status : Enum(pending|success|fail)</text>
+<text x="372" y="611" font-size="10.5">- nominal_diskon : Decimal</text>
+<text x="372" y="628" font-size="10.5">- kode_voucher : String</text>
+<line x1="360" y1="629" x2="640" y2="629" stroke="#111" stroke-width="1"/>
+<rect x="360" y="629" width="280" height="68" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="372" y="645" font-size="10.5">+ CreateOrder() : void</text>
+<text x="372" y="662" font-size="10.5">+ ProsesTransaksi() : void</text>
+<text x="372" y="679" font-size="10.5">+ DeleteOrder() : void</text>
+<text x="372" y="696" font-size="10.5">+ LihatRiwayat() : List</text>
+
+<!-- ── OrderDetail  x=360  y=740  w=280 ── -->
+<rect x="360" y="740" width="280" height="28" fill="#111"/>
+<text x="500" y="759" text-anchor="middle" fill="white" font-weight="bold" font-size="12">OrderDetail</text>
+<rect x="360" y="768" width="280" height="85" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="372" y="784" font-size="10.5">- id : Integer</text>
+<text x="372" y="801" font-size="10.5">- order_id : Integer (FK)</text>
+<text x="372" y="818" font-size="10.5">- menu_id : Integer (FK)</text>
+<text x="372" y="835" font-size="10.5">- qty : Integer</text>
+<text x="372" y="852" font-size="10.5">- harga : Decimal</text>
+<text x="372" y="869" font-size="10.5">- variant : String</text>
+<line x1="360" y1="853" x2="640" y2="853" stroke="#111" stroke-width="1"/>
+<rect x="360" y="853" width="280" height="17" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="372" y="866" font-size="10.5">+ HitungSubtotal() : Decimal</text>
+
+<!-- ── StokBarang  x=700  y=380  w=260 ── -->
+<rect x="700" y="380" width="260" height="28" fill="#111"/>
+<text x="830" y="399" text-anchor="middle" fill="white" font-weight="bold" font-size="12">StokBarang</text>
+<rect x="700" y="408" width="260" height="136" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="712" y="424" font-size="10.5">- id : Integer</text>
+<text x="712" y="441" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="712" y="458" font-size="10.5">- nama_barang : String</text>
+<text x="712" y="475" font-size="10.5">- satuan : String</text>
+<text x="712" y="492" font-size="10.5">- min_hijau / max_hijau : Decimal</text>
+<text x="712" y="509" font-size="10.5">- min_kuning / max_kuning : Decimal</text>
+<text x="712" y="526" font-size="10.5">- min_merah / max_merah : Decimal</text>
+<text x="712" y="543" font-size="10.5">- stok_terakhir : Decimal (accessor)</text>
+<line x1="700" y1="544" x2="960" y2="544" stroke="#111" stroke-width="1"/>
+<rect x="700" y="544" width="260" height="34" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="712" y="560" font-size="10.5">+ CreateStok() : void</text>
+<text x="712" y="577" font-size="10.5">+ EditStok() : void</text>
+
+<!-- ── StokHarian  x=700  y=650  w=260 ── -->
+<rect x="700" y="650" width="260" height="28" fill="#111"/>
+<text x="830" y="669" text-anchor="middle" fill="white" font-weight="bold" font-size="12">StokHarian</text>
+<rect x="700" y="678" width="260" height="68" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="712" y="694" font-size="10.5">- id : Integer</text>
+<text x="712" y="711" font-size="10.5">- stok_barang_id : Integer (FK)</text>
+<text x="712" y="728" font-size="10.5">- tanggal : Date</text>
+<text x="712" y="745" font-size="10.5">- jumlah : Decimal</text>
+<line x1="700" y1="746" x2="960" y2="746" stroke="#111" stroke-width="1"/>
+<rect x="700" y="746" width="260" height="17" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="712" y="759" font-size="10.5">+ TambahRiwayatStok() : void</text>
+
+<!-- ── Pengeluaran  x=1000  y=380  w=260 ── -->
+<rect x="1000" y="380" width="270" height="28" fill="#111"/>
+<text x="1135" y="399" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Pengeluaran</text>
+<rect x="1000" y="408" width="270" height="153" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1012" y="424" font-size="10.5">- id : Integer</text>
+<text x="1012" y="441" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="1012" y="458" font-size="10.5">- kategori : String</text>
+<text x="1012" y="475" font-size="10.5">- keterangan : String</text>
+<text x="1012" y="492" font-size="10.5">- item : String</text>
+<text x="1012" y="509" font-size="10.5">- harga : Decimal</text>
+<text x="1012" y="526" font-size="10.5">- qty : Decimal</text>
+<text x="1012" y="543" font-size="10.5">- total : Decimal</text>
+<text x="1012" y="560" font-size="10.5">- status : String</text>
+<line x1="1000" y1="561" x2="1270" y2="561" stroke="#111" stroke-width="1"/>
+<rect x="1000" y="561" width="270" height="34" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1012" y="577" font-size="10.5">+ CreatePengeluaran() : void</text>
+<text x="1012" y="594" font-size="10.5">+ EditPengeluaran() : void</text>
+
+<!-- ── Modal  x=1320  y=380  w=250 ── -->
+<rect x="1320" y="380" width="250" height="28" fill="#111"/>
+<text x="1445" y="399" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Modal</text>
+<rect x="1320" y="408" width="250" height="85" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1332" y="424" font-size="10.5">- id : Integer</text>
+<text x="1332" y="441" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="1332" y="458" font-size="10.5">- nominal : Decimal</text>
+<text x="1332" y="475" font-size="10.5">- keterangan : Text</text>
+<text x="1332" y="492" font-size="10.5">- status : String</text>
+<line x1="1320" y1="493" x2="1570" y2="493" stroke="#111" stroke-width="1"/>
+<rect x="1320" y="493" width="250" height="34" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1332" y="509" font-size="10.5">+ CreateModal() : void</text>
+<text x="1332" y="526" font-size="10.5">+ GetTotalModal() : Decimal</text>
+
+<!-- ── Voucher  x=1320  y=620  w=250 ── -->
+<rect x="1320" y="620" width="250" height="28" fill="#111"/>
+<text x="1445" y="639" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Voucher</text>
+<rect x="1320" y="648" width="250" height="102" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1332" y="664" font-size="10.5">- id : Integer</text>
+<text x="1332" y="681" font-size="10.5">- partner_id : Integer (FK)</text>
+<text x="1332" y="698" font-size="10.5">- kode_voucher : String</text>
+<text x="1332" y="715" font-size="10.5">- jenis_potongan : String</text>
+<text x="1332" y="732" font-size="10.5">- nominal_potongan : Decimal</text>
+<text x="1332" y="749" font-size="10.5">- is_active : Boolean</text>
+<line x1="1320" y1="750" x2="1570" y2="750" stroke="#111" stroke-width="1"/>
+<rect x="1320" y="750" width="250" height="17" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="1332" y="763" font-size="10.5">+ ApplyVoucher() : Decimal</text>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     RELATIONSHIPS
+     Garis lurus dengan label multiplicity di ujung
+     Gunakan elbow (waypoint) untuk menghindari tumpang tindih
+═══════════════════════════════════════════════════════════ -->
+
+<!-- ── 1. User 1 ─────────────────── 1 Partner (hasOne) ── -->
+<line x1="300" y1="148" x2="350" y2="148"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="306" y="143" font-size="10">1</text>
+<text x="330" y="143" font-size="10">1</text>
+
+<!-- ── 2. Partner 1 ────────────────── 1 InformasiOutlet ── -->
+<line x1="610" y1="148" x2="680" y2="148"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="616" y="143" font-size="10">1</text>
+<text x="660" y="143" font-size="10">1</text>
+
+<!-- ── 3. InformasiOutlet 1 ───────── 1 MediaQr ── -->
+<line x1="970" y1="180" x2="1030" y2="180"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="976" y="175" font-size="10">1</text>
+<text x="1012" y="175" font-size="10">1</text>
+
+<!-- ── 4. Partner 1 ──────────────── 0..* Menu ──
+         vertical down from Partner, then left to Menu top -->
+<line x1="370" y1="241" x2="370" y2="360"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="370" y1="360" x2="190" y2="360"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="190" y1="360" x2="190" y2="380"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="376" y="260" font-size="10">1</text>
+<text x="176" y="374" font-size="10">0..*</text>
+
+<!-- ── 5. Menu 1 ◆──────────────── 0..* VariantLevel (composition) ──
+         from bottom of Menu to top of VariantLevel -->
+<line x1="190" y1="629" x2="190" y2="700"
+      stroke="#111" stroke-width="1.2"
+      marker-start="url(#comp)" marker-end="url(#arr)"/>
+<text x="197" y="650" font-size="10">1</text>
+<text x="197" y="694" font-size="10">0..*</text>
+
+<!-- ── 6. Partner 1 ──────────────── 0..* Order ──
+         right side of Partner, down then right to Order top -->
+<line x1="610" y1="165" x2="660" y2="165"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="660" y1="165" x2="660" y2="360"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="660" y1="360" x2="500" y2="360"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="500" y1="360" x2="500" y2="380"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="666" y="180" font-size="10">1</text>
+<text x="486" y="374" font-size="10">0..*</text>
+
+<!-- ── 7. Order 1 ◆───────────────── 1..* OrderDetail (composition) ── -->
+<line x1="500" y1="697" x2="500" y2="740"
+      stroke="#111" stroke-width="1.2"
+      marker-start="url(#comp)" marker-end="url(#arr)"/>
+<text x="507" y="714" font-size="10">1</text>
+<text x="507" y="734" font-size="10">1..*</text>
+
+<!-- ── 8. Menu 1 ──────────────────── 0..* OrderDetail (association) ──
+         right of Menu bottom → waypoint → left of OrderDetail -->
+<line x1="320" y1="570" x2="340" y2="570"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="340" y1="570" x2="340" y2="810"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="340" y1="810" x2="360" y2="810"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="326" y="564" font-size="10">1</text>
+<text x="344" y="806" font-size="10">0..*</text>
+
+<!-- ── 9. Partner 1 ──────────────── 0..* StokBarang ──
+         bottom of Partner, down + right to StokBarang top -->
+<line x1="480" y1="241" x2="480" y2="350"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="480" y1="350" x2="830" y2="350"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="830" y1="350" x2="830" y2="380"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="486" y="260" font-size="10">1</text>
+<text x="816" y="374" font-size="10">0..*</text>
+
+<!-- ── 10. StokBarang 1 ◆─────────── 0..* StokHarian (composition) ── -->
+<line x1="830" y1="578" x2="830" y2="650"
+      stroke="#111" stroke-width="1.2"
+      marker-start="url(#comp)" marker-end="url(#arr)"/>
+<text x="837" y="598" font-size="10">1</text>
+<text x="837" y="644" font-size="10">0..*</text>
+
+<!-- ── 11. Partner 1 ─────────────── 0..* Pengeluaran ──
+         bottom of Partner → right → down → Pengeluaran top -->
+<line x1="540" y1="241" x2="540" y2="340"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="540" y1="340" x2="1135" y2="340"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="1135" y1="340" x2="1135" y2="380"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="546" y="260" font-size="10">1</text>
+<text x="1121" y="374" font-size="10">0..*</text>
+
+<!-- ── 12. Partner 1 ─────────────── 0..* Modal ──
+         bottom right of Partner area → waypoint → Modal top -->
+<line x1="560" y1="241" x2="560" y2="330"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="560" y1="330" x2="1445" y2="330"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="1445" y1="330" x2="1445" y2="380"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="566" y="260" font-size="10">1</text>
+<text x="1431" y="374" font-size="10">0..*</text>
+
+<!-- ── 13. Partner 1 ─────────────── 0..* Voucher ──
+         via top-routing to right edge area -->
+<line x1="580" y1="241" x2="580" y2="320"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="580" y1="320" x2="1480" y2="320"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="1480" y1="320" x2="1480" y2="615"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="1480" y1="615" x2="1445" y2="615"
+      stroke="#111" stroke-width="1.2"/>
+<line x1="1445" y1="615" x2="1445" y2="620"
+      stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="586" y="260" font-size="10">1</text>
+<text x="1431" y="614" font-size="10">0..*</text>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     LEGEND
+═══════════════════════════════════════════════════════════ -->
+<rect x="1030" y="680" width="370" height="155" fill="white" stroke="#111" stroke-width="1.2"/>
+<rect x="1030" y="680" width="370" height="26" fill="#111"/>
+<text x="1215" y="698" text-anchor="middle" fill="white" font-weight="bold" font-size="12">LEGENDA</text>
+
+<!-- Association -->
+<line x1="1050" y1="726" x2="1120" y2="726" stroke="#111" stroke-width="1.2" marker-end="url(#arr)"/>
+<text x="1130" y="730" font-size="11">Association (Asosiasi / Navigasi)</text>
+
+<!-- Composition -->
+<line x1="1050" y1="754" x2="1120" y2="754" stroke="#111" stroke-width="1.2"
+      marker-start="url(#comp)" marker-end="url(#arr)"/>
+<text x="1130" y="758" font-size="11">Composition (Child bergantung pada Parent)</text>
+
+<!-- Multiplicity -->
+<text x="1050" y="785" font-size="11">Multiplicity: 1, 0..1, 0..*, 1..*</text>
+<text x="1050" y="803" font-size="11">(-) Attribute private    (+) Method public</text>
+<text x="1050" y="821" font-size="11">(FK) Foreign Key ke tabel referensi</text>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TITLE BLOCK
+═══════════════════════════════════════════════════════════ -->
+<rect x="60" y="940" width="500" height="70" fill="white" stroke="#111" stroke-width="1.2"/>
+<text x="310" y="968" text-anchor="middle" font-weight="bold" font-size="14">CLASS DIAGRAM — Flavory.id</text>
+<text x="310" y="988" text-anchor="middle" font-size="11">Sistem Informasi Manajemen Kasir &amp; Partner</text>
+<text x="310" y="1004" text-anchor="middle" font-size="10">10 Kelas Inti | November 2026</text>
+
+</svg>
+</div>
+<p style="margin-top:12px;font-size:10px;color:#555;font-family:Arial,sans-serif;text-align:center;">
+  Flavory.id &mdash; Class Diagram 10 Kelas Inti &mdash; Hitam-Putih UML Klasik
+</p>
+</body>
+</html>

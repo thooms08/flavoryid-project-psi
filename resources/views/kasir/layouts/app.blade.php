@@ -403,11 +403,6 @@
                                 <span><i class="bi bi-graph-down-arrow me-2"></i>Pengeluaran</span>
                             </a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('kasir.modal.index') }}">
-                                <span><i class="bi bi-cash-coin me-2"></i>Modal Usaha</span>
-                            </a>
-                        </li>
                         <!--<li>
                             <a class="dropdown-item" href="{{ route('kasir.performa') }}">
                                 <span><i class="bi bi-graph-up me-2"></i>Performa Bisnis</span>

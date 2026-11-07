@@ -17,7 +17,7 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Perluas enum role — tambah 'owner'
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('kasir', 'manager', 'admin', 'owner') DEFAULT 'kasir'");
+        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('kasir', 'manager', 'owner') DEFAULT 'kasir'");
 
         Schema::table('users', function (Blueprint $table) {
             // 2. Hapus unique constraint global yang lama pada username
@@ -40,6 +40,6 @@ return new class extends Migration
         });
 
         // Kembalikan enum tanpa 'owner'
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('kasir', 'manager', 'admin') DEFAULT 'kasir'");
+        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('kasir', 'manager') DEFAULT 'kasir'");
     }
 };

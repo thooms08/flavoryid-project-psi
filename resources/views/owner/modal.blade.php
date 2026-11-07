@@ -71,7 +71,7 @@
 
 <div class="container-fluid py-4">
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+        <a href="{{ route('owner.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
             <i class="bi bi-arrow-left fs-4"></i>
         </a>
         <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;">Modal Usaha</h1>
@@ -105,7 +105,7 @@
     {{-- ===== FILTER CARD ===== --}}
     <div class="card shadow-sm border-0 mb-4 rounded-3 border-top border-orange border-3">
         <div class="card-body">
-            <form action="{{ route('kasir.modal.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
+            <form action="{{ route('owner.modal.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
                 <input type="hidden" name="status" value="{{ $status }}">
 
                 <div class="col-md-5">
@@ -201,7 +201,7 @@
                     <h6 class="fw-bold text-dark m-0"><i class="bi bi-plus-circle-fill text-orange me-2"></i> Input Modal Baru</h6>
                 </div>
                 <div class="card-body bg-light rounded-bottom">
-                    <form action="{{ route('kasir.modal.store') }}" method="POST">
+                    <form action="{{ route('owner.modal.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label fw-bold small">Nominal (Rp) <span class="text-danger">*</span></label>
@@ -244,11 +244,11 @@
 
                             {{-- TAB NAVIGASI STATUS --}}
                             <div class="nav-status d-flex gap-2 flex-grow-1 flex-sm-grow-0">
-                                <a href="{{ route('kasir.modal.index', ['status' => 'save', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}"
+                                <a href="{{ route('owner.modal.index', ['status' => 'save', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}"
                                    class="btn btn-sm flex-grow-1 flex-sm-grow-0 {{ $status == 'save' ? 'btn-active' : 'btn-inactive' }}">
                                     <i class="bi bi-check-circle me-1"></i> Tersedia
                                 </a>
-                                <a href="{{ route('kasir.modal.index', ['status' => 'delete', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}"
+                                <a href="{{ route('owner.modal.index', ['status' => 'delete', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}"
                                    class="btn btn-sm flex-grow-1 flex-sm-grow-0 {{ $status == 'delete' ? 'btn-active' : 'btn-inactive' }}">
                                     <i class="bi bi-trash-fill me-1"></i> Terhapus
                                 </a>
@@ -257,7 +257,7 @@
                             <div class="d-none d-sm-block border-end py-3"></div>
 
                             {{-- TOMBOL EXCEL --}}
-                            <form action="{{ route('kasir.modal.export') }}" method="GET" class="m-0 d-flex">
+                            <form action="{{ route('owner.modal.export') }}" method="GET" class="m-0 d-flex">
                                 <input type="hidden" name="start_date" value="{{ $startDate }}">
                                 <input type="hidden" name="end_date" value="{{ $endDate }}">
                                 <button type="submit" class="btn btn-success btn-sm fw-medium shadow-sm w-100 px-3">
@@ -306,7 +306,7 @@
                                         </td>
                                         <td class="text-center">
                                             @if($status == 'save')
-                                                <form action="{{ route('kasir.modal.destroy', $m->id) }}" method="POST" class="m-0 form-trash">
+                                                <form action="{{ route('owner.modal.destroy', $m->id) }}" method="POST" class="m-0 form-trash">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-light text-danger border shadow-sm">
@@ -314,7 +314,7 @@
                                                     </button>
                                                 </form>
                                             @else
-                                                <form action="{{ route('kasir.modal.restore', $m->id) }}" method="POST" class="m-0 form-restore">
+                                                <form action="{{ route('owner.modal.restore', $m->id) }}" method="POST" class="m-0 form-restore">
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="submit" class="btn btn-sm btn-success border shadow-sm fw-bold">

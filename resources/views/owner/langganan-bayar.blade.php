@@ -55,7 +55,7 @@
                 <div class="small text-muted" style="white-space: pre-line; line-height: 1.6;">{{ $payment['tutorial_pembayaran'] }}</div>
             </div>
 
-            <a href="{{ route('kasir.dashboard') }}" class="btn rounded-pill w-100 fw-bold py-3 text-white transition-all shadow-sm" style="background-color: #fd7e14;">
+            <a href="{{ route('owner.dashboard') }}" class="btn rounded-pill w-100 fw-bold py-3 text-white transition-all shadow-sm" style="background-color: #fd7e14;">
                 Kembali ke Dashboard
             </a>
             <p class="text-muted mt-3 mb-0" style="font-size: 0.75rem;">Status pembayaran Anda akan otomatis diperbarui dan diverifikasi oleh sistem setelah transfer berhasil.</p>
@@ -85,7 +85,7 @@
                         showConfirmButton: false,
                         timer: 2000
                     }).then(() => {
-                        window.location.href = "{{ route('kasir.langganan.sukses') }}";
+                        window.location.href = "{{ route('owner.langganan.sukses') }}";
                     });
                 }
             })

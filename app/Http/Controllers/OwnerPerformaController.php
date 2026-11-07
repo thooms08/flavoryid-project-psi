@@ -8,13 +8,34 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 
-class KasirPerformaController extends Controller
+class OwnerPerformaController extends Controller
 {
+    /**
+     * Ambil partner kasir yang terhubung ke owner yang sedang login.
+     */
+    private function getKasirPartner(): \App\Models\Partner
+    {
+        $owner      = Auth::user();
+        $ownerKasir = \App\Models\OwnerKasir::where('owner_id', $owner->id)->first();
+
+        if (!$ownerKasir) {
+            abort(403, 'Tidak ada akun kasir yang terhubung dengan akun owner ini.');
+        }
+
+        $kasirUser = \App\Models\User::find($ownerKasir->kasir_id);
+
+        if (!$kasirUser || !$kasirUser->partner) {
+            abort(403, 'Data partner kasir tidak ditemukan.');
+        }
+
+        return $kasirUser->partner;
+    }
+
     public function index(Request $request)
     {
         $timezone = 'Asia/Jakarta';
         Carbon::setLocale('id');
-        $partnerId = Auth::user()->partner->id;
+        $partnerId = $this->getKasirPartner()->id;
 
         // ══════════════════════════════════════════════════
         // 1. FILTER WAKTU DINAMIS
@@ -198,7 +219,7 @@ class KasirPerformaController extends Controller
         $startInput = $currentStart->format('Y-m-d');
         $endInput   = $currentEnd->format('Y-m-d');
 
-        return view('kasir.performa-bisnis', compact(
+        return view('owner.performa-bisnis', compact(
             'hariStats', 'jamStats', 'tanggalStats', 'bulanStats',
             'omzetCurrent', 'omzetPrev', 'countCurrent', 'countPrev',
             'growthRate', 'chartData', 'labelCurrent', 'labelPrev',

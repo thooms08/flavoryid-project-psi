@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{KasirMenuController, RegisterController, VerifikasiController, 
 KasirController, KasirOrderController, KasirOrderHistoryController, KasirOrderBatalController,
 KasirFormController, KasirStokController, KasirProfileController, KasirLaporanBisnisController,
-KasirLaporanPengeluaranController, KasirModalController, PageOutletController, KasirPerformaController,
+KasirLaporanPengeluaranController, PageOutletController,
 KasirNoteController, KasirLanggananController, KasirAkunController, PublicController,
 KasirVoucherController};
 use App\Http\Middleware\CheckSubscriptionStatus;
-use App\Http\Controllers\{AdminController, AdminPartnerController, AdminAkunPartnerController, PartnerResetPasswordController, AdminProfileController, AdminAktivitasController};
+use App\Http\Controllers\PartnerResetPasswordController;
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 
@@ -85,35 +85,42 @@ Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.
     Route::post('/laporan-bisnis/toggle',  [\App\Http\Controllers\OwnerIkhtisarBisnisController::class, 'toggleVisibilitas'])->name('laporan.toggle');
 
     // Laporan Pengeluaran
-    Route::get('/pengeluaran',             [KasirLaporanPengeluaranController::class, 'index'])->name('pengeluaran.index');
-    Route::post('/pengeluaran',            [KasirLaporanPengeluaranController::class, 'store'])->name('pengeluaran.store');
-    Route::put('/pengeluaran/{id}',        [KasirLaporanPengeluaranController::class, 'update'])->name('pengeluaran.update');
-    Route::delete('/pengeluaran/{id}',     [KasirLaporanPengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
-    Route::patch('/pengeluaran/{id}/restore', [KasirLaporanPengeluaranController::class, 'restore'])->name('pengeluaran.restore');
-    Route::get('/pengeluaran/export',      [KasirLaporanPengeluaranController::class, 'export'])->name('pengeluaran.export');
+    Route::get('/pengeluaran',             [\App\Http\Controllers\OwnerLaporanPengeluaranController::class, 'index'])->name('pengeluaran.index');
+    Route::post('/pengeluaran',            [\App\Http\Controllers\OwnerLaporanPengeluaranController::class, 'store'])->name('pengeluaran.store');
+    Route::put('/pengeluaran/{id}',        [\App\Http\Controllers\OwnerLaporanPengeluaranController::class, 'update'])->name('pengeluaran.update');
+    Route::delete('/pengeluaran/{id}',     [\App\Http\Controllers\OwnerLaporanPengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
+    Route::patch('/pengeluaran/{id}/restore', [\App\Http\Controllers\OwnerLaporanPengeluaranController::class, 'restore'])->name('pengeluaran.restore');
+    Route::get('/pengeluaran/export',      [\App\Http\Controllers\OwnerLaporanPengeluaranController::class, 'export'])->name('pengeluaran.export');
 
     // Modal Usaha
-    Route::get('/modal',                   [KasirModalController::class, 'index'])->name('modal.index');
-    Route::post('/modal',                  [KasirModalController::class, 'store'])->name('modal.store');
-    Route::patch('/modal/{id}/restore',    [KasirModalController::class, 'restore'])->name('modal.restore');
-    Route::delete('/modal/{id}',           [KasirModalController::class, 'destroy'])->name('modal.destroy');
-    Route::get('/modal/export',            [KasirModalController::class, 'export'])->name('modal.export');
+    Route::get('/modal',                   [\App\Http\Controllers\OwnerModalController::class, 'index'])->name('modal.index');
+    Route::post('/modal',                  [\App\Http\Controllers\OwnerModalController::class, 'store'])->name('modal.store');
+    Route::patch('/modal/{id}/restore',    [\App\Http\Controllers\OwnerModalController::class, 'restore'])->name('modal.restore');
+    Route::delete('/modal/{id}',           [\App\Http\Controllers\OwnerModalController::class, 'destroy'])->name('modal.destroy');
+    Route::get('/modal/export',            [\App\Http\Controllers\OwnerModalController::class, 'export'])->name('modal.export');
 
     // Performa Bisnis
-    Route::get('/performa-bisnis',         [KasirPerformaController::class, 'index'])->name('performa');
+    Route::get('/performa-bisnis',         [\App\Http\Controllers\OwnerPerformaController::class, 'index'])->name('performa');
 
     // AI Consultant (FlavoryAI — route kasir dihapus karena MineAIController tidak ada)
     // Route kasir.mineai.* dipindahkan — gunakan owner.ai.* untuk akses AI
 
     // Pengaturan Form Pesanan
-    Route::get('/pengaturan-form',         [KasirFormController::class, 'index'])->name('pengaturan.index');
-    Route::post('/pengaturan-form/update', [KasirFormController::class, 'update'])->name('pengaturan.update');
+    Route::get('/pengaturan-form',         [\App\Http\Controllers\OwnerFormController::class, 'index'])->name('pengaturan.index');
+    Route::post('/pengaturan-form/update', [\App\Http\Controllers\OwnerFormController::class, 'update'])->name('pengaturan.update');
+
+    // Voucher
+    Route::get('/voucher',            [KasirVoucherController::class, 'index'])->name('voucher.index');
+    Route::post('/voucher',           [KasirVoucherController::class, 'store'])->name('voucher.store');
+    Route::delete('/voucher/{voucher}', [KasirVoucherController::class, 'destroy'])->name('voucher.destroy');
+    Route::post('/voucher/check-kode', [KasirVoucherController::class, 'checkKode'])->name('voucher.check-kode');
+    Route::post('/voucher/apply',      [KasirVoucherController::class, 'applyVoucher'])->name('voucher.apply');
 
     // Langganan
-    Route::get('/langganan',               [KasirLanggananController::class, 'index'])->name('langganan.index');
-    Route::post('/langganan/subscribe',    [KasirLanggananController::class, 'subscribe'])->name('langganan.subscribe');
-    Route::post('/langganan/unsubscribe',  [KasirLanggananController::class, 'unsubscribe'])->name('langganan.unsubscribe');
-    Route::get('/langganan/sukses',        [KasirLanggananController::class, 'sukses'])->name('langganan.sukses');
+    Route::get('/langganan',               [\App\Http\Controllers\OwnerLanggananController::class, 'index'])->name('langganan.index');
+    Route::post('/langganan/subscribe',    [\App\Http\Controllers\OwnerLanggananController::class, 'subscribe'])->name('langganan.subscribe');
+    Route::post('/langganan/unsubscribe',  [\App\Http\Controllers\OwnerLanggananController::class, 'unsubscribe'])->name('langganan.unsubscribe');
+    Route::get('/langganan/sukses',        [\App\Http\Controllers\OwnerLanggananController::class, 'sukses'])->name('langganan.sukses');
 
     // FlavoryAI Consultant
     Route::get('/ai',                  [\App\Http\Controllers\OwnerAIController::class, 'index'])->name('ai');
@@ -193,11 +200,6 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::put('/kasir/pengeluaran/{id}', [KasirLaporanPengeluaranController::class, 'update'])->name('kasir.pengeluaran.update');
     Route::delete('/kasir/pengeluaran/{id}', [KasirLaporanPengeluaranController::class, 'destroy'])->name('kasir.pengeluaran.destroy');
     Route::get('/kasir/pengeluaran/export', [KasirLaporanPengeluaranController::class, 'export'])->name('kasir.pengeluaran.export');
-    Route::get('/modal', [KasirModalController::class, 'index'])->name('kasir.modal.index');
-    Route::post('/modal', [KasirModalController::class, 'store'])->name('kasir.modal.store');
-    Route::patch('/modal/{id}/restore', [KasirModalController::class, 'restore'])->name('kasir.modal.restore');
-    Route::delete('/modal/{id}', [KasirModalController::class, 'destroy'])->name('kasir.modal.destroy');
-    Route::get('/modal/export', [KasirModalController::class, 'export'])->name('kasir.modal.export');
     Route::get('/kasir/profile-outlet', [KasirProfileController::class, 'edit'])->name('kasir.profile-outlet.edit');
     Route::post('/kasir/profile-outlet', [KasirProfileController::class, 'update'])->name('kasir.profile-outlet.update');
     Route::get('/kasir/profile-outlet/download-qr', [KasirProfileController::class, 'downloadQr'])->name('kasir.profile-outlet.download-qr');
@@ -209,7 +211,6 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::post('/kasir/offline/check-synced', [KasirOrderController::class, 'checkOfflineSynced'])->name('kasir.offline.check-synced');
     Route::post('/kasir/sync-actions', [KasirController::class, 'syncActions'])->name('kasir.sync-actions');
     Route::post('/kasir/konfirmasi-bulk', [KasirController::class, 'bulkKonfirmasi'])->name('kasir.konfirmasi.bulk');
-    Route::get('/kasir/performa-bisnis', [KasirPerformaController::class, 'index'])->name('kasir.performa');
     Route::get('/kasir/notes', [KasirNoteController::class, 'index'])->name('kasir.notes.index');
     Route::post('/kasir/notes', [KasirNoteController::class, 'store'])->name('kasir.notes.store');
     Route::put('/kasir/notes/{note}', [KasirNoteController::class, 'update'])->name('kasir.notes.update');
@@ -230,22 +231,5 @@ Route::get('/{page_name}', [PageOutletController::class, 'show'])->name('outlet.
 Route::post('/{page_name}/order', [PageOutletController::class, 'storeOrder'])->name('outlet.order.store');
 Route::get('/{page_name}/konfirmasi/{uuid}', [PageOutletController::class, 'konfirmasi'])->name('outlet.order.konfirmasi');
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/index', [AdminController::class, 'index'])->name('dashboard');
-    Route::get('/partner-aktif', [AdminPartnerController::class, 'aktif'])->name('partner.aktif');
-    Route::get('/partner-jatuh-tempo', [AdminPartnerController::class, 'jatuhTempo'])->name('partner.jatuh_tempo');
-    Route::get('/partner-nonaktif', [AdminPartnerController::class, 'nonaktif'])->name('partner.nonaktif');
-    Route::get('/partner-tanpa-status', [AdminPartnerController::class, 'tanpaStatus'])->name('partner.tanpa_status');
-    Route::get('/partner/{uuid}/detail', [AdminPartnerController::class, 'detail'])->name('partner.detail');
-    Route::get('/akun-partner', [AdminAkunPartnerController::class, 'index'])->name('akun_partner.index');
-    Route::post('/akun-partner/{uuid}/generate-link', [AdminAkunPartnerController::class, 'generateLink'])->name('akun_partner.generate_link');
-    Route::patch('/partner/{uuid}/aktif', [AdminPartnerController::class, 'setAktif'])->name('partner.set_aktif');
-    Route::patch('/partner/{uuid}/jatuh-tempo', [AdminPartnerController::class, 'setJatuhTempo'])->name('partner.set_jatuh_tempo');
-    Route::patch('/partner/{uuid}/nonaktif', [AdminPartnerController::class, 'setNonaktif'])->name('partner.set_nonaktif');
-    Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
-    Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
-    Route::get('/aktivitas', [AdminAktivitasController::class, 'index'])->name('aktivitas.index');
-    Route::get('/partner/{uuid}/aktivitas', [AdminAktivitasController::class, 'detail'])->name('partner.aktivitas');
-});
 Route::get('/reset-password/{token}', [PartnerResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PartnerResetPasswordController::class, 'resetPassword'])->name('password.update');

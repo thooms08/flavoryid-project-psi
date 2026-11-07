@@ -30,14 +30,6 @@ class CheckLangganan extends Command
             $partner = Partner::with('user')->find($infoOutlet->partner_id);
             $user = $partner ? $partner->user : null;
 
-            // --- PENGECUALIAN UNTUK ADMIN ---
-            // Jika user adalah admin, lewati proses ini sepenuhnya (jangan tagih & jangan kirim email)
-            if ($user && $user->role === 'admin') {
-                $this->info("Outlet ID {$infoOutlet->id} dimiliki oleh Admin. Dilewati (Whitelist).");
-                continue;
-            }
-            // ---------------------------------
-
             $latestSub = Subscription::where('partner_id', $infoOutlet->partner_id)
                             ->where('status', 'success')
                             ->latest('updated_at')

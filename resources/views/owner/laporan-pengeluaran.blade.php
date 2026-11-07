@@ -62,7 +62,7 @@
 
 <div class="container-fluid py-4">
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
+        <a href="{{ route('owner.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale" style="width: 48px; height: 48px;">
             <i class="bi bi-arrow-left fs-4"></i>
         </a>
         <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight: 900; letter-spacing: -0.5px;">Laporan Pengeluaran</h1>
@@ -77,7 +77,7 @@
 
     <div class="card shadow-sm border-0 mb-4 rounded-3 border-top border-orange border-3">
         <div class="card-body">
-            <form action="{{ route('kasir.pengeluaran.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
+            <form action="{{ route('owner.pengeluaran.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
                 <input type="hidden" name="status" value="{{ $status }}">
                 <div class="col-md-5">
                     <label class="form-label fw-bold text-muted small mb-1">Dari Tanggal</label>
@@ -225,7 +225,7 @@
             <h5 class="fw-bold text-dark m-0"><i class="bi bi-cart-dash text-danger me-2"></i> Input Pengeluaran Baru</h5>
         </div>
         
-        <form action="{{ route('kasir.pengeluaran.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('owner.pengeluaran.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="status" value="save">
             
@@ -333,11 +333,11 @@
                 
                 {{-- TAB NAVIGASI STATUS --}}
                 <div class="nav-status d-flex gap-2">
-                    <a href="{{ route('kasir.pengeluaran.index', ['status' => 'save', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}" 
+                    <a href="{{ route('owner.pengeluaran.index', ['status' => 'save', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}" 
                        class="btn {{ $status == 'save' ? 'btn-active' : 'btn-inactive' }}">
                         <i class="bi bi-check-circle me-1"></i> Data Tersedia
                     </a>
-                    <a href="{{ route('kasir.pengeluaran.index', ['status' => 'delete', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}" 
+                    <a href="{{ route('owner.pengeluaran.index', ['status' => 'delete', 'start_date' => $startDate, 'end_date' => $endDate, 'quick_filter' => $quickFilter]) }}" 
                        class="btn {{ $status == 'delete' ? 'btn-active' : 'btn-inactive' }}">
                         <i class="bi bi-trash-fill me-1"></i> Data Terhapus
                     </a>
@@ -360,7 +360,7 @@
                     <button type="button" class="btn btn-dark btn-sm fw-medium shadow-sm" data-bs-toggle="modal" data-bs-target="#modalGallery">
                         <i class="bi bi-folder-fill me-1"></i> FOLDER BUKTI
                     </button>
-                    <form action="{{ route('kasir.pengeluaran.export') }}" method="GET" class="m-0">
+                    <form action="{{ route('owner.pengeluaran.export') }}" method="GET" class="m-0">
                         <input type="hidden" name="start_date" value="{{ $startDate }}">
                         <input type="hidden" name="end_date" value="{{ $endDate }}">
                         <button type="submit" class="btn btn-success btn-sm fw-medium shadow-sm">
@@ -426,13 +426,13 @@
                                     <div class="d-flex justify-content-center gap-1">
                                         @if($status == 'save')
                                             <button class="btn btn-sm btn-light text-warning border shadow-sm" onclick="openEditModal({{ $p->id }}, '{{ addslashes($p->item) }}', {{ $p->harga }}, {{ floatval($p->qty) }}, {{ $p->total }}, '{{ addslashes($p->keterangan) }}')"><i class="bi bi-pencil"></i></button>
-                                            <form action="{{ route('kasir.pengeluaran.destroy', $p->id) }}" method="POST" class="m-0 form-trash" data-no-loading>
+                                            <form action="{{ route('owner.pengeluaran.destroy', $p->id) }}" method="POST" class="m-0 form-trash" data-no-loading>
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-light text-danger border shadow-sm"><i class="bi bi-trash"></i></button>
                                             </form>
                                         @else
                                             {{-- Tambahkan class 'form-restore' pada form pulihkan --}}
-                                            <form action="{{ route('kasir.pengeluaran.restore', $p->id) }}" method="POST" class="m-0 form-restore" data-no-loading>
+                                            <form action="{{ route('owner.pengeluaran.restore', $p->id) }}" method="POST" class="m-0 form-restore" data-no-loading>
                                                 @csrf @method('PATCH')
                                                 <button type="submit" class="btn btn-sm btn-success border shadow-sm fw-bold">
                                                     <i class="bi bi-arrow-counterclockwise me-1"></i> Pulihkan
@@ -795,7 +795,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // ================= GLOBAL FUNCTIONS =================
 
 function openEditModal(id, item, harga, qty, total, keterangan) {
-    document.getElementById('formEdit').action = '/kasir/pengeluaran/' + id;
+    document.getElementById('formEdit').action = '/owner/pengeluaran/' + id;
     document.getElementById('editItem').value = item;
     document.getElementById('editHarga').value = harga;
     document.getElementById('editQty').value = qty;

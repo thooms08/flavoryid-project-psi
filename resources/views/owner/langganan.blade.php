@@ -56,7 +56,7 @@
 <div class="container-fluid py-4" style="max-width: 900px;">
     <div class="d-flex align-items-center gap-3 mb-4">
         @if($status !== 'nonaktif')
-        <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale shadow-sm" style="width: 48px; height: 48px;">
+        <a href="{{ route('owner.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center hover-scale shadow-sm" style="width: 48px; height: 48px;">
             <i class="bi bi-arrow-left fs-4"></i>
         </a>
         @endif
@@ -119,7 +119,7 @@
         </div>
     </div>
 
-    <form action="{{ route('kasir.langganan.subscribe') }}" method="POST">
+    <form action="{{ route('owner.langganan.subscribe') }}" method="POST">
         @csrf
         <div class="card card-custom p-4 mb-4">
             <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-box-seam text-orange me-2"></i> 1. Pilih Paket Layanan</h5>
@@ -194,7 +194,7 @@
                 <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i> Konfirmasi Berhenti</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('kasir.langganan.unsubscribe') }}" method="POST">
+            <form action="{{ route('owner.langganan.unsubscribe') }}" method="POST">
                 @csrf
                 <div class="modal-body py-4 px-4">
                     <div class="p-3 bg-danger bg-opacity-10 rounded-3 mb-3">

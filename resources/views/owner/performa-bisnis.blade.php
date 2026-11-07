@@ -291,7 +291,7 @@
     {{-- Header --}}
     <div class="d-flex align-items-center justify-content-between mb-2 mt-4">
         <div class="d-flex align-items-center gap-3">
-            <a href="{{ route('kasir.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+            <a href="{{ route('owner.dashboard') }}" class="btn btn-light border-warning-subtle text-secondary rounded-4 d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
                 <i class="bi bi-arrow-left fs-4"></i>
             </a>
             <h1 class="h4 mb-0 fw-black text-uppercase" style="font-weight:900;letter-spacing:-0.5px;">Performa Bisnis</h1>
@@ -306,7 +306,7 @@
     {{-- Filter --}}
     <div class="card shadow-sm border-0 mb-4 rounded-4 bg-white">
         <div class="card-body p-4">
-            <form action="{{ route('kasir.performa') }}" method="GET" class="row g-3 align-items-end">
+            <form action="{{ route('owner.performa') }}" method="GET" class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label fw-bold text-muted small">Dari Tanggal</label>
                     <input type="date" name="start_date" class="form-control rounded-3" value="{{ $startInput }}">
@@ -319,7 +319,7 @@
                     <button type="submit" class="btn btn-orange w-100 fw-bold rounded-3 shadow-sm">
                         <i class="bi bi-search me-1"></i> Terapkan
                     </button>
-                    <a href="{{ route('kasir.performa') }}" class="btn btn-light fw-bold rounded-3 border shadow-sm px-3" title="Reset">
+                    <a href="{{ route('owner.performa') }}" class="btn btn-light fw-bold rounded-3 border shadow-sm px-3" title="Reset">
                         <i class="bi bi-arrow-clockwise"></i>
                     </a>
                 </div>

@@ -82,13 +82,11 @@ class AuthController extends Controller
         Auth::login($user, $remember);
 
         // 5. Cek Verifikasi
-        if ($user->role !== 'admin') {
-            $isVerified = $user->partner?->verifikasi?->konfirmasi ?? false;
+        $isVerified = $user->partner?->verifikasi?->konfirmasi ?? false;
 
-            if (!$isVerified) {
-                Auth::logout(); // Logout paksa karena belum verifikasi
-                return back()->with('unverified', 'Akun Anda belum terverifikasi!')->withInput();
-            }
+        if (!$isVerified) {
+            Auth::logout(); // Logout paksa karena belum verifikasi
+            return back()->with('unverified', 'Akun Anda belum terverifikasi!')->withInput();
         }
 
         // 6. LOGIKA CEK STATUS LANGGANAN
@@ -196,7 +194,6 @@ class AuthController extends Controller
     {
         return match ($role) {
             'kasir'  => route('kasir.dashboard'),
-            'admin'  => route('admin.dashboard'),
             'owner'  => route('owner.dashboard'),
             default  => '/'
         };

@@ -21,7 +21,7 @@ class PartnerResetPasswordController extends Controller
             abort(403, 'Link reset password tidak valid atau sudah kedaluwarsa.');
         }
 
-        return view('admin.ubah-password', ['token' => $token, 'username' => $username]);
+        return view('auth.ubah-password', ['token' => $token, 'username' => $username]);
     }
 
     // Memproses perubahan password
