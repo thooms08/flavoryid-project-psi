@@ -2496,6 +2496,31 @@
             }, VOICE_SILENCE_MS);
         }
 
+        // Android/iOS: Chrome & Safari mengirim hasil kumulatif yang bertumpuk
+        // (contoh: "Halo", "Halo kamu", "Halo kamu apa") → rawan duplikat.
+        const VOICE_IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        // Gabungkan potongan hasil tanpa duplikasi:
+        // - seg kumulatif (diawali isi acc)  → ganti acc dengan seg
+        // - seg sudah termasuk di akhir acc → abaikan
+        // - ada tumpang tindih kata di ujung → sambung hanya bagian barunya
+        function mergeVoiceSegment(acc, seg) {
+            seg = (seg || '').trim();
+            if (!seg) return acc;
+            if (!acc) return seg;
+            const a = acc.toLowerCase(), s = seg.toLowerCase();
+            if (s.startsWith(a)) return seg;
+            if (a.endsWith(s)) return acc;
+            const aw = acc.split(/\s+/), sw = seg.split(/\s+/);
+            const max = Math.min(aw.length, sw.length);
+            for (let k = max; k > 0; k--) {
+                const tail = aw.slice(-k).join(' ').toLowerCase();
+                const head = sw.slice(0, k).join(' ').toLowerCase();
+                if (tail === head) return acc + ' ' + sw.slice(k).join(' ');
+            }
+            return acc + ' ' + seg;
+        }
+
         function commitVoiceBase() {
             voiceBase = chatInput.value;
             if (voiceBase && !/\s$/.test(voiceBase)) voiceBase += ' ';
@@ -2523,7 +2548,7 @@
             }
             const rec = new SpeechRec();
             rec.lang = VOICE_LANG;
-            rec.continuous = true;
+            rec.continuous = !VOICE_IS_MOBILE; // mobile: sesi pendek + auto-restart (anti duplikat)
             rec.interimResults = true;
             rec.maxAlternatives = 1;
             voiceRec = rec;
@@ -2537,27 +2562,30 @@
             };
 
             rec.onresult = e => {
-                let fin = '',
-                    interim = '';
-                for (let i = 0; i < e.results.length; i++) { // hasil kumulatif → tidak ada teks ganda
-                    const t = e.results[i][0].transcript;
-                    if (e.results[i].isFinal) fin += t;
-                    else interim += t;
+                if (voiceRec !== rec) return; // abaikan sesi lama / sudah dibatalkan
+
+                // Susun teks sesi ini dari semua hasil, dengan penghapusan duplikat
+                let sessionText = '';
+                for (let i = 0; i < e.results.length; i++) {
+                    sessionText = mergeVoiceSegment(sessionText, e.results[i][0].transcript);
                 }
-                const text = (fin + interim).trim();
-                if (!text) return;
-                voiceGot = true;
-                chatInput.value = voiceBase + text;
-                chatInput.dispatchEvent(new Event('input')); // auto-resize textarea
-                chatInput.scrollTop = chatInput.scrollHeight;
-                voiceStatusText.textContent = 'Menangkap suara Anda…';
-                voiceStatus.classList.add('hearing');
-                clearTimeout(voiceHearT);
-                voiceHearT = setTimeout(() => {
-                    voiceStatus.classList.remove('hearing');
-                    voiceStatusText.textContent = 'Mendengarkan… lanjutkan atau tekan Selesai';
-                }, 900);
-                resetVoiceTimer();
+
+                const combinedText = (voiceBase + sessionText).trim();
+
+                if (combinedText) {
+                    voiceGot = true;
+                    chatInput.value = combinedText;
+                    chatInput.dispatchEvent(new Event('input')); // auto-resize textarea
+                    chatInput.scrollTop = chatInput.scrollHeight;
+                    voiceStatusText.textContent = 'Menangkap suara Anda…';
+                    voiceStatus.classList.add('hearing');
+                    clearTimeout(voiceHearT);
+                    voiceHearT = setTimeout(() => {
+                        voiceStatus.classList.remove('hearing');
+                        voiceStatusText.textContent = 'Mendengarkan… lanjutkan atau tekan Selesai';
+                    }, 900);
+                    resetVoiceTimer();
+                }
             };
 
             rec.onerror = e => {
@@ -2589,13 +2617,17 @@
 
             rec.onend = () => {
                 if (voiceRec !== rec) return;
-                if (voiceWanted) { // Chrome menghentikan sesi sendiri → sambung lagi
+                if (voiceWanted) { // sesi berakhir sendiri → sambung lagi dengan basis teks terbaru
                     commitVoiceBase();
-                    try {
-                        rec.start();
-                        return;
-                    } catch (err) {
-                        /* jatuh ke endVoice */ }
+                    setTimeout(() => {
+                        if (voiceRec !== rec || !voiceWanted) return;
+                        try {
+                            rec.start();
+                        } catch (err) {
+                            endVoice();
+                        }
+                    }, 250);
+                    return;
                 }
                 endVoice();
             };
