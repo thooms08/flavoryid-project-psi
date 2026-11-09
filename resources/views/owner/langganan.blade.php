@@ -1,58 +1,41 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Langganan Bisnis - Flavory.id</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    @include('layouts.favicon')
-    <script src="{{ asset('js/loading.js') }}"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@extends('owner.layouts.app')
 
-    <style>
-        :root {
-            --bs-orange: #fd7e14;
-            --bs-orange-hover: #e37011;
-            --soft-orange: #fff4e6;
-        }
+@section('title', 'Langganan Bisnis')
 
-        body {
-            background-color: #fff7ed;
-            font-family: 'Poppins', sans-serif;
-            color: #333;
-        }
+@section('styles')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    :root {
+        --bs-orange: #fd7e14;
+        --bs-orange-hover: #e37011;
+        --soft-orange: #fff4e6;
+    }
 
-        /* Button & Utility Styles */
-        .btn-orange { background-color: var(--bs-orange); color: white; border: none; font-weight: 600; }
-        .btn-orange:hover { background-color: var(--bs-orange-hover); color: white; }
-        .text-orange { color: var(--bs-orange) !important; }
-        .hover-scale { transition: transform 0.2s; }
-        .hover-scale:hover { transform: scale(1.05); }
+    body { background-color: #fff7ed; font-family: 'Poppins', sans-serif; color: #333; }
 
-        /* Custom Cards */
-        .card-custom { border-radius: 1rem; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); background-color: #fff; }
-        
-        .package-card {
-            border-radius: 1rem; border: 2px solid #f1f1f1; background: #fff;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; overflow: hidden;
-        }
-        .package-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(253, 126, 20, 0.1); border-color: var(--soft-orange); }
-        .package-card.selected { border-color: var(--bs-orange); background: var(--soft-orange); }
-        
-        /* Badges */
-        .badge-status { padding: 10px 20px; border-radius: 50px; font-weight: 700; letter-spacing: 1px; font-size: 0.85rem; display: inline-block; }
-        .bg-aktif { background: #d1e7dd; color: #0f5132; }
-        .bg-jatuh_tempo { background: #fff3cd; color: #664d03; }
-        .bg-nonaktif { background: #f8d7da; color: #842029; }
-    </style>
-</head>
-<body>
+    .btn-orange { background-color: var(--bs-orange); color: white; border: none; font-weight: 600; }
+    .btn-orange:hover { background-color: var(--bs-orange-hover); color: white; }
+    .text-orange { color: var(--bs-orange) !important; }
+    .hover-scale { transition: transform 0.2s; }
+    .hover-scale:hover { transform: scale(1.05); }
 
+    .card-custom { border-radius: 1rem; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); background-color: #fff; }
+
+    .package-card {
+        border-radius: 1rem; border: 2px solid #f1f1f1; background: #fff;
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1); cursor: pointer; position: relative; overflow: hidden;
+    }
+    .package-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(253,126,20,0.1); border-color: var(--soft-orange); }
+    .package-card.selected { border-color: var(--bs-orange); background: var(--soft-orange); }
+
+    .badge-status { padding: 10px 20px; border-radius: 50px; font-weight: 700; letter-spacing: 1px; font-size: 0.85rem; display: inline-block; }
+    .bg-aktif      { background: #d1e7dd; color: #0f5132; }
+    .bg-jatuh_tempo{ background: #fff3cd; color: #664d03; }
+    .bg-nonaktif   { background: #f8d7da; color: #842029; }
+</style>
+@endsection
+
+@section('content')
 <div class="container-fluid py-4" style="max-width: 900px;">
     <div class="d-flex align-items-center gap-3 mb-4">
         @if($status !== 'nonaktif')
@@ -80,8 +63,8 @@
                         <div>
                             <h5 class="fw-bold mb-1">Status Lisensi</h5>
                             <p class="text-muted small mb-0">
-                                Outlet: <strong>{{ $outlet->nama_outlet }}</strong> 
-                                <span class="mx-1">|</span> 
+                                Outlet: <strong>{{ $outlet->nama_outlet }}</strong>
+                                <span class="mx-1">|</span>
                                 Paket: <span class="badge bg-light text-orange border border-warning-subtle text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">{{ $paket }}</span>
                             </p>
                         </div>
@@ -101,19 +84,13 @@
 
         <div class="col-lg-5">
             <div class="card card-custom p-4 h-100 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, var(--bs-orange) 0%, #e37011 100%); color: white; position: relative; overflow: hidden;">
-                
                 <i class="bi bi-graph-up-arrow position-absolute" style="font-size: 8rem; right: -20px; bottom: -30px; opacity: 0.15;"></i>
-                
                 <div class="position-relative z-1">
                     <h6 class="fw-bold mb-1" style="color: #ffe8d6; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
                         <i class="bi bi-stars me-1"></i> Keuntungan Anda Bulan {{ $namaBulan }}
                     </h6>
-                    <h3 class="fw-black mb-2" style="font-weight: 900;">
-                        Rp {{ number_format($totalUntung ?? 0, 0, ',', '.') }}
-                    </h3>
-                    <p class="small mb-0" style="opacity: 0.85; line-height: 1.4;">
-                        Ayo tingkatkan terus penjualan {{ $outlet->nama_outlet }}!
-                    </p>
+                    <h3 class="fw-black mb-2" style="font-weight: 900;">Rp {{ number_format($totalUntung ?? 0, 0, ',', '.') }}</h3>
+                    <p class="small mb-0" style="opacity: 0.85; line-height: 1.4;">Ayo tingkatkan terus penjualan {{ $outlet->nama_outlet }}!</p>
                 </div>
             </div>
         </div>
@@ -123,7 +100,6 @@
         @csrf
         <div class="card card-custom p-4 mb-4">
             <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-box-seam text-orange me-2"></i> 1. Pilih Paket Layanan</h5>
-            
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
                     <label class="w-100 h-100">
@@ -172,7 +148,6 @@
                     <option value="MANDIRIVA">Mandiri Virtual Account</option>
                 </select>
             </div>
-            
             <button type="submit" class="btn btn-orange w-100 py-3 mt-4 fs-6 fw-bold shadow-sm rounded-pill hover-scale">
                 LANJUTKAN PEMBAYARAN <i class="bi bi-arrow-right-circle ms-2"></i>
             </button>
@@ -211,10 +186,11 @@
         </div>
     </div>
 </div>
+@endsection
 
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Script untuk efek toggle radio button
     document.querySelectorAll('.package-radio').forEach(radio => {
         radio.addEventListener('change', function() {
             document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected'));
@@ -222,5 +198,4 @@
         });
     });
 </script>
-</body>
-</html>
+@endsection

@@ -1,495 +1,430 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('owner.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Pengaturan Akun - Flavory.id</title>
+@section('title', 'Pengaturan Akun')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('layouts.favicon')
+@section('styles')
+<style>
+    /* ── Page wrapper ──────────────────────────────────────────────── */
+    .akun-wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
 
-    <style>
-        :root {
-            --primary-orange: #ff6a00;
-            --dark-orange: #e86c00;
-            --soft-orange: #fff4e6;
-        }
+    /* ── Page header ───────────────────────────────────────────────── */
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 36px;
+    }
+    .page-header-back {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: white;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all .2s ease;
+        flex-shrink: 0;
+    }
+    .page-header-back:hover {
+        background: var(--orange);
+        border-color: var(--orange);
+        color: white;
+    }
+    .page-header-title {
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+    .page-header-sub {
+        font-size: 0.8rem;
+        color: var(--muted);
+        font-weight: 500;
+        margin-top: 2px;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fb;
-            color: #333;
-        }
+    /* ── Alert ─────────────────────────────────────────────────────── */
+    .alert-flavory {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 28px;
+        border: none;
+    }
+    .alert-flavory i { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .alert-success-f { background: #ecfdf5; color: #065f46; }
+    .alert-error-f   { background: #fef2f2; color: #991b1b; }
+    .alert-flavory ul { margin: 6px 0 0; padding-left: 18px; }
+    .alert-flavory li { margin-bottom: 2px; }
 
-        .account-card {
-            background: white;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
+    /* ── Section divider ───────────────────────────────────────────── */
+    .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+    }
+    .section-head-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    .icon-profile  { background: #fff4ec; color: var(--orange); }
+    .icon-security { background: #eff6ff; color: #3b82f6; }
+    .section-head-title { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .section-head-sub   { font-size: 0.74rem; color: var(--muted); font-weight: 500; }
 
-        .account-header {
-            background: linear-gradient(135deg, var(--primary-orange), var(--dark-orange));
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
+    /* ── Form field ────────────────────────────────────────────────── */
+    .field-group { margin-bottom: 20px; }
+    .field-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+    .field-label .req { color: var(--orange); }
+    .field-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        background: white;
+        font-family: inherit;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--text);
+        transition: border-color .2s ease, box-shadow .2s ease;
+        outline: none;
+    }
+    .field-input:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(255,106,0,0.1);
+    }
+    .field-input::placeholder { color: #94a3b8; font-weight: 400; }
 
-        .account-header i {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
+    .field-hint {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 5px;
+        font-weight: 500;
+    }
 
-        .account-header h4 {
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
+    /* password wrapper */
+    .field-password { position: relative; }
+    .field-password .field-input { padding-right: 44px; }
+    .field-eye {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 1rem;
+        transition: color .2s ease;
+        user-select: none;
+    }
+    .field-eye:hover { color: var(--orange); }
 
-        .account-header p {
-            margin: 5px 0 0;
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
+    /* ── Status badges (username / password) ───────────────────────── */
+    .field-status {
+        display: none;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 6px 10px;
+        border-radius: 8px;
+    }
+    .field-status.checking { display: block; background: #fffbeb; color: #92400e; }
+    .field-status.ok       { display: block; background: #ecfdf5; color: #065f46; }
+    .field-status.error    { display: block; background: #fef2f2; color: #991b1b; }
 
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--dark-orange);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--soft-orange);
-        }
+    /* ── Submit button ──────────────────────────────────────────────── */
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 24px;
+        background: var(--orange);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
+    }
+    .btn-save:hover {
+        background: #e85d00;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(255,106,0,0.28);
+    }
+    .btn-save:active { transform: translateY(0); }
 
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
+    /* ── Section separator ──────────────────────────────────────────── */
+    .form-sep {
+        border: none;
+        border-top: 1px dashed #e2e8f0;
+        margin: 36px 0;
+    }
 
-        .form-label .required {
-            color: #dc3545;
-        }
+    /* ── Responsive ─────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+        .akun-wrap { padding: 24px 16px 80px; }
+        .page-header-title { font-size: 1.15rem; }
+    }
+</style>
+@endsection
 
-        .form-control,
-        .form-select {
-            border-radius: 12px;
-            padding: 12px 15px;
-            border: 1.5px solid #e9ecef;
-            background-color: #f8f9fa;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
+@section('content')
+<div class="akun-wrap">
 
-        .form-control:focus,
-        .form-select:focus {
-            background-color: #ffffff;
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 0 4px rgba(255, 106, 0, 0.1);
-        }
-
-        .form-control:disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-        }
-
-        /* Username validation styling */
-        .username-status {
-            display: none;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .username-status.checking {
-            display: block;
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .username-status.available {
-            display: block;
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .username-status.taken {
-            display: block;
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        /* Password match indicator */
-        .password-match-status {
-            display: none;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .password-match-status.match {
-            display: block;
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .password-match-status.nomatch {
-            display: block;
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        /* Toggle password visibility */
-        .password-wrapper {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #6c757d;
-            font-size: 1.1rem;
-            transition: color 0.2s;
-        }
-
-        .toggle-password:hover {
-            color: var(--primary-orange);
-        }
-
-        .btn-orange {
-            background-color: var(--primary-orange);
-            color: white;
-            border: none;
-            font-weight: 700;
-            border-radius: 12px;
-            padding: 12px 24px;
-            transition: all 0.3s;
-            letter-spacing: 0.5px;
-            font-size: 0.95rem;
-        }
-
-        .btn-orange:hover {
-            background-color: var(--dark-orange);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3);
-        }
-
-        .btn-back {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            font-weight: 600;
-            border-radius: 12px;
-            padding: 12px 24px;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-back:hover {
-            background-color: #5a6268;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .account-header {
-                padding: 1.5rem;
-            }
-
-            .account-header i {
-                font-size: 2.5rem;
-            }
-
-            .account-header h4 {
-                font-size: 1.3rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
-
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4"
-                        role="alert" style="background-color: #d1e7dd; color: #0f5132;">
-                        <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4"
-                        role="alert" style="background-color: #f8d7da; color: #842029;">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <strong>Terjadi kesalahan:</strong>
-                        <ul class="mb-0 mt-2">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                <div class="account-card">
-                    <div class="account-header">
-                        <i class="bi bi-person-circle"></i>
-                        <h4>Pengaturan Akun Owner</h4>
-                        <p>Kelola informasi profil dan keamanan akun Anda</p>
-                    </div>
-
-                    <div class="p-4">
-                        <!-- ============================================
-                             FORM 1: PROFIL MANAGER
-                        ============================================= -->
-                        <form method="POST" action="{{ route('owner.akun.update') }}" id="profileForm">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="form_type" value="profile">
-
-                            <h5 class="section-title">
-                                <i class="bi bi-person-badge me-2"></i>Informasi Profil
-                            </h5>
-
-                            <div class="mb-3">
-                                <label for="nama_manager" class="form-label">
-                                    Nama Manager <span class="required">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="nama_manager" name="nama_manager"
-                                    value="{{ old('nama_manager', $user->partner->nama_manager ?? '') }}" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="form-label">
-                                    Email <span class="required">*</span>
-                                </label>
-                                <input type="email" class="form-control" id="email" name="email"
-                                    value="{{ old('email', $user->partner->email ?? '') }}" required>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="no_wa" class="form-label">
-                                    Nomor WhatsApp <span class="required">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="no_wa" name="no_wa"
-                                    value="{{ old('no_wa', $user->partner->no_wa ?? '') }}" required
-                                    placeholder="08xxxxxxxxxx">
-                            </div>
-
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-orange">
-                                    <i class="bi bi-save me-2"></i>Simpan Perubahan Profil
-                                </button>
-                            </div>
-                        </form>
-
-                        <hr class="my-4">
-
-                        <!-- ============================================
-                             FORM 2: KEAMANAN (USERNAME & PASSWORD)
-                        ============================================= -->
-                        <form method="POST" action="{{ route('owner.akun.update') }}" id="securityForm">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="form_type" value="security">
-
-                            <h5 class="section-title">
-                                <i class="bi bi-shield-lock me-2"></i>Keamanan Akun
-                            </h5>
-
-                            <div class="mb-3">
-                                <label for="username" class="form-label">
-                                    Username <span class="required">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="username" name="username"
-                                    value="{{ old('username', $user->username ?? '') }}" required autocomplete="off">
-                                <div id="usernameStatus" class="username-status"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="password" class="form-label">
-                                    Password Baru
-                                </label>
-                                <div class="password-wrapper">
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Kosongkan jika tidak ingin mengubah" autocomplete="new-password">
-                                    <i class="bi bi-eye toggle-password" id="togglePassword"></i>
-                                </div>
-                                <small class="text-muted">Minimal 6 karakter</small>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="password_confirmation" class="form-label">
-                                    Konfirmasi Password Baru
-                                </label>
-                                <div class="password-wrapper">
-                                    <input type="password" class="form-control" id="password_confirmation"
-                                        name="password_confirmation" placeholder="Ketik ulang password baru"
-                                        autocomplete="new-password">
-                                    <i class="bi bi-eye toggle-password" id="togglePasswordConfirm"></i>
-                                </div>
-                                <div id="passwordMatchStatus" class="password-match-status"></div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ route('owner.dashboard') }}" class="btn-back">
-                                    <i class="bi bi-arrow-left me-2"></i>Kembali
-                                </a>
-                                <button type="submit" class="btn btn-orange" id="btnSaveSecurity">
-                                    <i class="bi bi-shield-check me-2"></i>Simpan Perubahan Keamanan
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
+    {{-- Header --}}
+    <div class="page-header">
+        <a href="{{ route('owner.dashboard') }}" class="page-header-back" aria-label="Kembali">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <div class="page-header-title">Pengaturan Akun</div>
+            <div class="page-header-sub">Kelola profil dan keamanan akun Owner Anda</div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // ============================================
-        // AJAX Username Availability Check
-        // ============================================
-        let typingTimer;
-        const originalUsername = "{{ $user->username }}";
+    {{-- Flash messages --}}
+    @if(session('success'))
+    <div class="alert-flavory alert-success-f" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+    @endif
 
-        document.getElementById('username').addEventListener('input', function() {
-            clearTimeout(typingTimer);
-            const username = this.value.trim();
-            const statusDiv = document.getElementById('usernameStatus');
+    @if($errors->any())
+    <div class="alert-flavory alert-error-f" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            <div>Terjadi kesalahan:</div>
+            <ul>
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
 
-            if (username === '' || username === originalUsername) {
-                statusDiv.className = 'username-status';
-                statusDiv.textContent = '';
-                return;
-            }
+    {{-- ═══════════════════════════════════════
+         FORM 1 — PROFIL MANAGER
+    ════════════════════════════════════════ --}}
+    <div class="section-head">
+        <div class="section-head-icon icon-profile">
+            <i class="bi bi-person-badge"></i>
+        </div>
+        <div>
+            <div class="section-head-title">Informasi Profil</div>
+            <div class="section-head-sub">Nama, email, dan nomor WhatsApp yang terdaftar</div>
+        </div>
+    </div>
 
-            statusDiv.className = 'username-status checking';
-            statusDiv.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Memeriksa ketersediaan...';
+    <form method="POST" action="{{ route('owner.akun.update') }}" id="profileForm">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="form_type" value="profile">
 
-            typingTimer = setTimeout(function() {
-                fetch("{{ route('owner.akun.check-username') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ username: username })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.available) {
-                        statusDiv.className = 'username-status available';
-                        statusDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Username tersedia!';
-                    } else {
-                        statusDiv.className = 'username-status taken';
-                        statusDiv.innerHTML = '<i class="bi bi-x-circle-fill me-2"></i>Username sudah digunakan!';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    statusDiv.className = 'username-status';
-                    statusDiv.textContent = '';
-                });
-            }, 500);
-        });
+        <div class="field-group">
+            <label for="nama_manager" class="field-label">
+                Nama Manager <span class="req">*</span>
+            </label>
+            <input type="text" id="nama_manager" name="nama_manager" class="field-input"
+                   value="{{ old('nama_manager', $user->partner->nama_manager ?? '') }}"
+                   placeholder="Nama lengkap Anda" required>
+        </div>
 
-        // ============================================
-        // Real-time Password Match Check
-        // ============================================
-        function checkPasswordMatch() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('password_confirmation').value;
-            const statusDiv = document.getElementById('passwordMatchStatus');
+        <div class="field-group">
+            <label for="email" class="field-label">
+                Email <span class="req">*</span>
+            </label>
+            <input type="email" id="email" name="email" class="field-input"
+                   value="{{ old('email', $user->partner->email ?? '') }}"
+                   placeholder="contoh@email.com" required>
+            <div class="field-hint">Email ini digunakan untuk pengiriman kode OTP saat lupa password.</div>
+        </div>
 
-            if (password === '' || confirmPassword === '') {
-                statusDiv.className = 'password-match-status';
-                statusDiv.textContent = '';
-                return;
-            }
+        <div class="field-group">
+            <label for="no_wa" class="field-label">
+                Nomor WhatsApp <span class="req">*</span>
+            </label>
+            <input type="text" id="no_wa" name="no_wa" class="field-input"
+                   value="{{ old('no_wa', $user->partner->no_wa ?? '') }}"
+                   placeholder="08xxxxxxxxxx" required>
+        </div>
 
-            if (password === confirmPassword) {
-                statusDiv.className = 'password-match-status match';
-                statusDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Password cocok!';
-            } else {
-                statusDiv.className = 'password-match-status nomatch';
-                statusDiv.innerHTML = '<i class="bi bi-x-circle-fill me-2"></i>Password tidak cocok!';
-            }
+        <div style="display:flex; justify-content:flex-end; margin-top: 4px;">
+            <button type="submit" class="btn-save">
+                <i class="bi bi-check-lg"></i> Simpan Profil
+            </button>
+        </div>
+    </form>
+
+    <hr class="form-sep">
+
+    {{-- ═══════════════════════════════════════
+         FORM 2 — KEAMANAN
+    ════════════════════════════════════════ --}}
+    <div class="section-head">
+        <div class="section-head-icon icon-security">
+            <i class="bi bi-shield-lock"></i>
+        </div>
+        <div>
+            <div class="section-head-title">Keamanan Akun</div>
+            <div class="section-head-sub">Ubah username atau password login Anda</div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ route('owner.akun.update') }}" id="securityForm">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="form_type" value="security">
+
+        <div class="field-group">
+            <label for="username" class="field-label">
+                Username <span class="req">*</span>
+            </label>
+            <input type="text" id="username" name="username" class="field-input"
+                   value="{{ old('username', $user->username ?? '') }}"
+                   placeholder="Username Anda" required autocomplete="off">
+            <div id="usernameStatus" class="field-status"></div>
+        </div>
+
+        <div class="field-group">
+            <label for="password" class="field-label">Password Baru</label>
+            <div class="field-password">
+                <input type="password" id="password" name="password" class="field-input"
+                       placeholder="Kosongkan jika tidak ingin diubah" autocomplete="new-password">
+                <i class="bi bi-eye field-eye" id="togglePassword"></i>
+            </div>
+            <div class="field-hint">Minimal 6 karakter.</div>
+        </div>
+
+        <div class="field-group">
+            <label for="password_confirmation" class="field-label">Konfirmasi Password Baru</label>
+            <div class="field-password">
+                <input type="password" id="password_confirmation" name="password_confirmation" class="field-input"
+                       placeholder="Ketik ulang password baru" autocomplete="new-password">
+                <i class="bi bi-eye field-eye" id="togglePasswordConfirm"></i>
+            </div>
+            <div id="passwordMatchStatus" class="field-status"></div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top: 4px;">
+            <button type="submit" class="btn-save" id="btnSaveSecurity">
+                <i class="bi bi-shield-check"></i> Simpan Keamanan
+            </button>
+        </div>
+    </form>
+
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    // ── AJAX: cek ketersediaan username ─────────────────────────────
+    const originalUsername = "{{ $user->username }}";
+    let typingTimer;
+
+    document.getElementById('username').addEventListener('input', function () {
+        clearTimeout(typingTimer);
+        const val = this.value.trim();
+        const status = document.getElementById('usernameStatus');
+
+        if (!val || val === originalUsername) {
+            status.className = 'field-status';
+            return;
         }
 
-        document.getElementById('password').addEventListener('input', checkPasswordMatch);
-        document.getElementById('password_confirmation').addEventListener('input', checkPasswordMatch);
+        status.className = 'field-status checking';
+        status.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Memeriksa...';
 
-        // ============================================
-        // Toggle Password Visibility
-        // ============================================
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordField = document.getElementById('password');
-            const icon = this;
+        typingTimer = setTimeout(() => {
+            fetch("{{ route('owner.akun.check-username') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ username: val })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.available) {
+                    status.className = 'field-status ok';
+                    status.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Username tersedia';
+                } else {
+                    status.className = 'field-status error';
+                    status.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> Username sudah digunakan';
+                }
+            })
+            .catch(() => { status.className = 'field-status'; });
+        }, 500);
+    });
 
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye');
-            }
+    // ── Real-time password match ─────────────────────────────────────
+    function checkMatch() {
+        const pw  = document.getElementById('password').value;
+        const cpw = document.getElementById('password_confirmation').value;
+        const st  = document.getElementById('passwordMatchStatus');
+
+        if (!pw || !cpw) { st.className = 'field-status'; return; }
+
+        if (pw === cpw) {
+            st.className = 'field-status ok';
+            st.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Password cocok';
+        } else {
+            st.className = 'field-status error';
+            st.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> Password tidak cocok';
+        }
+    }
+    document.getElementById('password').addEventListener('input', checkMatch);
+    document.getElementById('password_confirmation').addEventListener('input', checkMatch);
+
+    // ── Toggle password visibility ───────────────────────────────────
+    function toggleVis(inputId, iconEl) {
+        const input = document.getElementById(inputId);
+        const isPass = input.type === 'password';
+        input.type = isPass ? 'text' : 'password';
+        iconEl.classList.toggle('bi-eye',      !isPass);
+        iconEl.classList.toggle('bi-eye-slash', isPass);
+    }
+    document.getElementById('togglePassword').addEventListener('click', function () { toggleVis('password', this); });
+    document.getElementById('togglePasswordConfirm').addEventListener('click', function () { toggleVis('password_confirmation', this); });
+
+    // ── Auto-dismiss flash alert setelah 5 detik ────────────────────
+    setTimeout(() => {
+        document.querySelectorAll('.alert-flavory').forEach(el => {
+            el.style.transition = 'opacity .4s ease';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 400);
         });
-
-        document.getElementById('togglePasswordConfirm').addEventListener('click', function() {
-            const passwordField = document.getElementById('password_confirmation');
-            const icon = this;
-
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye');
-            }
-        });
-
-        // ============================================
-        // Auto-hide alerts after 5 seconds
-        // ============================================
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-    </script>
-
-</body>
-
-</html>
+    }, 5000);
+</script>
+@endsection
