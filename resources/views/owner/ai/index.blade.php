@@ -1608,32 +1608,6 @@
                                     Tanya apa saja, dari menu terlaris hingga strategi promosi!
                                 </p>
                             </div>
-                            <div class="ai-welcome-chips">
-                                <button type="button" class="ai-chip"
-                                    data-prompt="Menu apa yang paling laris bulan ini, Bos?">
-                                    <i class="bi bi-cup-hot"></i> Menu terlaris bulan ini
-                                </button>
-                                <button type="button" class="ai-chip"
-                                    data-prompt="Bagaimana performa penjualan 30 hari terakhir?">
-                                    <i class="bi bi-bar-chart-line"></i> Performa penjualan 30 hari
-                                </button>
-                                <button type="button" class="ai-chip"
-                                    data-prompt="Apa saran kamu untuk meningkatkan omzet outlet saya?">
-                                    <i class="bi bi-rocket-takeoff"></i> Saran tingkatkan omzet
-                                </button>
-                                <button type="button" class="ai-chip"
-                                    data-prompt="Apakah ada menu yang perlu saya pertimbangkan untuk dihapus atau direvisi harganya?">
-                                    <i class="bi bi-lightbulb"></i> Evaluasi menu &amp; harga
-                                </button>
-                                <button type="button" class="ai-chip"
-                                    data-prompt="Bagaimana kondisi stok barang saya sekarang?">
-                                    <i class="bi bi-box-seam"></i> Cek kondisi stok
-                                </button>
-                                <button type="button" class="ai-chip"
-                                    data-prompt="Berikan ringkasan keuangan outlet saya bulan ini.">
-                                    <i class="bi bi-cash-coin"></i> Ringkasan keuangan
-                                </button>
-                            </div>
                         </div>
                     @else
                         {{-- Muat pesan sesi aktif via JS setelah load --}}
@@ -1663,8 +1637,6 @@
                         <i class="bi bi-send-fill"></i>
                     </button>
                 </div>
-                <p class="input-hint">Tekan <kbd>Enter</kbd> kirim · <kbd>Shift+Enter</kbd> baris baru · FlavoryAI
-                    membaca data outlet Anda secara real-time</p>
             </div>
 
         </div>{{-- /ai-main --}}

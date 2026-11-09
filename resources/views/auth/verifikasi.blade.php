@@ -67,16 +67,16 @@
                     <div class="mb-4">
                         <i class="bi bi-envelope-paper-heart-fill text-orange" style="font-size: 3.5rem; color: #ff6a00;"></i>
                     </div>
-                    <h3 class="fw-bolder text-dark mb-2">Masukkan Kode Verifikasi</h3>
+                    <h3 class="fw-bolder text-dark mb-2">Masukkan Kode OTP</h3>
                     <p class="text-muted small mb-4">
-                        Masukkan 6-digit kode verifikasi yang sama seperti kode saat pendaftaran. Kode ini langsung ditampilkan di layar setelah Anda selesai mendaftar.
+                        Masukkan 6-digit kode OTP yang telah dikirimkan ke email yang terdaftar pada akun Anda. Kode berlaku selama <strong>10 menit</strong>.
                     </p>
 
                     <form action="{{ route('password.verifikasi.proses') }}" method="POST">
                         @csrf
                         <div class="mb-4">
                             <input type="text" name="code" class="form-control form-control-code w-100" placeholder="ABC123" maxlength="6" pattern="[A-Za-z0-9]{6}" required autocomplete="off" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');">
-                            <div class="form-text mt-2 text-danger small">Masukkan kombinasi huruf dan angka yang Anda terima saat pendaftaran.</div>
+                            <div class="form-text mt-2 text-muted small">Masukkan kombinasi huruf dan angka yang dikirim ke email Anda.</div>
                         </div>
 
                         <button type="submit" class="btn btn-orange w-100">

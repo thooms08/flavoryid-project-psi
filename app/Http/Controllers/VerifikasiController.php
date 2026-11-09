@@ -15,10 +15,7 @@ class VerifikasiController extends Controller {
             return redirect()->route('register')->with('error', 'Link verifikasi tidak valid. Silakan daftar ulang.');
         }
 
-        $kodeVerif = Verifikasi::where('partner_id', $partner->id)
-            ->value('kode_verifikasi');
-
-        return view('verifikasi', compact('id', 'kodeVerif'));
+        return view('verifikasi', compact('id'));
     }
 
     public function verify(Request $request, $id) {

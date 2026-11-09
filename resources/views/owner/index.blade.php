@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Dashboard Owner | Flavory.id</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -262,6 +262,8 @@
             position: relative;
             z-index: 2;
             max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
         }
         .hero-greeting {
             font-size: 0.72rem;
@@ -288,10 +290,13 @@
             font-size: 0.87rem;
             color: var(--muted);
             line-height: 1.6;
+            max-width: 620px;
+            margin: 0 auto;
         }
         .hero-chips {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 8px;
             margin-top: 18px;
         }
@@ -421,50 +426,446 @@
         .icon-purple  { background: #faf5ff; color: #a855f7; }
         .icon-slate   { background: #f1f5f9; color: #64748b; }
 
-        /* ─── Card AI Consultant (gradasi oranye animasi) ────────────── */
+        /* ─── Card AI Consultant (interaktif) ────────────────────────── */
         @keyframes aiShift {
             0%   { background-position: 0%   50%; }
             50%  { background-position: 100% 50%; }
             100% { background-position: 0%   50%; }
         }
+        @keyframes aiDot {
+            0%   { box-shadow: 0 0 0 0 rgba(255,255,255,.7); }
+            100% { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+        }
+
         .menu-card-ai {
             background: linear-gradient(135deg, #ff6a00, #ff9a00, #ffb300, #ff7a1a, #ff6a00);
             background-size: 300% 300%;
-            animation: aiShift 4s ease infinite;
+            animation: aiShift 6s ease infinite;
             border: none;
             box-shadow: 0 8px 32px rgba(255,106,0,0.35);
+            transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+            transition: transform .18s ease-out, box-shadow .22s ease;
+            will-change: transform;
         }
-        .menu-card-ai .menu-card-title,
-        .menu-card-ai .menu-card-desc { color: rgba(255,255,255,0.95); }
-        .menu-card-ai .menu-card-arrow { color: rgba(255,255,255,0.9); }
         .menu-card-ai:hover {
-            box-shadow: 0 20px 48px rgba(255,106,0,0.45);
+            transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-6px);
+            box-shadow: 0 22px 52px rgba(255,106,0,0.5);
             border: none;
         }
-        .menu-card-ai:hover .menu-card-title,
-        .menu-card-ai:hover .menu-card-desc { color: #fff; }
+        .menu-card-ai:active { transform: perspective(900px) scale(.985); }
+        .menu-card-ai:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
         .menu-card-ai::before { display: none; }
 
-        /* icon AI: white background semi-transparan */
-        .icon-ai {
-            background: rgba(255,255,255,0.22);
-            color: #fff;
-            backdrop-filter: blur(4px);
+        /* sorotan cahaya mengikuti kursor */
+        .menu-card-ai::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(255,255,255,.38), transparent 62%);
+            opacity: 0;
+            transition: opacity .25s ease;
+            pointer-events: none;
         }
+        .menu-card-ai:hover::after { opacity: 1; }
 
-        /* sparkle decoration on AI card */
-        .ai-sparkle {
+        .menu-card-ai .menu-card-title { color: #fff; }
+        .menu-card-ai .menu-card-desc  { color: rgba(255,255,255,.92); }
+
+        /* status */
+        .ai-status {
             position: absolute;
             top: 16px;
-            right: 20px;
-            font-size: 1.4rem;
-            opacity: 0.55;
-            animation: aiShift 3s ease infinite, aiSparkle 2.4s ease-in-out infinite;
+            right: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 4px 11px 4px 9px;
+            border-radius: 100px;
+            background: rgba(255,255,255,.2);
+            border: 1px solid rgba(255,255,255,.3);
+            color: #fff;
+            font-size: .66rem;
+            font-weight: 700;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
-        @keyframes aiSparkle {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.55; }
-            50%       { transform: scale(1.25) rotate(15deg); opacity: 0.9; }
+        .ai-status i {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #fff;
+            animation: aiDot 1.8s ease-out infinite;
         }
+
+        /* robot + gelembung chat */
+        .ai-stage {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 14px 0 18px;
+            min-height: 96px;
+        }
+        .ai-robot {
+            width: 96px;
+            height: 96px;
+            flex-shrink: 0;
+            padding: 10px 8px 6px;
+            border-radius: 28px;
+            background: linear-gradient(160deg, #ffffff, #fff1df);
+            border: 1px solid rgba(255,255,255,.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 0 #fff, 0 12px 26px rgba(160,60,0,.3);
+            transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+        }
+        .menu-card-ai:hover .ai-robot { transform: scale(1.07) rotate(-2deg); }
+        .ai-bubble {
+            position: relative;
+            background: #fff;
+            color: var(--text);
+            border-radius: 16px 16px 16px 4px;
+            padding: 10px 14px;
+            font-size: .76rem;
+            font-weight: 600;
+            line-height: 1.4;
+            box-shadow: 0 6px 18px rgba(160,60,0,.2);
+            min-width: 0;
+        }
+        .ai-bubble::before {
+            content: '';
+            position: absolute;
+            left: -6px; bottom: 10px;
+            width: 12px; height: 12px;
+            background: #fff;
+            transform: rotate(45deg);
+            border-radius: 2px;
+        }
+        .ai-bubble span { position: relative; display: block; transition: opacity .25s ease, transform .25s ease; }
+        .ai-bubble span.swap { opacity: 0; transform: translateY(4px); }
+
+        .menu-card-ai .menu-card-arrow {
+            align-self: flex-start;
+            background: #fff;
+            color: var(--orange);
+            padding: 9px 16px;
+            border-radius: 100px;
+            box-shadow: 0 6px 16px rgba(160,60,0,.22);
+        }
+        .menu-card-ai:hover .menu-card-arrow { gap: 10px; }
+
+        /* ─── Wajah robot FlavoryAI (disalin dari ai/index.blade.php) ── */
+        .fa-face {
+            --px: 0px;
+            --py: 0px;
+            /* arah pandang mengikuti kursor */
+            --ex: 0px;
+            --ey: 0px;
+            /* offset pandangan dari ekspresi  */
+            --sx: 1;
+            --sy: 1;
+            /* skala mata dari ekspresi        */
+            --tilt: 0deg;
+            /* kepala sedikit miring ke kursor */
+            display: block;
+            width: 100%;
+            height: 100%;
+            line-height: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .fa-face[data-global] {
+            cursor: pointer;
+        }
+
+        .fa-svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .fa-tilt {
+            transform-box: fill-box;
+            transform-origin: 50% 100%;
+            transform: rotate(var(--tilt));
+            transition: transform .25s ease;
+        }
+
+        .fa-head {
+            transform-box: fill-box;
+            transform-origin: 50% 100%;
+        }
+
+        .fa-face[data-global] .fa-head {
+            animation: fa-float 3.2s ease-in-out infinite;
+        }
+
+        .fa-orb-glow {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: fa-pulse 1.8s ease-in-out infinite;
+        }
+
+        .fa-ear-in {
+            transition: fill .2s;
+        }
+
+        /* mata */
+        .fa-eyes {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: fa-blink 4.6s infinite;
+            animation-delay: var(--bd, 0s);
+        }
+
+        .fa-eye {
+            fill: #FFE9CC;
+            transform-box: fill-box;
+            transform-origin: center;
+            transform: translate(calc(var(--px) + var(--ex)), calc(var(--py) + var(--ey))) scale(var(--sx), var(--sy));
+            transition: transform .18s ease, opacity .15s ease;
+        }
+
+        .fa-eye-hl {
+            fill: #fff;
+        }
+
+        .fa-arc {
+            fill: none;
+            stroke: #FFE9CC;
+            stroke-width: 5;
+            stroke-linecap: round;
+            opacity: 0;
+            transition: opacity .15s;
+        }
+
+        .fa-brow {
+            fill: none;
+            stroke: #FFB067;
+            stroke-width: 4;
+            stroke-linecap: round;
+            opacity: 0;
+            transition: opacity .15s;
+        }
+
+        /* mulut */
+        .fa-mouth {
+            opacity: 0;
+            transition: opacity .12s;
+            fill: none;
+            stroke: #FFB067;
+            stroke-width: 4.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .fa-mouth--happy {
+            fill: #FF9B4A;
+            stroke: #FF9B4A;
+            stroke-width: 3;
+        }
+
+        .fa-mouth--listen {
+            fill: #2A1810;
+            stroke-width: 4;
+        }
+
+        /* pipi & air mata */
+        .fa-cheek {
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .fa-tear {
+            opacity: 0;
+        }
+
+        /* ── ekspresi ── */
+        .fa-face[data-exp="smile"] .fa-mouth--smile,
+        .fa-face[data-exp="happy"] .fa-mouth--happy,
+        .fa-face[data-exp="talk"] .fa-mouth--happy,
+        .fa-face[data-exp="think"] .fa-mouth--think,
+        .fa-face[data-exp="listen"] .fa-mouth--listen,
+        .fa-face[data-exp="sad"] .fa-mouth--sad {
+            opacity: 1;
+        }
+
+        .fa-face[data-exp="smile"] .fa-cheek {
+            opacity: .18;
+        }
+
+        .fa-face[data-exp="talk"] .fa-cheek {
+            opacity: .25;
+        }
+
+        .fa-face[data-exp="happy"] .fa-cheek {
+            opacity: .6;
+        }
+
+        .fa-face[data-exp="happy"] .fa-eye {
+            opacity: 0;
+        }
+
+        .fa-face[data-exp="happy"] .fa-arc {
+            opacity: 1;
+        }
+
+        .fa-face[data-exp="happy"] .fa-head {
+            animation: fa-hop .45s ease-out 2;
+        }
+
+        .fa-face[data-exp="talk"] .fa-mouth--happy {
+            transform-box: fill-box;
+            transform-origin: 50% 0;
+            animation: fa-talk .26s ease-in-out infinite alternate;
+        }
+
+        .fa-face[data-exp="think"] {
+            --ex: 3px;
+            --ey: -4px;
+        }
+
+        .fa-face[data-exp="think"] .fa-head {
+            animation: fa-sway 1.6s ease-in-out infinite alternate;
+        }
+
+        .fa-face[data-exp="think"] .fa-orb-glow {
+            animation-duration: .9s;
+        }
+
+        .fa-face[data-exp="listen"] {
+            --sx: 1.12;
+            --sy: 1.2;
+        }
+
+        .fa-face[data-exp="listen"] .fa-orb-glow {
+            animation-duration: .8s;
+        }
+
+        .fa-face[data-exp="listen"] .fa-ear-in {
+            animation: fa-ear .55s ease-in-out infinite alternate;
+        }
+
+        .fa-face[data-exp="sad"] {
+            --sy: .86;
+            --ey: 3px;
+        }
+
+        .fa-face[data-exp="sad"] .fa-brow {
+            opacity: 1;
+        }
+
+        .fa-face[data-exp="sad"] .fa-tear {
+            animation: fa-drip 1.6s ease-in infinite;
+        }
+
+        @keyframes fa-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        @keyframes fa-pulse {
+
+            0%,
+            100% {
+                opacity: .22;
+                transform: scale(.9);
+            }
+
+            50% {
+                opacity: .55;
+                transform: scale(1.18);
+            }
+        }
+
+        @keyframes fa-blink {
+
+            0%,
+            92%,
+            100% {
+                transform: scaleY(1);
+            }
+
+            95% {
+                transform: scaleY(.08);
+            }
+        }
+
+        @keyframes fa-hop {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-9px) scale(1.04);
+            }
+        }
+
+        @keyframes fa-talk {
+            from {
+                transform: scaleY(.3);
+            }
+
+            to {
+                transform: scaleY(1);
+            }
+        }
+
+        @keyframes fa-sway {
+            from {
+                transform: rotate(-3deg);
+            }
+
+            to {
+                transform: rotate(3deg);
+            }
+        }
+
+        @keyframes fa-ear {
+            from {
+                fill: #F26A0F;
+            }
+
+            to {
+                fill: #FFD27A;
+            }
+        }
+
+        @keyframes fa-drip {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(14px);
+                opacity: 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .fa-face *,
+            .fa-face *::before,
+            .fa-face *::after {
+                animation: none !important;
+            }
+        }
+
 
         /* ─── Outlet info bar ────────────────────────────────────────── */
         .outlet-bar {
@@ -525,9 +926,130 @@
             .outlet-bar { flex-wrap: wrap; gap: 12px; }
             .outlet-bar-badge { margin-left: 0; }
         }
+
+        /* ─── Bottom bar (hanya handphone) ───────────────────────────── */
+        .bottom-bar { display: none; }
+        @media (max-width: 768px) {
+            .topbar { justify-content: center; }
+            .topbar-right { display: none; }
+            body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+            .bottom-bar {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 4px;
+                position: fixed;
+                left: 0; right: 0; bottom: 0;
+                z-index: 100;
+                padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+                background: rgba(255,255,255,0.92);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-top: 1px solid var(--border);
+                box-shadow: 0 -8px 28px rgba(0,0,0,0.06);
+            }
+            .bottom-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
+                padding: 7px 4px;
+                border: 0;
+                background: none;
+                border-radius: 14px;
+                font: inherit;
+                font-size: 0.68rem;
+                font-weight: 600;
+                color: var(--muted);
+                text-decoration: none;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                transition: background .15s ease, color .15s ease;
+            }
+            .bottom-item i { font-size: 1.3rem; line-height: 1; transition: transform .2s ease; }
+            .bottom-item:active { background: rgba(255,106,0,0.1); }
+            .bottom-item:active i { transform: scale(.88); }
+            .bottom-item.active { color: var(--orange); background: rgba(255,106,0,0.08); }
+            .bottom-item.logout { color: #ef4444; }
+            .bottom-item.logout:active { background: #fef2f2; }
+            .bottom-item:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+            .ai-stage { min-height: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .menu-card-ai, .ai-status i { animation: none !important; }
+            .menu-card-ai, .menu-card-ai:hover { transform: none; }
+        }
     </style>
 </head>
 <body>
+
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="fa-g-head" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FFB460" />
+                <stop offset="1" stop-color="#F26A0F" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+<template id="tplRobotFace"><svg class="fa-svg" viewBox="18 0 164 134" xmlns="http://www.w3.org/2000/svg"
+            focusable="false" aria-hidden="true">
+            <g class="fa-tilt">
+                <g class="fa-head">
+                    {{-- telinga --}}
+                    <rect x="20" y="70" width="20" height="34" rx="10" fill="#FFF4E8" />
+                    <rect class="fa-ear-in" x="25" y="80" width="8" height="14" rx="4" fill="#F26A0F" />
+                    <rect x="160" y="70" width="20" height="34" rx="10" fill="#FFF4E8" />
+                    <rect class="fa-ear-in" x="167" y="80" width="8" height="14" rx="4"
+                        fill="#F26A0F" />
+                    {{-- antena --}}
+                    <rect x="97" y="18" width="6" height="20" rx="3" fill="#3A2316" />
+                    <circle class="fa-orb-glow" cx="100" cy="14" r="13" fill="#FFD27A" />
+                    <circle cx="100" cy="14" r="8" fill="#FFD27A" />
+                    <circle cx="97.5" cy="11.5" r="2.5" fill="#fff" />
+                    {{-- cangkang kepala --}}
+                    <rect x="34" y="34" width="132" height="98" rx="44" fill="url(#fa-g-head)" />
+                    <path d="M52 52 Q60 42 82 40" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="5"
+                        stroke-linecap="round" />
+                    {{-- layar wajah --}}
+                    <rect x="46" y="48" width="108" height="70" rx="32" fill="#2A1810" />
+                    <rect x="46" y="48" width="108" height="70" rx="32" fill="none" stroke="#FFB067"
+                        stroke-opacity=".35" stroke-width="2" />
+                    <path d="M62 56 Q76 50 96 52" fill="none" stroke="#fff" stroke-opacity=".12"
+                        stroke-width="4" stroke-linecap="round" />
+                    {{-- alis (sedih) --}}
+                    <path class="fa-brow" d="M67 68 L89 60" />
+                    <path class="fa-brow" d="M133 68 L111 60" />
+                    {{-- mata --}}
+                    <g class="fa-eyes">
+                        <g class="fa-eye">
+                            <ellipse cx="78" cy="78" rx="9" ry="12" />
+                            <circle class="fa-eye-hl" cx="81" cy="73" r="3" />
+                        </g>
+                        <g class="fa-eye">
+                            <ellipse cx="122" cy="78" rx="9" ry="12" />
+                            <circle class="fa-eye-hl" cx="125" cy="73" r="3" />
+                        </g>
+                    </g>
+                    {{-- mata senang (^ ^) --}}
+                    <path class="fa-arc" d="M68 82 Q78 69 88 82" />
+                    <path class="fa-arc" d="M112 82 Q122 69 132 82" />
+                    {{-- pipi --}}
+                    <g class="fa-cheek">
+                        <ellipse cx="63" cy="101" rx="10" ry="6" fill="#FF6F8A" />
+                        <ellipse cx="137" cy="101" rx="10" ry="6" fill="#FF6F8A" />
+                    </g>
+                    {{-- mulut --}}
+                    <path class="fa-mouth fa-mouth--smile" d="M88 98 Q100 110 112 98" />
+                    <path class="fa-mouth fa-mouth--happy" d="M88 96 Q100 116 112 96 Z" />
+                    <path class="fa-mouth fa-mouth--think" d="M92 104 L108 104" />
+                    <ellipse class="fa-mouth fa-mouth--listen" cx="100" cy="104" rx="5.5"
+                        ry="7" />
+                    <path class="fa-mouth fa-mouth--sad" d="M90 108 Q100 98 110 108" />
+                    <path class="fa-tear" d="M70 94 Q74 101 70 105 Q66 101 70 94 Z" fill="#8FD8FF" />
+                </g>
+            </g>
+        </svg></template>
 
 {{-- ── Topbar ───────────────────────────────────────────────────────────── --}}
 <header class="topbar">
@@ -570,7 +1092,7 @@
                     <span>Akun</span>
                 </a>
                 
-                <button type="button" class="dropdown-menu-item logout-item" id="btnLogout">
+                <button type="button" class="dropdown-menu-item logout-item js-logout" id="btnLogout">
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Keluar</span>
                 </button>
@@ -583,6 +1105,26 @@
     @csrf
 </form>
 
+{{-- ── Bottom bar (muncul di handphone, menggantikan menu di topbar) ───── --}}
+<nav class="bottom-bar" aria-label="Menu utama">
+    <a href="{{ route('owner.dashboard') }}" class="bottom-item {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}">
+        <i class="bi bi-house-door-fill"></i>
+        <span>Beranda</span>
+    </a>
+    <a href="{{ route('owner.langganan.index') }}" class="bottom-item {{ request()->routeIs('owner.langganan.*') ? 'active' : '' }}">
+        <i class="bi bi-patch-check-fill"></i>
+        <span>Langganan</span>
+    </a>
+    <a href="{{ route('owner.akun.index') }}" class="bottom-item {{ request()->routeIs('owner.akun.*') ? 'active' : '' }}">
+        <i class="bi bi-person-circle"></i>
+        <span>Akun</span>
+    </a>
+    <button type="button" class="bottom-item logout js-logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Keluar</span>
+    </button>
+</nav>
+
 {{-- ── Hero / Welcome Banner ───────────────────────────────────────────── --}}
 <section class="hero-banner">
     <div class="hero-orb hero-orb-1"></div>
@@ -590,7 +1132,7 @@
     <div class="hero-content">
         <p class="hero-greeting">Selamat Datang</p>
         <h1 class="hero-title">
-            Halo, <span>{{ Auth::user()->username }}</span>! 👋<br>
+            Halo, <span>{{ Auth::user()->username }}</span>!<br>
             Dashboard Owner
         </h1>
         <p class="hero-sub">
@@ -599,12 +1141,6 @@
                 Outlet aktif: <strong>{{ $outlet->nama_outlet ?? 'Outlet Saya' }}</strong>.
             @endif
         </p>
-        <div class="hero-chips">
-            <div class="hero-chip"><i class="bi bi-shield-check-fill"></i> Akses Owner</div>
-            <div class="hero-chip"><i class="bi bi-clock-history"></i> Real-time Data</div>
-            <div class="hero-chip"><i class="bi bi-bar-chart-fill"></i> Laporan Lengkap</div>
-            <div class="hero-chip"><i class="bi bi-robot"></i> AI Consultant</div>
-        </div>
     </div>
 </section>
 
@@ -629,6 +1165,23 @@
 
     {{-- ── Menu Grid ────────────────────────────────────────────────── --}}
     <div class="menu-grid">
+        
+        <a href="{{ route('owner.ai') }}" class="menu-card menu-card-ai" id="aiCard">
+            <div class="ai-stage">
+                <div class="ai-robot">
+                    <span class="fa-face" data-global data-fa-hydrate data-exp="smile"></span>
+                </div>
+                <div class="ai-bubble" aria-hidden="true"><span id="aiBubbleText">Menu apa yang paling laris minggu ini?</span></div>
+            </div>
+
+            <div class="menu-card-title">Flavory AI Consultant</div>
+            <div class="menu-card-desc">
+                Konsultan bisnis berbasis AI. Tanya apa saja soal performa outlet — dijawab berdasarkan data nyata Anda.
+            </div>
+            <div class="menu-card-arrow">
+                Mulai Chat AI <i class="bi bi-arrow-right"></i>
+            </div>
+        </a>
 
         {{-- 1. Ikhtisar Bisnis --}}
         <a href="{{ route('owner.laporan.index') }}" class="menu-card">
@@ -686,21 +1239,6 @@
             </div>
         </a>
 
-        {{-- 5. Flavory AI Consultant (special animated card) --}}
-        <a href="{{ route('owner.ai') }}" class="menu-card menu-card-ai">
-            <span class="ai-sparkle">✨</span>
-            <div class="menu-card-icon icon-ai">
-                <i class="bi bi-stars"></i>
-            </div>
-            <div class="menu-card-title">Flavory AI Consultant</div>
-            <div class="menu-card-desc">
-                Konsultan bisnis berbasis AI. Tanya apa saja soal performa outlet — dijawab berdasarkan data nyata Anda.
-            </div>
-            <div class="menu-card-arrow">
-                Mulai Chat AI <i class="bi bi-arrow-right"></i>
-            </div>
-        </a>
-
         {{-- 6. Pengaturan Form Pesanan --}}
         <a href="{{ route('owner.pengaturan.index') }}" class="menu-card">
             <div class="menu-card-icon icon-purple">
@@ -742,10 +1280,9 @@
     // ============================================
     // SweetAlert Logout Confirmation
     // ============================================
-    const btnLogout = document.getElementById('btnLogout');
     const logoutForm = document.getElementById('logoutForm');
     
-    btnLogout.addEventListener('click', function(e) {
+    function confirmLogout(e) {
         e.preventDefault();
         
         Swal.fire({
@@ -780,7 +1317,129 @@
                 logoutForm.submit();
             }
         });
+    }
+    // tombol Keluar di dropdown (desktop) & bottom bar (handphone)
+    document.querySelectorAll('.js-logout').forEach(function (btn) {
+        btn.addEventListener('click', confirmLogout);
     });
+</script>
+
+<script>
+    // ============================================
+    // Wajah Robot FlavoryAI (logika sama dengan ai/index.blade.php)
+    // ============================================
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function faceSvg() {
+        return document.getElementById('tplRobotFace').innerHTML;
+    }
+
+    // Isi placeholder <span data-fa-hydrate>
+    function hydrateFaces(root = document) {
+        root.querySelectorAll('[data-fa-hydrate]').forEach(el => {
+            el.removeAttribute('data-fa-hydrate');
+            el.innerHTML = faceSvg();
+            el.style.setProperty('--bd', (-Math.random() * 4.6).toFixed(2) + 's'); // kedip tidak serempak
+        });
+    }
+
+    // Mata + kepala mengikuti kursor / sentuhan
+    const faceTrack = { x: 0, y: 0, raf: 0, last: Date.now() };
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    function lookAt(f, nx, ny) {
+        f.style.setProperty('--px', (nx * 4.5).toFixed(2) + 'px');
+        f.style.setProperty('--py', (ny * 3.2).toFixed(2) + 'px');
+        f.style.setProperty('--tilt', (nx * 4).toFixed(1) + 'deg');
+    }
+
+    function updateFaces() {
+        faceTrack.raf = 0;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const batch = [];
+        document.querySelectorAll('.fa-face').forEach(f => {
+            const r = f.getBoundingClientRect();
+            if (!r.width || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) return;
+            batch.push([f, r]);
+        });
+        batch.forEach(([f, r]) => {
+            const nx = clamp((faceTrack.x - (r.left + r.width / 2)) / 220, -1, 1);
+            const ny = clamp((faceTrack.y - (r.top + r.height / 2)) / 220, -1, 1);
+            lookAt(f, nx, ny);
+        });
+    }
+
+    function onPointer(e) {
+        faceTrack.x = e.clientX;
+        faceTrack.y = e.clientY;
+        faceTrack.last = Date.now();
+        if (!faceTrack.raf) faceTrack.raf = requestAnimationFrame(updateFaces);
+    }
+    document.addEventListener('pointermove', onPointer, { passive: true });
+    document.addEventListener('pointerdown', onPointer, { passive: true });
+
+    // Saat tidak ada gerakan: wajah melirik ke sekitar
+    setInterval(() => {
+        if (Date.now() - faceTrack.last < 4000 || document.hidden) return;
+        document.querySelectorAll('.fa-face[data-global]').forEach(f => {
+            lookAt(f, Math.random() * 2 - 1, (Math.random() * 2 - 1) * .6);
+        });
+    }, 3500);
+
+    hydrateFaces(document);
+
+    // ============================================
+    // Interaksi card AI
+    // ============================================
+    const aiCard = document.getElementById('aiCard');
+    if (aiCard) {
+        const face = aiCard.querySelector('.fa-face');
+        const setExp = v => { if (face) face.dataset.exp = v; };
+        let hovering = false;
+
+        aiCard.addEventListener('pointerenter', e => { hovering = true; if (e.pointerType === 'mouse') setExp('happy'); });
+        aiCard.addEventListener('pointerleave', () => {
+            hovering = false; setExp('smile');
+            aiCard.style.setProperty('--rx', '0deg');
+            aiCard.style.setProperty('--ry', '0deg');
+        });
+        aiCard.addEventListener('pointerdown', () => setExp('listen'));
+        aiCard.addEventListener('pointerup', e => setExp(hovering && e.pointerType === 'mouse' ? 'happy' : 'smile'));
+        aiCard.addEventListener('pointercancel', () => setExp('smile'));
+
+        // Sorotan cahaya + tilt 3D (khusus mouse)
+        aiCard.addEventListener('pointermove', e => {
+            if (e.pointerType !== 'mouse') return;
+            const r = aiCard.getBoundingClientRect();
+            const x = e.clientX - r.left, y = e.clientY - r.top;
+            aiCard.style.setProperty('--mx', x + 'px');
+            aiCard.style.setProperty('--my', y + 'px');
+            if (!reduceMotion) {
+                aiCard.style.setProperty('--rx', ((0.5 - y / r.height) * 7).toFixed(2) + 'deg');
+                aiCard.style.setProperty('--ry', ((x / r.width - 0.5) * 7).toFixed(2) + 'deg');
+            }
+        });
+
+        // Gelembung contoh pertanyaan: robot "berpikir" lalu "bicara" saat ganti
+        const bubble = document.getElementById('aiBubbleText');
+        const tips = [
+            'Menu apa yang paling laris minggu ini?',
+            'Kenapa omzet kemarin turun?',
+            'Jam berapa outlet paling ramai?',
+            'Menu mana yang margin untungnya paling tipis?'
+        ];
+        let tipIdx = 0;
+        if (!reduceMotion) {
+            setInterval(() => {
+                bubble.classList.add('swap');
+                setTimeout(() => {
+                    tipIdx = (tipIdx + 1) % tips.length;
+                    bubble.textContent = tips[tipIdx];
+                    bubble.classList.remove('swap');
+                }, 250);
+            }, 3800);
+        }
+    }
 </script>
 
 </body>

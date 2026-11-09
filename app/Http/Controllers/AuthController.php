@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Mail\KodeVerifikasiMail;
 use App\Models\{User, Partner, InformasiOutlet, MediaQr, Verifikasi};
 
 class AuthController extends Controller
@@ -130,17 +133,37 @@ class AuthController extends Controller
             return back()->with('error', 'Akun partner tidak ditemukan.');
         }
 
-        $verifikasi = Verifikasi::where('partner_id', $partner->id)->first();
-        if (!$verifikasi) {
-            return back()->with('error', 'Kode verifikasi untuk akun ini tidak ditemukan. Hubungi admin.');
+        if (!$partner->email) {
+            return back()->with('error', 'Tidak ada email terdaftar untuk akun ini. Hubungi admin.');
         }
 
+        // Generate OTP baru 6 karakter alphanumeric
+        $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $digits  = '0123456789';
+        $all     = $letters . $digits;
+        $otp     = $letters[random_int(0, 25)]
+                 . $digits[random_int(0, 9)];
+        for ($i = 2; $i < 6; $i++) {
+            $otp .= $all[random_int(0, strlen($all) - 1)];
+        }
+        $otp = str_shuffle($otp);
+
         session([
-            'reset_user_id' => $user->id,
+            'reset_user_id'  => $user->id,
             'reset_username' => $user->username,
+            'reset_otp'      => $otp,
+            'reset_otp_at'   => now()->timestamp,
         ]);
 
-        return redirect()->route('password.verifikasi')->with('success', 'Masukkan kode verifikasi yang sama seperti saat pendaftaran. Kode tidak dikirim melalui email.');
+        // Kirim OTP ke email yang terdaftar di partner
+        Mail::to($partner->email)->send(new KodeVerifikasiMail($otp, $user));
+
+        // Sembunyikan sebagian email untuk privasi
+        $emailParts = explode('@', $partner->email);
+        $maskedEmail = substr($emailParts[0], 0, 2) . str_repeat('*', max(1, strlen($emailParts[0]) - 2)) . '@' . $emailParts[1];
+
+        return redirect()->route('password.verifikasi')
+            ->with('success', "Kode OTP telah dikirim ke email {$maskedEmail}. Berlaku selama 10 menit.");
     }
 
     public function showVerifikasi()
@@ -163,27 +186,25 @@ class AuthController extends Controller
             return redirect()->route('lupa-password')->with('error', 'Sesi telah habis. Silakan ulangi proses.');
         }
 
+        // Validasi OTP expired (10 menit)
+        $otpAt = session('reset_otp_at');
+        if (!$otpAt || (now()->timestamp - $otpAt) > 600) {
+            session()->forget(['reset_user_id', 'reset_username', 'reset_otp', 'reset_otp_at']);
+            return redirect()->route('lupa-password')->with('error', 'Kode OTP sudah kedaluwarsa. Silakan ulangi proses.');
+        }
+
+        $sessionOtp = session('reset_otp');
+        if (!$sessionOtp || strtoupper($request->code) !== strtoupper($sessionOtp)) {
+            return back()->with('error', 'Kode OTP salah. Pastikan kode sesuai dengan yang dikirim ke email Anda.');
+        }
+
         $user = User::find($userId);
         if (!$user) {
             return redirect()->route('lupa-password')->with('error', 'User tidak ditemukan.');
         }
 
-        $partner = Partner::where('user_id', $userId)->first();
-        if (!$partner) {
-            return back()->with('error', 'Akun partner tidak ditemukan untuk verifikasi.');
-        }
-
-        $verifikasi = Verifikasi::where('partner_id', $partner->id)->first();
-        if (!$verifikasi) {
-            return back()->with('error', 'Kode verifikasi tidak valid.');
-        }
-
-        if (strtoupper($request->code) !== strtoupper($verifikasi->kode_verifikasi)) {
-            return back()->with('error', 'Kode verifikasi salah.');
-        }
-
         Auth::login($user);
-        session()->forget(['reset_user_id', 'reset_username']);
+        session()->forget(['reset_user_id', 'reset_username', 'reset_otp', 'reset_otp_at']);
 
         return redirect()->intended($this->getRedirectUrl($user->role))->with('success', 'Berhasil masuk! Jangan lupa ubah password Anda di Pengaturan Akun.');
     }

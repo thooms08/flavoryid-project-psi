@@ -25,24 +25,18 @@
                 <i class="bi bi-shield-check text-white text-3xl"></i>
             </div>
            <h1 class="text-3xl font-extrabold text-slate-900">Verifikasi <span class="text-orange-600">Partner</span></h1>
-            <div class="mt-5 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-left shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill text-red-500 text-xl flex-shrink-0 mt-0.5"></i>
+            <div class="mt-5 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3 text-left shadow-sm">
+                <i class="bi bi-envelope-check-fill text-blue-500 text-xl flex-shrink-0 mt-0.5"></i>
                 <div>
-                    <p class="text-sm font-bold text-red-800 mb-1">PENTING: SIMPAN KODE INI!</p>
-                    <p class="text-xs text-red-700 leading-relaxed">
-                        Kode verifikasi Anda bersifat rahasia. <strong>WAJIB disimpan</strong> karena kode ini akan digunakan sebagai kunci pemulihan jika suatu saat Anda lupa password.
+                    <p class="text-sm font-bold text-blue-800 mb-1">Kode OTP Telah Dikirim ke Email Anda</p>
+                    <p class="text-xs text-blue-700 leading-relaxed">
+                        Silakan buka email yang Anda daftarkan, lalu masukkan kode verifikasi 6 karakter yang dikirim dari <strong>support@flavory.id</strong>. Kode bersifat rahasia, jangan berikan kepada siapa pun.
                     </p>
                 </div>
             </div>
 
         <div class="glass-effect rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-white">
             <div class="space-y-6">
-                <div class="bg-orange-50 border border-orange-200 rounded-3xl p-6 text-center">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-orange-600 mb-2">Kode Verifikasi Anda</p>
-                    <p class="text-4xl font-black tracking-[0.35em] text-slate-900">{{ $kodeVerif ?? '------' }}</p>
-                    <p class="text-sm text-slate-500 mt-3">Masukkan kode ini di form di bawah agar akun Anda dapat diaktifkan.</p>
-                </div>
-
                 <div>
                     <label for="kode" class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-3 text-center">Masukkan Kode Verifikasi</label>
                     <div class="relative">

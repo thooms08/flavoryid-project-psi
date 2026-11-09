@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\VerifikasiEmail;
 use App\Models\{User, Partner, InformasiOutlet, MediaQr, Verifikasi};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class RegisterController extends Controller {
@@ -82,9 +84,10 @@ class RegisterController extends Controller {
                 'maps' => $request->maps,
             ]);
 
+            $kodeOtp = $this->generateMixedAlphaNumericCode(6);
             Verifikasi::create([
-                'partner_id' => $partner->id,
-                'kode_verifikasi' => $this->generateMixedAlphaNumericCode(6),
+                'partner_id'      => $partner->id,
+                'kode_verifikasi' => $kodeOtp,
                 'konfirmasi'      => false,
             ]);
 
@@ -119,8 +122,11 @@ class RegisterController extends Controller {
             // Sinkronisasi akun ke key.flavory.id agar owner bisa login di sana
             $this->syncToKeyFlavory($request->username, $userKasir->password, $partner);
 
-            // Jika Gratis, langsung ke verifikasi tanpa email
+            // Jika Gratis, kirim OTP via email lalu redirect ke verifikasi
             if ($amount == 0) {
+                if ($partner->email) {
+                    Mail::to($partner->email)->send(new VerifikasiEmail($kodeOtp, $partner->nama_manager));
+                }
                 return redirect()->route('verifikasi.show', ['id' => $partner->uuid]);
             }
 
@@ -370,8 +376,11 @@ class RegisterController extends Controller {
                 $kodeData = \App\Models\Verifikasi::where('partner_id', $partner->id)->first();
                 
                 if ($partner && $kodeData) {
-                    Log::info('WijayaPay Webhook registration payment success, no verification email sent because code will display on screen', [
-                        'invoice' => $refId,
+                    if ($partner->email) {
+                        Mail::to($partner->email)->send(new VerifikasiEmail($kodeData->kode_verifikasi, $partner->nama_manager));
+                    }
+                    Log::info('WijayaPay Webhook: OTP verification email sent', [
+                        'invoice'    => $refId,
                         'partner_id' => $partner->id,
                     ]);
                 }

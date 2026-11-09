@@ -77,7 +77,7 @@
                             <i class="bi bi-key-fill fs-2"></i>
                         </div>
                         <h3 class="fw-bolder text-dark mb-1">Lupa Password?</h3>
-                        <p class="text-muted small">Masukkan username Anda. Selanjutnya, Anda akan diminta memasukkan 6-digit kode verifikasi yang Anda dapatkan saat mendaftar. Kode tidak dikirim melalui email.</p>
+                        <p class="text-muted small">Masukkan username Anda. Kode OTP akan dikirimkan otomatis ke email yang terdaftar pada akun Anda.</p>
                     </div>
 
                     <form action="{{ route('lupa-password.kirim') }}" method="POST">
