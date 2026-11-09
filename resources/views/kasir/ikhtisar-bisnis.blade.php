@@ -86,7 +86,7 @@
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <form action="{{ route('kasir.laporan.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
+            <form action="{{ route('kasir.ikhtisar.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Dari Tanggal</label>
                     <input type="date" name="start_date" id="start_date" class="form-control rounded-3" value="{{ $startDate }}">
@@ -100,7 +100,7 @@
                     <button type="submit" class="btn btn-orange w-100 fw-bold rounded-3 shadow-sm">
                         <i class="bi bi-search me-1"></i> Terapkan
                     </button>
-                    <a href="{{ route('kasir.laporan.index') }}" class="btn btn-light fw-bold rounded-3 border shadow-sm px-3 d-flex align-items-center" title="Reset ke Default">
+                    <a href="{{ route('kasir.ikhtisar.index') }}" class="btn btn-light fw-bold rounded-3 border shadow-sm px-3 d-flex align-items-center" title="Reset ke Default">
                         <i class="bi bi-arrow-clockwise"></i>
                     </a>
                 </div>
@@ -268,7 +268,7 @@
                 <button type="button" id="btnToggleMode" class="btn btn-light border-secondary text-secondary btn-sm fw-medium shadow-sm">
                     <i class="bi bi-view-list me-1"></i> SEDERHANAKAN
                 </button>
-                <form action="{{ route('kasir.laporan.export') }}" method="GET" target="_blank" class="m-0">
+                <form action="{{ route('kasir.ikhtisar.export') }}" method="GET" target="_blank" class="m-0">
                     <input type="hidden" name="start_date" value="{{ $startDate }}">
                     <input type="hidden" name="end_date" value="{{ $endDate }}">
                     <input type="hidden" name="mode" id="exportMode" value="lengkap">
@@ -666,7 +666,7 @@ function showBukti(imageUrl) {
         const ctx = document.getElementById('financeLineChart').getContext('2d');
 
         function loadChartData(filterMode, customStart = '', customEnd = '') {
-            let url = `/kasir/laporan-bisnis/chart?filter=${filterMode}&start_date=${customStart}&end_date=${customEnd}`;
+            let url = `/kasir/ikhtisar-bisnis/chart?filter=${filterMode}&start_date=${customStart}&end_date=${customEnd}`;
             
             if (window.showLoading) window.showLoading();
             fetch(url, { headers: { 'Accept': 'application/json' } })

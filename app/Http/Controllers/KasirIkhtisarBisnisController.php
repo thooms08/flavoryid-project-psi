@@ -15,7 +15,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class KasirLaporanBisnisController extends Controller
+class KasirIkhtisarBisnisController extends Controller
 {
     // Data historis (bukan hari ini) di-cache 10 menit,
     // data hari ini 2 menit agar tetap near-realtime.
@@ -126,7 +126,7 @@ class KasirLaporanBisnisController extends Controller
         // Filter di Collection — tidak perlu query tambahan
         $ordersWithBukti = $data['orders']->whereNotNull('bukti_bayar');
 
-        return view('kasir.laporan-bisnis', [
+        return view('kasir.ikhtisar-bisnis', [
             'startDate'        => $startDate,
             'endDate'          => $endDate,
             'topMenus'         => $data['topMenus'],

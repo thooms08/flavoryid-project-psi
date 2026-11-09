@@ -400,7 +400,7 @@
                             <a href="{{ route('kasir.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
                                 <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>
-                        @elseif(in_array(auth()->user()->role, ['owner', 'manager']))
+                        @elseif(auth()->user()->role === 'owner')
                             <a href="{{ route('owner.dashboard') }}" class="btn btn-orange w-100 w-lg-auto">
                                 <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>

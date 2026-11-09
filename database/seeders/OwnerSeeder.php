@@ -7,25 +7,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * ManagerSeeder
+ * OwnerSeeder
  * ─────────────────────────────────────────────────────────────────
- * Membuat satu akun manager dan menghubungkannya ke akun kasir
+ * Membuat satu akun owner dan menghubungkannya ke akun kasir
  * yang sudah ada (kasir_id = 4) lewat tabel owner_kasir.
  *
  * Seeder ini IDEMPOTENT — aman dijalankan berulang kali.
- * Jika username sudah ada dengan role manager, baris baru tidak
+ * Jika username sudah ada dengan role owner, baris baru tidak
  * akan dibuat. Begitu pula baris owner_kasir-nya.
  *
  * Jalankan:
- *   php artisan db:seed --class=ManagerSeeder
+ *   php artisan db:seed --class=OwnerSeeder
  * ─────────────────────────────────────────────────────────────────
  */
-class ManagerSeeder extends Seeder
+class OwnerSeeder extends Seeder
 {
-    // ── Konfigurasi akun manager ──────────────────────────────────
-    const USERNAME  = 'manager-demo';
+    // ── Konfigurasi akun owner ────────────────────────────────────
+    const USERNAME  = 'owner-demo';
     const PASSWORD  = 'password123';
-    const ROLE      = 'manager';
+    const ROLE      = 'owner';
 
     // ── Kasir yang akan dihubungkan ───────────────────────────────
     const KASIR_ID  = 4;
@@ -46,33 +46,33 @@ class ManagerSeeder extends Seeder
             return;
         }
 
-        // ── 2. Buat akun manager (idempotent) ────────────────────
-        $existingManager = DB::table('users')
+        // ── 2. Buat akun owner (idempotent) ───────────────────────
+        $existingOwner = DB::table('users')
             ->where('username', self::USERNAME)
             ->where('role', self::ROLE)
             ->first();
 
-        if ($existingManager) {
-            $managerId = $existingManager->id;
+        if ($existingOwner) {
+            $ownerId = $existingOwner->id;
             $this->command->warn(
-                '⚠️  User manager "' . self::USERNAME . '" sudah ada (id=' . $managerId . '), dilewati.'
+                '⚠️  User owner "' . self::USERNAME . '" sudah ada (id=' . $ownerId . '), dilewati.'
             );
         } else {
-            $managerId = DB::table('users')->insertGetId([
+            $ownerId = DB::table('users')->insertGetId([
                 'username'   => self::USERNAME,
                 'password'   => Hash::make(self::PASSWORD),
                 'role'       => self::ROLE,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            $this->command->info('✅  Akun manager dibuat (id=' . $managerId . ').');
+            $this->command->info('✅  Akun owner dibuat (id=' . $ownerId . ').');
         }
 
         // ── 3. Isi tabel owner_kasir (idempotent) ─────────────────
-        // Kolom owner_id diisi dengan id manager (role manager juga
-        // bisa menjadi "pemilik" outlet, sesuai logika aplikasi).
+        // Kolom owner_id diisi dengan id owner (role owner adalah
+        // pemilik outlet yang dapat mengelola kasir).
         $alreadyLinked = DB::table('owner_kasir')
-            ->where('owner_id', $managerId)
+            ->where('owner_id', $ownerId)
             ->where('kasir_id', self::KASIR_ID)
             ->exists();
 
@@ -83,31 +83,31 @@ class ManagerSeeder extends Seeder
 
         if ($alreadyLinked) {
             $this->command->warn(
-                '⚠️  Relasi owner_kasir (owner_id=' . $managerId .
+                '⚠️  Relasi owner_kasir (owner_id=' . $ownerId .
                 ', kasir_id=' . self::KASIR_ID . ') sudah ada, dilewati.'
             );
         } elseif ($kasirAlreadyTaken) {
             $this->command->error(
                 '❌  Kasir id=' . self::KASIR_ID . ' sudah terhubung ke owner_id=' .
                 $kasirAlreadyTaken->owner_id . '. ' .
-                'Satu kasir hanya boleh dimiliki oleh satu owner/manager.'
+                'Satu kasir hanya boleh dimiliki oleh satu owner.'
             );
         } else {
             DB::table('owner_kasir')->insert([
-                'owner_id'   => $managerId,
+                'owner_id'   => $ownerId,
                 'kasir_id'   => self::KASIR_ID,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
             $this->command->info(
                 '✅  Relasi owner_kasir dibuat ' .
-                '(owner_id=' . $managerId . ', kasir_id=' . self::KASIR_ID . ').'
+                '(owner_id=' . $ownerId . ', kasir_id=' . self::KASIR_ID . ').'
             );
         }
 
         $this->command->newLine();
         $this->command->line('┌──────────────────────────────────────────┐');
-        $this->command->line('│  Kredensial akun manager                 │');
+        $this->command->line('│  Kredensial akun owner                   │');
         $this->command->line('│  Username : ' . str_pad(self::USERNAME, 29) . '│');
         $this->command->line('│  Password : ' . str_pad(self::PASSWORD, 29) . '│');
         $this->command->line('│  Role     : ' . str_pad(self::ROLE, 29) . '│');

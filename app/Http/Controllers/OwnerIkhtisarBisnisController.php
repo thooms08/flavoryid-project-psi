@@ -17,16 +17,16 @@ use App\Models\OwnerKasir;
  *     di halaman kasir yang terhubung dengan owner ini.
  *
  * Fungsi lain (index, export, getChartData) didelegasikan langsung ke
- * KasirLaporanBisnisController agar tidak ada duplikasi logika bisnis.
+ * KasirIkhtisarBisnisController agar tidak ada duplikasi logika bisnis.
  * ──────────────────────────────────────────────────────────────────────────
  */
 class OwnerIkhtisarBisnisController extends Controller
 {
-    // ── Delegasi ke KasirLaporanBisnisController ─────────────────────────
+    // ── Delegasi ke KasirIkhtisarBisnisController ─────────────────────────
 
     /**
      * Tampilkan halaman Ikhtisar Bisnis untuk owner.
-     * Data diambil dari KasirLaporanBisnisController, lalu dirender
+     * Data diambil dari KasirIkhtisarBisnisController, lalu dirender
      * dengan view khusus owner (owner.laporan-bisnis) yang memiliki
      * tombol toggle visibilitas kasir.
      */
@@ -34,13 +34,13 @@ class OwnerIkhtisarBisnisController extends Controller
     {
         $owner = Auth::user();
 
-        // Set user request ke kasir agar KasirLaporanBisnisController
+        // Set user request ke kasir agar KasirIkhtisarBisnisController
         // dapat menemukan partner dan memproses data dengan benar.
         $this->impersonateKasir($request);
 
         $kasirUser = $request->user(); // sudah di-set ke kasir oleh impersonateKasir()
 
-        $response = app(KasirLaporanBisnisController::class)->index($request);
+        $response = app(KasirIkhtisarBisnisController::class)->index($request);
         $viewData = $response->getData();
 
         // Ambil status toggle dari partner kasir
@@ -58,7 +58,7 @@ class OwnerIkhtisarBisnisController extends Controller
     public function getChartData(Request $request)
     {
         $this->impersonateKasir($request);
-        return app(KasirLaporanBisnisController::class)->getChartData($request);
+        return app(KasirIkhtisarBisnisController::class)->getChartData($request);
     }
 
     /**
@@ -67,7 +67,7 @@ class OwnerIkhtisarBisnisController extends Controller
     public function export(Request $request)
     {
         $this->impersonateKasir($request);
-        return app(KasirLaporanBisnisController::class)->export($request);
+        return app(KasirIkhtisarBisnisController::class)->export($request);
     }
 
     // ── Helper: set user request ke kasir yang terhubung ─────────────────

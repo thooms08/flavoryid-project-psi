@@ -14,8 +14,8 @@ class OwnerController extends Controller
     // ─── Halaman login owner ──────────────────────────────────────────────────
     public function showLogin()
     {
-        // Sudah login sebagai owner atau manager → langsung ke dashboard
-        if (Auth::check() && in_array(Auth::user()->role, ['owner', 'manager'])) {
+        // Sudah login sebagai owner → langsung ke dashboard
+        if (Auth::check() && Auth::user()->role === 'owner') {
             return redirect()->route('owner.dashboard');
         }
 
@@ -35,14 +35,14 @@ class OwnerController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Cari user berdasarkan username dengan role owner atau manager
+        // Cari user berdasarkan username dengan role owner
         $user = User::where('username', $request->input('username'))
-            ->whereIn('role', ['owner', 'manager'])
+            ->where('role', 'owner')
             ->first();
 
         if (!$user) {
             return back()->withErrors([
-                'username' => 'Username tidak ditemukan atau bukan akun Owner/Manager.',
+                'username' => 'Username tidak ditemukan atau bukan akun Owner.',
             ])->withInput();
         }
 
@@ -52,7 +52,7 @@ class OwnerController extends Controller
             ])->withInput();
         }
 
-        // Cek verifikasi partner (jika owner/manager punya partner)
+        // Cek verifikasi partner (jika owner punya partner)
         $partner = Partner::where('user_id', $user->id)->first();
         if ($partner) {
             $isVerified = $partner->verifikasi?->konfirmasi ?? false;

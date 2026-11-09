@@ -83,7 +83,7 @@
             <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50 flex items-start gap-3">
                 <i class="bi bi-info-circle-fill text-slate-400 mt-0.5 flex-shrink-0"></i>
                 <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                    Halaman ini khusus untuk akun dengan role <strong class="text-slate-700">Owner</strong> atau <strong class="text-slate-700">Manager</strong>.
+                    Halaman ini khusus untuk akun dengan role <strong class="text-slate-700">Owner</strong>.
                     Jika Anda kasir, gunakan <a href="{{ route('login') }}" class="text-orange-600 font-bold hover:underline">halaman login kasir</a>.
                 </p>
             </div>

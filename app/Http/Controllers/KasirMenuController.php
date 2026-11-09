@@ -28,7 +28,7 @@ class KasirMenuController extends Controller {
         $paket = $partner->outlet->mediaQr->paket ?? 'gratis';
         $limit = 500;
 
-        return view('kasir.gallery-menu', compact('menus', 'limit', 'paket'));
+        return view('kasir.kelola-menu', compact('menus', 'limit', 'paket'));
     }
 
     public function store(Request $request) {

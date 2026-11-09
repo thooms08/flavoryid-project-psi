@@ -1199,7 +1199,7 @@
             formData.append('menus[0][nama_menu]', nama);
             formData.append('menus[0][harga]', harga);
 
-            const res = await fetch('/kasir/gallery-menu/store', {
+            const res = await fetch('/kasir/kelola-menu/store', {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 body: formData

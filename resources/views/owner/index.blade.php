@@ -69,6 +69,33 @@
             align-items: center;
             gap: 12px;
         }
+        
+        /* ─── User Dropdown ──────────────────────────────────────────── */
+        .user-dropdown {
+            position: relative;
+        }
+        
+        .user-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 12px 6px 6px;
+            border-radius: 50px;
+            border: 1.5px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .user-dropdown-trigger:hover {
+            background: rgba(255, 106, 0, 0.05);
+            border-color: rgba(255, 106, 0, 0.15);
+        }
+        
+        .user-dropdown.open .user-dropdown-trigger {
+            background: rgba(255, 106, 0, 0.08);
+            border-color: rgba(255, 106, 0, 0.2);
+        }
+        
         .topbar-user {
             display: flex;
             align-items: center;
@@ -102,25 +129,101 @@
             font-weight: 600;
             color: var(--muted);
         }
-        .btn-logout {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #ef4444;
-            background: #fef2f2;
-            border: 1px solid #fee2e2;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.2s, transform 0.15s;
+        
+        .dropdown-arrow {
+            font-size: 0.7rem;
+            color: var(--muted);
+            transition: transform 0.2s ease;
         }
-        .btn-logout:hover {
-            background: #fee2e2;
-            transform: translateY(-1px);
+        
+        .user-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* Dropdown Menu */
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--border);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .user-dropdown.open .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-menu-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(255, 106, 0, 0.03), rgba(255, 154, 0, 0.02));
+        }
+        
+        .dropdown-menu-header .name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        
+        .dropdown-menu-header .role {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        
+        .dropdown-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .dropdown-menu-item:hover {
+            background: rgba(255, 106, 0, 0.05);
+            color: var(--orange);
+        }
+        
+        .dropdown-menu-item i {
+            font-size: 1.05rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .dropdown-menu-item.logout-item {
+            color: #ef4444;
+            border-top: 1px solid var(--border);
+        }
+        
+        .dropdown-menu-item.logout-item:hover {
+            background: #fef2f2;
             color: #dc2626;
+        }
+        
+        /* Hide old logout button */
+        .btn-logout {
+            display: none;
         }
 
         /* ─── Hero / welcome banner ──────────────────────────────────── */
@@ -437,25 +540,48 @@
     </a>
 
     <div class="topbar-right">
-        <div class="topbar-user">
-            <div class="topbar-avatar">
-                {{ strtoupper(substr(Auth::user()->username ?? 'O', 0, 1)) }}
+        <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-trigger">
+                <div class="topbar-user">
+                    <div class="topbar-avatar">
+                        {{ strtoupper(substr(Auth::user()->username ?? 'O', 0, 1)) }}
+                    </div>
+                    <div class="topbar-user-info">
+                        <span class="name">{{ Auth::user()->username }}</span>
+                        <span class="role">Owner</span>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
             </div>
-            <div class="topbar-user-info">
-                <span class="name">{{ Auth::user()->username }}</span>
-                <span class="role">Owner / Manager</span>
+            
+            <div class="user-dropdown-menu">
+                <div class="dropdown-menu-header">
+                    <div class="name">{{ Auth::user()->username }}</div>
+                    <div class="role">Owner / Manager</div>
+                </div>
+                
+                <a href="{{ route('owner.langganan.index') }}" class="dropdown-menu-item">
+                    <i class="bi bi-patch-check-fill"></i>
+                    <span>Langganan</span>
+                </a>
+                
+                <a href="{{ route('owner.akun.index') }}" class="dropdown-menu-item">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Akun</span>
+                </a>
+                
+                <button type="button" class="dropdown-menu-item logout-item" id="btnLogout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Keluar</span>
+                </button>
             </div>
         </div>
-
-        <form action="{{ route('owner.logout') }}" method="POST" style="margin:0;">
-            @csrf
-            <button type="submit" class="btn-logout">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Keluar</span>
-            </button>
-        </form>
     </div>
 </header>
+
+<form id="logoutForm" action="{{ route('owner.logout') }}" method="POST" style="display:none;">
+    @csrf
+</form>
 
 {{-- ── Hero / Welcome Banner ───────────────────────────────────────────── --}}
 <section class="hero-banner">
@@ -465,7 +591,7 @@
         <p class="hero-greeting">Selamat Datang</p>
         <h1 class="hero-title">
             Halo, <span>{{ Auth::user()->username }}</span>! 👋<br>
-            Dashboard Owner & Manager
+            Dashboard Owner
         </h1>
         <p class="hero-sub">
             Pantau dan kelola semua aspek bisnis Anda dari satu tempat.
@@ -589,23 +715,73 @@
             </div>
         </a>
 
-        {{-- 7. Langganan --}}
-        <a href="{{ route('owner.langganan.index') }}" class="menu-card">
-            <div class="menu-card-icon icon-slate">
-                <i class="bi bi-patch-check-fill"></i>
-            </div>
-            <div class="menu-card-title">Langganan</div>
-            <div class="menu-card-desc">
-                Kelola status langganan Flavory.id. Cek tanggal jatuh tempo dan perpanjang paket Anda.
-            </div>
-            <div class="menu-card-arrow">
-                Kelola Langganan <i class="bi bi-arrow-right"></i>
-            </div>
-        </a>
-
-    </div>{{-- /menu-grid --}}
+    </div>
 
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // ============================================
+    // User Dropdown Toggle
+    // ============================================
+    const userDropdown = document.getElementById('userDropdown');
+    const dropdownTrigger = userDropdown.querySelector('.user-dropdown-trigger');
+    
+    dropdownTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('open');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!userDropdown.contains(e.target)) {
+            userDropdown.classList.remove('open');
+        }
+    });
+    
+    // ============================================
+    // SweetAlert Logout Confirmation
+    // ============================================
+    const btnLogout = document.getElementById('btnLogout');
+    const logoutForm = document.getElementById('logoutForm');
+    
+    btnLogout.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        Swal.fire({
+            title: 'Konfirmasi Logout',
+            text: 'Apakah Anda yakin ingin keluar dari akun?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ff6a00',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="bi bi-box-arrow-right me-2"></i>Ya, Keluar',
+            cancelButtonText: '<i class="bi bi-x-circle me-2"></i>Batal',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-4',
+                confirmButton: 'px-4 py-2 fw-bold',
+                cancelButton: 'px-4 py-2 fw-bold'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading
+                Swal.fire({
+                    title: 'Logging out...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Submit logout form
+                logoutForm.submit();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

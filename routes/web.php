@@ -5,7 +5,7 @@ use App\Http\Controllers\OwnerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{KasirMenuController, RegisterController, VerifikasiController, 
 KasirController, KasirOrderController, KasirOrderHistoryController, KasirOrderBatalController,
-KasirFormController, KasirStokController, KasirProfileController, KasirLaporanBisnisController,
+KasirFormController, KasirStokController, KasirProfileController, KasirIkhtisarBisnisController,
 KasirLaporanPengeluaranController, PageOutletController,
 KasirNoteController, KasirLanggananController, KasirAkunController, PublicController,
 KasirVoucherController};
@@ -75,7 +75,7 @@ Route::get('/login-owner',  [OwnerController::class, 'showLogin'])->name('owner.
 Route::post('/login-owner', [OwnerController::class, 'login'])->name('owner.login.post');
 Route::post('/logout-owner', [OwnerController::class, 'logout'])->name('owner.logout');
 
-Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.')->group(function () {
+Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/index', [OwnerController::class, 'index'])->name('dashboard');
 
     // Ikhtisar Bisnis (pakai controller kasir yang sudah ada)
@@ -128,6 +128,11 @@ Route::middleware(['auth', 'role:owner,manager'])->prefix('owner')->name('owner.
     Route::get('/ai/sessions',         [\App\Http\Controllers\OwnerAIController::class, 'listSessions'])->name('ai.sessions');
     Route::get('/ai/session/{uuid}',   [\App\Http\Controllers\OwnerAIController::class, 'loadSession'])->name('ai.session.load');
     Route::delete('/ai/session/{uuid}',[\App\Http\Controllers\OwnerAIController::class, 'deleteSession'])->name('ai.session.delete');
+
+    // Pengaturan Akun Owner
+    Route::get('/akun',                [\App\Http\Controllers\OwnerAkunController::class, 'index'])->name('akun.index');
+    Route::put('/akun/update',         [\App\Http\Controllers\OwnerAkunController::class, 'update'])->name('akun.update');
+    Route::post('/akun/check-username',[\App\Http\Controllers\OwnerAkunController::class, 'checkUsername'])->name('akun.check-username');
 });
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -156,8 +161,8 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     })->name('private.pengeluaran');
     
     Route::get('/kasir/index', [KasirController::class, 'index'])->name('kasir.dashboard');
-    Route::get('/kasir/gallery-menu', [KasirMenuController::class, 'index'])->name('kasir.menu.index');
-    Route::post('/kasir/gallery-menu/store', [KasirMenuController::class, 'store'])->name('kasir.menu.store');
+    Route::get('/kasir/kelola-menu', [KasirMenuController::class, 'index'])->name('kasir.menu.index');
+    Route::post('/kasir/kelola-menu/store', [KasirMenuController::class, 'store'])->name('kasir.menu.store');
     Route::get('/kasir/menu/search', [KasirMenuController::class, 'search'])->name('kasir.menu.search');
     Route::put('/kasir/menu/{id}', [KasirMenuController::class, 'update'])->name('kasir.menu.update');
     Route::delete('/kasir/menu/{id}', [KasirMenuController::class, 'destroy'])->name('kasir.menu.destroy');
@@ -191,9 +196,9 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::post('/kasir/order-batal/{order}/restore', [KasirOrderBatalController::class, 'restore'])->name('kasir.order-batal.restore');
     Route::get('/kasir/profile-outlet', [KasirProfileController::class, 'edit'])->name('kasir.profile-outlet.edit');
     Route::post('/kasir/profile-outlet', [KasirProfileController::class, 'update'])->name('kasir.profile-outlet.update');
-    Route::get('/kasir/laporan-bisnis', [KasirLaporanBisnisController::class, 'index'])->name('kasir.laporan.index');
-    Route::get('/kasir/laporan-bisnis/export', [KasirLaporanBisnisController::class, 'export'])->name('kasir.laporan.export');
-     Route::get('/kasir/laporan-bisnis/chart', [KasirLaporanBisnisController::class, 'getChartData'])->name('kasir.laporan-bisnis.chart');
+    Route::get('/kasir/ikhtisar-bisnis', [KasirIkhtisarBisnisController::class, 'index'])->name('kasir.ikhtisar.index');
+    Route::get('/kasir/ikhtisar-bisnis/export', [KasirIkhtisarBisnisController::class, 'export'])->name('kasir.ikhtisar.export');
+    Route::get('/kasir/ikhtisar-bisnis/chart', [KasirIkhtisarBisnisController::class, 'getChartData'])->name('kasir.ikhtisar.chart');
     Route::get('/kasir/pengeluaran', [KasirLaporanPengeluaranController::class, 'index'])->name('kasir.pengeluaran.index');
     Route::post('/kasir/pengeluaran', [KasirLaporanPengeluaranController::class, 'store'])->name('kasir.pengeluaran.store');
     Route::patch('/kasir/pengeluaran/{id}/restore', [KasirLaporanPengeluaranController::class, 'restore'])->name('kasir.pengeluaran.restore');

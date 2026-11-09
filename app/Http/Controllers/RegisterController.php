@@ -37,14 +37,23 @@ class RegisterController extends Controller {
         try {
             DB::beginTransaction();
 
-            $user = User::create([
+            // 1. Buat akun kasir (user pertama untuk outlet)
+            $userKasir = User::create([
                 'username' => $request->username,
                 'password' => Hash::make($request->password),
                 'role' => 'kasir',
             ]);
 
+            // 2. Buat akun owner dengan username dan password yang sama
+            $userOwner = User::create([
+                'username' => $request->username,
+                'password' => Hash::make($request->password),
+                'role' => 'owner',
+            ]);
+
+            // 3. Buat data partner (terkait dengan user kasir)
             $partner = Partner::create([
-                'user_id' => $user->id,
+                'user_id' => $userKasir->id,
                 'uuid' => (string) Str::uuid(),
                 'nama_manager' => $request->nama_manager,
                 'no_wa' => $request->no_wa,
@@ -97,10 +106,18 @@ class RegisterController extends Controller {
                 'payment_status' => $amount == 0 ? 'success' : 'pending',
             ]);
 
+            // 4. Buat relasi owner_kasir (hubungkan owner dengan kasir)
+            DB::table('owner_kasir')->insert([
+                'owner_id' => $userOwner->id,
+                'kasir_id' => $userKasir->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             DB::commit();
 
-            // Sinkronisasi akun ke key.flavory.id agar manager bisa login di sana
-            $this->syncToKeyFlavory($request->username, $user->password, $partner);
+            // Sinkronisasi akun ke key.flavory.id agar owner bisa login di sana
+            $this->syncToKeyFlavory($request->username, $userKasir->password, $partner);
 
             // Jika Gratis, langsung ke verifikasi tanpa email
             if ($amount == 0) {

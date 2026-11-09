@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>FlavoryAI Consultant | Flavory.id</title>
+    <title>FlavoryAI | Flavory.id</title>
     @include('layouts.favicon')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
@@ -1576,7 +1576,7 @@
                         <i class="bi bi-layout-sidebar"></i>
                     </button>
                     <span class="ai-topbar-title" id="topbarTitle">
-                        {{ $activeSession ? $activeSession->title : 'FlavoryAI Consultant' }}
+                        {{ $activeSession ? $activeSession->title : 'FlavoryAI' }}
                     </span>
                 </div>
                 <div class="ai-topbar-right">
@@ -1603,7 +1603,7 @@
                                     Halo, Bos <span class="ai-gradient-text">{{ $ownerName }}</span>!
                                 </h1>
                                 <p class="ai-welcome-sub">
-                                    Saya <strong>FlavoryAI Consultant</strong> | siap bantu analisis bisnis outlet Anda
+                                    Saya <strong>FlavoryAI</strong> | siap bantu analisis bisnis outlet Anda
                                     secara real-time.
                                     Tanya apa saja, dari menu terlaris hingga strategi promosi!
                                 </p>
@@ -2362,7 +2362,7 @@
             loadToken++; // batalkan load sesi yang masih berjalan
             currentSessionUuid = null;
             chatInner.innerHTML = '';
-            topbarTitle.textContent = 'FlavoryAI Consultant';
+            topbarTitle.textContent = 'FlavoryAI';
             history.replaceState({}, '', window.location.pathname); // buang ?session=
             chatInner.appendChild(createWelcomeScreenEl());
             hydrateFaces(chatInner);
@@ -2387,7 +2387,7 @@
                 Halo, Bos <span class="ai-gradient-text">${escHtml(OWNER_NAME || '')}</span>!
             </h1>
             <p class="ai-welcome-sub">
-                Saya <strong>FlavoryAI Consultant</strong> — siap bantu analisis bisnis outlet Anda secara real-time.
+                Saya <strong>FlavoryAI</strong> — siap bantu analisis bisnis outlet Anda secara real-time.
                 Tanya apa saja, dari menu terlaris hingga strategi promosi!
             </p>
         </div>

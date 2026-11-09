@@ -393,7 +393,7 @@
                         <li><hr class="dropdown-divider"></li>
                         @if(!isset($partner) || ($partner->show_ikhtisar_bisnis ?? true))
                         <li>
-                            <a class="dropdown-item" href="{{ route('kasir.laporan.index') }}">
+                            <a class="dropdown-item" href="{{ route('kasir.ikhtisar.index') }}">
                                 <span><i class="bi bi-bar-chart-line me-2"></i>Ikhtisar Bisnis</span>
                             </a>
                         </li>
