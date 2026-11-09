@@ -207,7 +207,6 @@
 
         {{-- AI Consultant --}}
         <a href="{{ route('owner.ai') }}" class="menu-card menu-card-ai" id="aiCard">
-            <div class="ai-status"><i></i> AKTIF</div>
             <div class="ai-stage">
                 <div class="ai-robot">
                     <span class="fa-face" data-global data-fa-hydrate data-exp="smile"></span>
