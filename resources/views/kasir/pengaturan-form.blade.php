@@ -64,7 +64,7 @@
         margin-bottom: 5px;
         display: block;
     }
-    /* Input group nominal + jenis (persis seperti diskon di order.blade.php) */
+    
     .input-group-custom .form-control-custom {
         border-radius: 12px;
     }
