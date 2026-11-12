@@ -17,13 +17,13 @@ class ComprehensivePartnerSeeder extends Seeder
     const KASIR_PASSWORD = 'password123';
     const OWNER_USERNAME = 'owner-flavory';
     const OWNER_PASSWORD = 'password123';
-    
+
     const TOTAL_MENU = 50;
     const TOTAL_SUCCESS_ORDERS = 1000;
     const TOTAL_FAILED_ORDERS = 200;
     const TOTAL_PENGELUARAN = 400;
     const TOTAL_MODAL = 10;
-    
+
     // Periode data: Juli 2026 - Oktober 2026
     const START_DATE = '2026-07-01';
     const END_DATE = '2026-10-31';
@@ -32,21 +32,24 @@ class ComprehensivePartnerSeeder extends Seeder
     {
         // ── 1. Hapus data lama jika ada ─────────────────────
         $this->command->info('Menghapus data lama...');
-        
+
         // Hapus dalam urutan yang benar untuk menghindari constraint violation
         DB::table('order_details')->delete();
         DB::table('orders')->delete();
+        DB::table('variant_level')->delete();
         DB::table('menus')->delete();
+        DB::table('bukti_pengeluarans')->delete();
+        DB::table('pengeluarans')->delete();
         DB::table('stok_harian')->delete();
         DB::table('stok_barang')->delete();
-        DB::table('pengeluaran')->delete();
         DB::table('modal')->delete();
         DB::table('verifikasi')->delete();
         DB::table('media_qr')->delete();
         DB::table('informasi_outlet')->delete();
+        DB::table('owner_kasir')->delete();
         DB::table('partners')->delete();
         DB::table('users')->whereIn('username', [self::KASIR_USERNAME, self::OWNER_USERNAME])->delete();
-        
+
         $this->command->info('✅ Data lama berhasil dihapus');
 
         // ── 2. Buat User Kasir ──────────────────────────────
@@ -106,8 +109,8 @@ class ComprehensivePartnerSeeder extends Seeder
         // ── 7. Media QR (status aktif) ──────────────────────
         DB::table('media_qr')->insert([
             'informasi_id'   => $outletId,
-            'qr_code_design' => 'modern',
-            'paket'          => 'premium',
+            'qr_code_design' => 'original',
+            'paket'          => 'eksklusif',
             'status'         => 'aktif',
             'payment_status' => 'success',
             'created_at'     => now(),
@@ -241,10 +244,11 @@ class ComprehensivePartnerSeeder extends Seeder
         foreach ($menuCategories as $kategori => $items) {
             foreach ($items as [$nama, $harga]) {
                 if ($counter >= self::TOTAL_MENU) break;
-                
+
                 $deskripsi = "Menu $kategori berkualitas dengan cita rasa premium";
-                $tipeMenu = $counter < 10 ? 'best_seller' : ($counter < 30 ? 'utama' : 'spesial');
-                
+                // ENUM: hanya 'best_seller' atau 'utama'
+                $tipeMenu = $counter < 10 ? 'best_seller' : 'utama';
+
                 $menuIds[] = DB::table('menus')->insertGetId([
                     'partner_id'  => $partnerId,
                     'nama_menu'   => $nama,
@@ -258,7 +262,7 @@ class ComprehensivePartnerSeeder extends Seeder
                     'created_at'  => now(),
                     'updated_at'  => now(),
                 ]);
-                
+
                 $counter++;
             }
             if ($counter >= self::TOTAL_MENU) break;
@@ -275,83 +279,84 @@ class ComprehensivePartnerSeeder extends Seeder
     {
         $startDate = Carbon::parse(self::START_DATE);
         $endDate = Carbon::parse(self::END_DATE);
-        $totalDays = $endDate->diffInDays($startDate);
-        
+        $totalDays = (int) $startDate->diffInDays($endDate);
+
         $customerNames = ['Andi', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fajar', 'Gita', 'Hendra', 'Indah', 'Joko'];
         $paymentMethods = ['cash', 'qris', 'transfer'];
         $tables = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'Meja 1', 'Meja 2', 'Take Away'];
-        
+
         $totalOrders = self::TOTAL_SUCCESS_ORDERS + self::TOTAL_FAILED_ORDERS;
         $menuCount = count($menuIds);
-        
+
         $orderChunks = [];
         $detailChunks = [];
         $orderCounter = 1;
-        
+
         for ($i = 0; $i < $totalOrders; $i++) {
             // Generate random date within July-October 2026
             $randomDay = random_int(0, $totalDays);
             $orderDate = $startDate->copy()->addDays($randomDay);
-            
+
             // Random time between 08:00 and 22:00
             $randomHour = random_int(8, 21);
             $randomMinute = random_int(0, 59);
             $createdAt = $orderDate->copy()->setTime($randomHour, $randomMinute);
             $updatedAt = $createdAt->copy()->addMinutes(random_int(1, 15));
-            
-            // Determine if this is a failed order (200 pertama adalah failed)
+
+            // 200 pertama adalah failed, sisanya success
+            // ENUM status: 'pending', 'success', 'fail'
             $isFailed = $i < self::TOTAL_FAILED_ORDERS;
-            $status = $isFailed ? 'failed' : 'success';
-            
+            $status = $isFailed ? 'fail' : 'success';
+
             // 1-4 items per order
             $itemCount = random_int(1, min(4, $menuCount));
             $selectedMenus = [];
             $subtotal = 0;
-            
+
             // Randomly select menus
             for ($j = 0; $j < $itemCount; $j++) {
                 $menuId = $menuIds[array_rand($menuIds)];
                 $quantity = random_int(1, 3);
                 $price = $this->getRandomMenuPrice();
-                
+
                 $selectedMenus[] = [
                     'menu_id' => $menuId,
                     'qty' => $quantity,
                     'harga' => $price,
                 ];
-                
+
                 $subtotal += $quantity * $price;
             }
-            
-            // Apply discount (20% chance)
+
+            // Apply discount (20% chance, hanya untuk success)
             $discount = 0;
             $discountType = 'Rp';
             if (random_int(1, 5) === 1 && !$isFailed) {
                 $discountType = random_int(0, 1) ? '%' : 'Rp';
-                $discount = $discountType === '%' 
-                    ? random_int(5, 15) 
+                $discount = $discountType === '%'
+                    ? random_int(5, 15)
                     : round(random_int(2000, 8000) / 1000) * 1000;
             }
-            
+
             // Calculate total
             if ($discountType === '%') {
                 $total = $subtotal - ($subtotal * $discount / 100);
             } else {
                 $total = max(0, $subtotal - $discount);
             }
-            
+
             $paymentMethod = $paymentMethods[array_rand($paymentMethods)];
-            
+
             // For failed orders, set appropriate values
             if ($isFailed) {
                 $total = 0;
                 $discount = 0;
                 $paymentMethod = 'cash';
             }
-            
+
             $uuid = (string) Str::uuid();
             $receiptCode = strtoupper(Str::random(6));
-            
+
             $orderChunks[] = [
                 'partner_id'    => $partnerId,
                 'uuid'          => $uuid,
@@ -371,14 +376,14 @@ class ComprehensivePartnerSeeder extends Seeder
                 'created_at'    => $createdAt,
                 'updated_at'    => $updatedAt,
             ];
-            
+
             // Store details for later insertion
             $detailChunks[$uuid] = [
                 'menus' => $selectedMenus,
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt,
             ];
-            
+
             // Insert in chunks of 100
             if (count($orderChunks) >= 100) {
                 $this->insertOrderChunk($orderChunks, $detailChunks);
@@ -386,33 +391,33 @@ class ComprehensivePartnerSeeder extends Seeder
                 $detailChunks = [];
             }
         }
-        
+
         // Insert remaining orders
         if (!empty($orderChunks)) {
             $this->insertOrderChunk($orderChunks, $detailChunks);
         }
-        
+
         $this->command->info('✅ ' . self::TOTAL_SUCCESS_ORDERS . ' transaksi berhasil dan ' . self::TOTAL_FAILED_ORDERS . ' transaksi gagal berhasil dibuat');
     }
-    
+
     private function insertOrderChunk(array $orderChunks, array $detailChunks): void
     {
         // Insert orders
         DB::table('orders')->insert($orderChunks);
-        
+
         // Get inserted order IDs
         $uuids = array_column($orderChunks, 'uuid');
         $insertedOrders = DB::table('orders')
             ->whereIn('uuid', $uuids)
             ->pluck('id', 'uuid')
             ->toArray();
-        
+
         // Prepare order details
         $detailsToInsert = [];
         foreach ($detailChunks as $uuid => $detailData) {
             $orderId = $insertedOrders[$uuid] ?? null;
             if (!$orderId) continue;
-            
+
             foreach ($detailData['menus'] as $menu) {
                 $detailsToInsert[] = [
                     'order_id'   => $orderId,
@@ -425,13 +430,13 @@ class ComprehensivePartnerSeeder extends Seeder
                 ];
             }
         }
-        
+
         // Insert order details
         if (!empty($detailsToInsert)) {
             DB::table('order_details')->insert($detailsToInsert);
         }
     }
-    
+
     private function getRandomMenuPrice(): int
     {
         $prices = [5000, 8000, 10000, 15000, 18000, 20000, 22000, 25000, 28000, 30000, 35000, 40000];
@@ -445,80 +450,68 @@ class ComprehensivePartnerSeeder extends Seeder
     {
         $startDate = Carbon::parse(self::START_DATE);
         $endDate = Carbon::parse(self::END_DATE);
-        $totalDays = $endDate->diffInDays($startDate);
-        
+        $totalDays = (int) $startDate->diffInDays($endDate);
+
         $expenseCategories = [
-            'Bahan Baku' => [
+            'operasional usaha' => [
                 'items' => ['Kopi Arabika', 'Kopi Robusta', 'Susu Segar', 'Gula Pasir', 'Es Batu', 'Buah Segar', 'Sayuran', 'Daging Ayam', 'Ikan', 'Telur'],
                 'price_range' => [50000, 500000],
             ],
-            'Operasional' => [
-                'items' => ['Listrik', 'Air', 'Gas', 'Internet', 'Telepon', 'Kebersihan', 'Keamanan', 'Parkir'],
-                'price_range' => [100000, 1000000],
-            ],
-            'Gaji Karyawan' => [
+            'operasional karyawan' => [
                 'items' => ['Gaji Kasir', 'Gaji Barista', 'Gaji Waiters', 'Gaji Cleaning Service'],
                 'price_range' => [1500000, 5000000],
             ],
-            'Perlengkapan' => [
-                'items' => ['Gelas', 'Piring', 'Sendok', 'Garpu', 'Serbet', 'Sapu', 'Kemoceng', 'Ember', 'Kain Pel'],
-                'price_range' => [50000, 300000],
-            ],
-            'Pemeliharaan' => [
-                'items' => ['Servis Mesin Kopi', 'Perbaikan AC', 'Renovasi Meja', 'Cat Ulang', 'Perbaikan Listrik'],
-                'price_range' => [200000, 2000000],
-            ],
-            'Marketing' => [
-                'items' => ['Iklan Social Media', 'Flyer', 'Spanduk', 'Promo Diskon', 'Event Partner'],
-                'price_range' => [50000, 500000],
+            'lainnya' => [
+                'items' => ['Listrik', 'Air', 'Gas', 'Internet', 'Telepon', 'Kebersihan', 'Keamanan', 'Parkir', 'Servis Mesin Kopi', 'Perbaikan AC', 'Iklan Social Media', 'Flyer', 'Spanduk'],
+                'price_range' => [50000, 2000000],
             ],
         ];
-        
+
         $expensesToInsert = [];
-        
+
         for ($i = 0; $i < self::TOTAL_PENGELUARAN; $i++) {
             // Random date within period
             $randomDay = random_int(0, $totalDays);
             $expenseDate = $startDate->copy()->addDays($randomDay);
-            
+
             // Random category
             $category = array_rand($expenseCategories);
             $categoryData = $expenseCategories[$category];
-            
+
             // Random item from category
             $item = $categoryData['items'][array_rand($categoryData['items'])];
-            
+
             // Random quantity and price
             $quantity = random_int(1, 10);
             $price = random_int($categoryData['price_range'][0], $categoryData['price_range'][1]);
             $total = $price * $quantity;
-            
-            // Status (mostly success, some pending)
-            $status = random_int(1, 10) <= 8 ? 'success' : 'pending';
-            
+
+            // ENUM status: 'save' atau 'delete' (mayoritas save)
+            $status = random_int(1, 10) <= 8 ? 'save' : 'delete';
+
             $expensesToInsert[] = [
                 'partner_id' => $partnerId,
                 'kategori'   => $category,
-                'keterangan' => "Pengeluaran untuk $item",
-                'item'       => $item,
-                'harga'      => $price,
-                'qty'        => $quantity,
-                'total'      => $total,
-                'status'     => $status,
-                'created_at' => $expenseDate,
-                'updated_at' => $expenseDate,
+                'keterangan'  => "Pengeluaran untuk $item",
+                'item'        => $item,
+                'harga'       => $price,
+                'qty'         => $quantity,
+                'total'       => $total,
+                'status'      => $status,
+                'created_at'  => $expenseDate,
+                'updated_at'  => $expenseDate,
             ];
-            
+
             // Insert in chunks of 100
             if (count($expensesToInsert) >= 100) {
-                DB::table('pengeluaran')->insert($expensesToInsert);
+                DB::table('pengeluarans')->insert($expensesToInsert);
                 $expensesToInsert = [];
             }
         }
-        
+
         // Insert remaining
         if (!empty($expensesToInsert)) {
-            DB::table('pengeluaran')->insert($expensesToInsert);
+            DB::table('pengeluarans')->insert($expensesToInsert);
         }
     }
 
@@ -529,8 +522,8 @@ class ComprehensivePartnerSeeder extends Seeder
     {
         $startDate = Carbon::parse('2026-07-01');
         $endDate = Carbon::parse('2026-08-31');
-        $totalDays = $endDate->diffInDays($startDate);
-        
+        $totalDays = (int) $startDate->diffInDays($endDate);
+
         $modalTypes = [
             ['Investasi Awal', 50000000],
             ['Tambahan Modal', 25000000],
@@ -538,32 +531,32 @@ class ComprehensivePartnerSeeder extends Seeder
             ['Investor', 100000000],
             ['Tabungan Pribadi', 30000000],
         ];
-        
+
         $modalToInsert = [];
-        
+
         for ($i = 0; $i < self::TOTAL_MODAL; $i++) {
             // Random date between July-August 2026
             $randomDay = random_int(0, $totalDays);
             $modalDate = $startDate->copy()->addDays($randomDay);
-            
+
             // Random modal type
             $modalType = $modalTypes[array_rand($modalTypes)];
-            
+
             // Random nominal (variation from base)
             $baseAmount = $modalType[1];
             $variation = random_int(-20, 20) * 1000000; // ±20 juta
             $nominal = max(10000000, $baseAmount + $variation); // Minimum 10 juta
-            
+
             $modalToInsert[] = [
                 'partner_id' => $partnerId,
-                'nominal'    => $nominal,
-                'keterangan' => $modalType[0],
-                'status'     => 'success',
-                'created_at' => $modalDate,
-                'updated_at' => $modalDate,
+                'nominal'     => $nominal,
+                'keterangan'  => $modalType[0],
+                'status'      => 'save', // ENUM: 'save' atau 'delete'
+                'created_at'  => $modalDate,
+                'updated_at'  => $modalDate,
             ];
         }
-        
+
         DB::table('modal')->insert($modalToInsert);
     }
 
@@ -584,9 +577,9 @@ class ComprehensivePartnerSeeder extends Seeder
             ['Kertas Receipt', 'roll', 2, 10, 1, 2, 0, 1],
             ['Kemasan Makanan', 'pcs', 50, 200, 25, 50, 0, 25],
         ];
-        
+
         $stokBarangIds = [];
-        
+
         // Insert stok barang
         foreach ($items as $item) {
             $stokBarangId = DB::table('stok_barang')->insertGetId([
@@ -602,30 +595,30 @@ class ComprehensivePartnerSeeder extends Seeder
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);
-            
+
             $stokBarangIds[] = $stokBarangId;
         }
-        
+
         // Seed stok harian untuk 4 bulan
         $this->seedStokHarian($partnerId, $stokBarangIds);
     }
-    
+
     private function seedStokHarian(int $partnerId, array $stokBarangIds): void
     {
         $startDate = Carbon::parse(self::START_DATE);
         $endDate = Carbon::parse(self::END_DATE);
-        $totalDays = $endDate->diffInDays($startDate);
-        
+        $totalDays = (int) $startDate->diffInDays($endDate);
+
         $stokHarianToInsert = [];
-        
+
         // Create stock data for each item every 3 days
         foreach ($stokBarangIds as $itemId) {
             for ($day = 0; $day <= $totalDays; $day += 3) {
                 $stockDate = $startDate->copy()->addDays($day);
-                
+
                 // Random stock amount between 10-100
                 $stockAmount = random_int(10, 100);
-                
+
                 $stokHarianToInsert[] = [
                     'stok_barang_id' => $itemId,
                     'tanggal'        => $stockDate->format('Y-m-d'),
@@ -633,7 +626,7 @@ class ComprehensivePartnerSeeder extends Seeder
                     'created_at'     => $stockDate,
                     'updated_at'     => $stockDate,
                 ];
-                
+
                 // Insert in chunks of 100
                 if (count($stokHarianToInsert) >= 100) {
                     DB::table('stok_harian')->insert($stokHarianToInsert);
@@ -641,7 +634,7 @@ class ComprehensivePartnerSeeder extends Seeder
                 }
             }
         }
-        
+
         // Insert remaining
         if (!empty($stokHarianToInsert)) {
             DB::table('stok_harian')->insert($stokHarianToInsert);
