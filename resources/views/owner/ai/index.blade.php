@@ -2072,7 +2072,7 @@
                             history.replaceState({
                                     sessionUuid: currentSessionUuid
                                 }, '',
-                                `${window.location.pathname}?session=${currentSessionUuid}`);
+                                `{{ route('owner.ai') }}/${currentSessionUuid}`);
                             // Defer refresh agar tidak ganggu loop render
                             setTimeout(refreshSidebarSessions, 0);
                             if (parsed.delta === undefined && !parsed.error) continue; // packet hanya berisi uuid
@@ -2181,7 +2181,7 @@
                 history.replaceState({
                         sessionUuid: data.uuid
                     }, '',
-                    `${window.location.pathname}?session=${data.uuid}`);
+                    `{{ route('owner.ai') }}/${data.uuid}`);
 
                 // role dari DB bisa 'user' atau 'assistant' → selain 'user' dianggap AI
                 (data.messages || []).forEach(m => {
@@ -2335,7 +2335,7 @@
             currentSessionUuid = null;
             chatInner.innerHTML = '';
             topbarTitle.textContent = 'FlavoryAI';
-            history.replaceState({}, '', window.location.pathname); // buang ?session=
+            history.replaceState({}, '', '{{ route('owner.ai') }}'); // buang session dari URL
             chatInner.appendChild(createWelcomeScreenEl());
             hydrateFaces(chatInner);
             document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active'));

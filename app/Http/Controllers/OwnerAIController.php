@@ -33,7 +33,7 @@ class OwnerAIController extends Controller
     }
 
     // ─── Halaman utama AI ─────────────────────────────────────────────────────
-    public function index(Request $request)
+    public function index(Request $request, ?string $session = null)
     {
         $partner  = $this->getKasirPartner();
         $sessions = $partner
@@ -43,7 +43,11 @@ class OwnerAIController extends Controller
             : collect();
 
         $activeSession = null;
-        if ($request->has('session')) {
+        if ($session) {
+            // Dari route parameter: /owner/ai/{session}
+            $activeSession = $sessions->firstWhere('uuid', $session);
+        } elseif ($request->has('session')) {
+            // Fallback: Dari query parameter (backward compatibility)
             $activeSession = $sessions->firstWhere('uuid', $request->query('session'));
         }
 

@@ -403,32 +403,6 @@
                                 <span><i class="bi bi-graph-down-arrow me-2"></i>Pengeluaran</span>
                             </a>
                         </li>
-                        <!--<li>
-                            <a class="dropdown-item" href="{{ route('kasir.performa') }}">
-                                <span><i class="bi bi-graph-up me-2"></i>Performa Bisnis</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item dropdown-item-mineai {{ request()->routeIs('kasir.mineai') ? 'active-dropdown' : '' }}" href="{{ route('kasir.mineai') }}">
-                                <span class="d-flex align-items-center gap-2">
-                                    <svg class="mineai-svg-logo" width="18" height="18" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <defs>
-                                            <linearGradient id="mineai_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                <stop offset="0%" style="stop-color:#ff6a00;" />
-                                                <stop offset="100%" style="stop-color:#ee0979;" />
-                                            </linearGradient>
-                                        </defs>
-                                        <path d="M 20,85 L 20,25 L 60,65 L 100,25 L 100,85"
-                                              stroke="url(#mineai_gradient)"
-                                              stroke-width="26"
-                                              stroke-linecap="round"
-                                              stroke-linejoin="round" />
-                                    </svg>
-                                    <span>MineAI <span style="color:#6c757d;font-size:.8rem;">(Fitur AI)</span></span>
-                                    <span class="badge-mineai-baru">BARU</span>
-                                </span>
-                            </a>
-                        </li>!-->
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('kasir.pengaturan.index') ? 'active-dropdown' : '' }}" href="{{ route('kasir.pengaturan.index') }}">

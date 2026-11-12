@@ -121,11 +121,12 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/langganan/sukses',        [\App\Http\Controllers\OwnerLanggananController::class, 'sukses'])->name('langganan.sukses');
 
     // FlavoryAI Consultant
-    Route::get('/ai',                  [\App\Http\Controllers\OwnerAIController::class, 'index'])->name('ai');
-    Route::post('/ai/chat',            [\App\Http\Controllers\OwnerAIController::class, 'chat'])->name('ai.chat');
-    Route::get('/ai/sessions',         [\App\Http\Controllers\OwnerAIController::class, 'listSessions'])->name('ai.sessions');
-    Route::get('/ai/session/{uuid}',   [\App\Http\Controllers\OwnerAIController::class, 'loadSession'])->name('ai.session.load');
-    Route::delete('/ai/session/{uuid}',[\App\Http\Controllers\OwnerAIController::class, 'deleteSession'])->name('ai.session.delete');
+    Route::get('/ai',                       [\App\Http\Controllers\OwnerAIController::class, 'index'])->name('ai');
+    Route::get('/ai/{session}',             [\App\Http\Controllers\OwnerAIController::class, 'index'])->name('ai.session');
+    Route::post('/ai/chat',                 [\App\Http\Controllers\OwnerAIController::class, 'chat'])->name('ai.chat');
+    Route::get('/ai/sessions/list',         [\App\Http\Controllers\OwnerAIController::class, 'listSessions'])->name('ai.sessions');
+    Route::get('/ai/session/{uuid}/load',   [\App\Http\Controllers\OwnerAIController::class, 'loadSession'])->name('ai.session.load');
+    Route::delete('/ai/session/{uuid}',     [\App\Http\Controllers\OwnerAIController::class, 'deleteSession'])->name('ai.session.delete');
 
     // Pengaturan Akun Owner
     Route::get('/akun',                [\App\Http\Controllers\OwnerAkunController::class, 'index'])->name('akun.index');
