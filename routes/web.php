@@ -68,7 +68,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh-captcha', [AuthController::class, 'refreshCaptcha'])->name('captcha.refresh');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// ─── Owner / Manager Login ───────────────────────────────────────────────────
+// ─── Owner / Manager Login ──
 Route::get('/login-owner',  [OwnerController::class, 'showLogin'])->name('owner.login');
 Route::post('/login-owner', [OwnerController::class, 'login'])->name('owner.login.post');
 Route::post('/logout-owner', [OwnerController::class, 'logout'])->name('owner.logout');
