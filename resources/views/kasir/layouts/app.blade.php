@@ -442,11 +442,6 @@
                    title="Hubungi Customer Service via WhatsApp">
                     <i class="bi bi-headset"></i>
                 </a>
-                
-                {{-- TOMBOL ABSEN & SHIFT BARU --}}
-                <a href="http://key.flavory.id/login" target="_blank" class="btn-absen">
-                    <i class="bi bi-fingerprint me-1"></i> ABSEN & SHIFT
-                </a>
 
                 <form action="{{ route('logout') }}" method="POST" class="m-0" id="form-logout">
                     @csrf
