@@ -52,13 +52,29 @@ class OwnerController extends Controller
             ])->withInput();
         }
 
-        // Cek verifikasi partner (jika owner punya partner)
-        $partner = Partner::where('user_id', $user->id)->first();
+        // Cek hubungan owner_kasir dan verifikasi partner kasir
+        $ownerKasir = \App\Models\OwnerKasir::where('owner_id', $user->id)->first();
+        
+        if (!$ownerKasir) {
+            return back()->with('unverified', 'Akun Owner Anda belum terhubung dengan akun kasir. Hubungi administrator.')->withInput();
+        }
+
+        // Ambil kasir user dan partnernya
+        $kasirUser = User::find($ownerKasir->kasir_id);
+        
+        if (!$kasirUser) {
+            return back()->with('unverified', 'Akun kasir yang terhubung tidak ditemukan.')->withInput();
+        }
+
+        $partner = Partner::where('user_id', $kasirUser->id)->first();
+        
         if ($partner) {
             $isVerified = $partner->verifikasi?->konfirmasi ?? false;
             if (!$isVerified) {
-                return back()->with('unverified', 'Akun Anda belum terverifikasi. Hubungi administrator.')->withInput();
+                return back()->with('unverified', 'Partner belum terverifikasi. Hubungi administrator.')->withInput();
             }
+        } else {
+            return back()->with('unverified', 'Data partner tidak ditemukan.')->withInput();
         }
 
         // Login terlebih dahulu, baru regenerate session
@@ -80,8 +96,22 @@ class OwnerController extends Controller
     // ─── Dashboard utama owner ────────────────────────────────────────────────
     public function index()
     {
-        $user    = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
+        $user = Auth::user();
+        
+        // Ambil partner kasir yang terhubung dengan owner ini
+        $ownerKasir = \App\Models\OwnerKasir::where('owner_id', $user->id)->first();
+        
+        if (!$ownerKasir) {
+            abort(403, 'Tidak ada akun kasir yang terhubung dengan akun owner ini.');
+        }
+
+        $kasirUser = User::find($ownerKasir->kasir_id);
+        
+        if (!$kasirUser || !$kasirUser->partner) {
+            abort(403, 'Data partner kasir tidak ditemukan.');
+        }
+
+        $partner = $kasirUser->partner;
         $outlet  = $partner ? InformasiOutlet::where('partner_id', $partner->id)->first() : null;
 
         return view('owner.index', compact('user', 'partner', 'outlet'));
