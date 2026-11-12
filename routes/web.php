@@ -14,9 +14,7 @@ use App\Http\Controllers\PartnerResetPasswordController;
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 
-// PWA Splash Screen — start_url untuk PWA, redirect ke login setelah animasi
 Route::get('/splash', function () {
-    // Jika sudah login, langsung ke dashboard (tidak perlu animasi)
     if (auth()->check()) {
         return redirect()->route('kasir.dashboard');
     }
