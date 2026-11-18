@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -16,7 +17,10 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Pengeluaran;
 use App\Models\StokBarang;
+use App\Models\StokHarian;
 use App\Models\Modal;
+use App\Models\Note;
+use App\Models\PengaturanForm;
 use Carbon\Carbon;
 
 class OwnerAIController extends Controller
@@ -75,22 +79,44 @@ class OwnerAIController extends Controller
     // ─── Muat satu sesi (AJAX) ────────────────────────────────────────────────
     public function loadSession(string $uuid)
     {
-        $partner = $this->getKasirPartner();
-        if (!$partner) abort(403);
+        try {
+            $partner = $this->getKasirPartner();
+            
+            if (!$partner) {
+                return response()->json([
+                    'error' => 'Partner tidak ditemukan. Silakan login ulang.'
+                ], 403);
+            }
 
-        $session = FlavoryAiSession::where('uuid', $uuid)
-            ->where('partner_id', $partner->id)
-            ->with('messages')
-            ->firstOrFail();
+            $session = FlavoryAiSession::where('uuid', $uuid)
+                ->where('partner_id', $partner->id)
+                ->with('messages')
+                ->first();
 
-        return response()->json([
-            'uuid'     => $session->uuid,
-            'title'    => $session->title,
-            'messages' => $session->messages->map(fn($m) => [
-                'role'    => $m->role,
-                'content' => $m->content,
-            ]),
-        ]);
+            if (!$session) {
+                return response()->json([
+                    'error' => 'Sesi tidak ditemukan atau sudah dihapus.'
+                ], 404);
+            }
+
+            return response()->json([
+                'uuid'     => $session->uuid,
+                'title'    => $session->title,
+                'messages' => $session->messages->map(fn($m) => [
+                    'role'    => $m->role,
+                    'content' => $m->content,
+                ]),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('FlavoryAI loadSession error: ' . $e->getMessage(), [
+                'uuid' => $uuid,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'error' => 'Terjadi kesalahan saat memuat percakapan. Silakan coba lagi.'
+            ], 500);
+        }
     }
 
     // ─── Hapus sesi (AJAX) ────────────────────────────────────────────────────
@@ -116,6 +142,7 @@ class OwnerAIController extends Controller
             return response()->json(['error' => 'Partner tidak ditemukan.'], 403);
         }
 
+        $partnerId   = $partner->id;
         $userMessage = trim($request->input('message'));
         $sessionUuid = $request->input('session_uuid');
 
@@ -188,13 +215,14 @@ class OwnerAIController extends Controller
         // Gunakan StreamedResponse Symfony langsung — paling reliable untuk SSE
         // response()->stream() masih melalui middleware stack Laravel yang bisa buffer
         return new \Symfony\Component\HttpFoundation\StreamedResponse(
-            function () use ($messages, $sessionId, $sessionUuid, $activeModel, $isGptOss) {
+            function () use ($messages, $sessionId, $sessionUuid, $activeModel, $isGptOss, $partnerId) {
 
                 // Bersihkan buffer yang mungkin aktif
                 if (ob_get_level() > 0) ob_end_clean();
 
                 $fullResponse = '';
                 $done         = false;
+                $lastSentLen  = 0; // panjang teks aman yang sudah dikirim ke client
 
                 // Kirim UUID sesi ke client sebelum stream dimulai
                 echo "data: " . json_encode(['session_uuid' => $sessionUuid]) . "\n\n";
@@ -285,8 +313,16 @@ class OwnerAIController extends Controller
                             $delta = $decoded['choices'][0]['delta']['content'] ?? null;
                             if ($delta !== null && $delta !== '') {
                                 $fullResponse .= $delta;
-                                echo "data: " . json_encode(['delta' => $delta]) . "\n\n";
-                                flush();
+                                // Sembunyikan blok ```flavory_action dari tampilan chat.
+                                // Potong response di titik awal blok aksi — user tidak perlu melihatnya.
+                                $visibleText = preg_replace('/```flavory_action[\s\S]*$/u', '', $fullResponse);
+                                $safeLen     = strlen($visibleText);
+                                if ($safeLen > $lastSentLen) {
+                                    $safeDelta   = substr($visibleText, $lastSentLen);
+                                    $lastSentLen = $safeLen;
+                                    echo "data: " . json_encode(['delta' => $safeDelta]) . "\n\n";
+                                    flush();
+                                }
                             }
                         }
                     }
@@ -301,19 +337,49 @@ class OwnerAIController extends Controller
                     echo "data: " . json_encode(['error' => $friendlyMsg]) . "\n\n";
                 }
 
-                // Selalu kirim [DONE] di akhir
-                echo "data: [DONE]\n\n";
-                flush();
-
-                // Simpan jawaban AI ke database
+                // Simpan jawaban AI ke database dan eksekusi action (sebelum [DONE])
                 if ($fullResponse) {
+                    // ── Ekstrak dan hapus blok action dari teks yang disimpan ──
+                    $cleanResponse = preg_replace('/```flavory_action\s*[\s\S]*?```/u', '', $fullResponse);
+                    $cleanResponse = trim($cleanResponse);
+
                     FlavoryAiMessage::create([
                         'flavory_ai_session_id' => $sessionId,
                         'role'                  => 'assistant',
-                        'content'               => $fullResponse,
+                        'content'               => $cleanResponse ?: $fullResponse,
                     ]);
                     FlavoryAiSession::where('id', $sessionId)->touch();
+
+                    // ── Eksekusi action block jika ada — SEBELUM [DONE] ──
+                    if (preg_match('/```flavory_action\s*([\s\S]*?)```/u', $fullResponse, $m)) {
+                        $rawJson = trim($m[1]);
+                        $decoded = json_decode($rawJson, true);
+
+                        if (is_array($decoded)) {
+                            // Normalisasi: single action atau array of actions
+                            $aiActions = [];
+                            if (isset($decoded['action'])) {
+                                $aiActions = [$decoded];
+                            } elseif (isset($decoded['actions']) && is_array($decoded['actions'])) {
+                                $aiActions = $decoded['actions'];
+                            }
+
+                            if (!empty($aiActions)) {
+                                $results = $this->runAiActions($aiActions, $partnerId);
+
+                                // Kirim hasil eksekusi ke frontend sebelum stream ditutup
+                                echo "data: " . json_encode([
+                                    'action_results' => $results,
+                                ]) . "\n\n";
+                                flush();
+                            }
+                        }
+                    }
                 }
+
+                // Selalu kirim [DONE] di akhir
+                echo "data: [DONE]\n\n";
+                flush();
             },
             200,
             [
@@ -324,6 +390,288 @@ class OwnerAIController extends Controller
                 'Pragma'            => 'no-cache',
             ]
         );
+    }
+
+    // ─── Eksekusi daftar aksi AI (dipanggil dari chat() setelah stream selesai) ──
+    private function runAiActions(array $actions, int $partnerId): array
+    {
+        $results = [];
+        foreach ($actions as $action) {
+            $actionName = $action['action'] ?? '';
+            $params     = $action['params'] ?? [];
+
+            // Pastikan params bukan string (prompt injection protection)
+            if (!is_array($params)) {
+                $results[] = ['action' => $actionName, 'success' => false, 'message' => 'Parameter tidak valid.'];
+                continue;
+            }
+
+            $result = $this->executeAiAction($actionName, $params, $partnerId);
+            $results[] = array_merge(['action' => $actionName], $result);
+        }
+        return $results;
+    }
+
+    // ─── Eksekusi satu aksi AI — semua query dilock ke $partnerId ─────────────
+    private function executeAiAction(string $action, array $params, int $partnerId): array
+    {
+        // Sanitasi: strip semua key yang bisa mengandung injeksi scope (partner_id, id, dsb.)
+        unset($params['partner_id'], $params['id']);
+
+        try {
+            switch ($action) {
+
+                // ══ MENU ══════════════════════════════════════════════════════
+                case 'menu_create': {
+                    $nama = trim($params['nama_menu'] ?? '');
+                    if (!$nama) return ['success' => false, 'message' => 'Nama menu wajib diisi.'];
+                    $harga = max(0, (int) ($params['harga'] ?? 0));
+                    Menu::create([
+                        'partner_id'  => $partnerId,
+                        'nama_menu'   => $nama,
+                        'harga'       => $harga,
+                        'kategori'    => substr(trim($params['kategori'] ?? 'F&B'), 0, 100),
+                        'tipe_menu'   => in_array($params['tipe_menu'] ?? '', ['utama','best_seller']) ? $params['tipe_menu'] : 'utama',
+                        'deskripsi'   => isset($params['deskripsi']) ? substr(trim($params['deskripsi']), 0, 500) : null,
+                        'stok_menu'   => isset($params['stok_menu']) && $params['stok_menu'] !== null ? (int) $params['stok_menu'] : null,
+                        'status_menu' => 'tersedia',
+                    ]);
+                    // Invalidate cache
+                    Cache::forget("menu_list_{$partnerId}");
+                    return ['success' => true, 'message' => "Menu \"{$nama}\" berhasil ditambahkan."];
+                }
+
+                case 'menu_update': {
+                    $namaLama = trim($params['nama_menu_lama'] ?? '');
+                    $namaBaru = trim($params['nama_menu'] ?? $namaLama);
+                    if (!$namaLama) return ['success' => false, 'message' => 'Nama menu lama wajib diisi.'];
+                    $menu = Menu::where('partner_id', $partnerId)
+                        ->where('nama_menu', $namaLama)
+                        ->first();
+                    if (!$menu) return ['success' => false, 'message' => "Menu \"{$namaLama}\" tidak ditemukan."];
+
+                    $updateData = [];
+                    if ($namaBaru && $namaBaru !== $namaLama) $updateData['nama_menu'] = $namaBaru;
+                    if (isset($params['harga']))       $updateData['harga']       = max(0, (int)$params['harga']);
+                    if (isset($params['kategori']))    $updateData['kategori']    = substr(trim($params['kategori']), 0, 100);
+                    if (isset($params['tipe_menu']) && in_array($params['tipe_menu'], ['utama','best_seller']))
+                                                       $updateData['tipe_menu']   = $params['tipe_menu'];
+                    if (isset($params['status_menu']) && in_array($params['status_menu'], ['tersedia','habis']))
+                                                       $updateData['status_menu'] = $params['status_menu'];
+                    if (isset($params['deskripsi']))   $updateData['deskripsi']   = substr(trim($params['deskripsi']), 0, 500);
+                    if (isset($params['stok_menu']))   $updateData['stok_menu']   = $params['stok_menu'] !== null ? (int)$params['stok_menu'] : null;
+
+                    if (empty($updateData)) return ['success' => false, 'message' => 'Tidak ada data yang perlu diubah.'];
+                    $menu->update($updateData);
+                    Cache::forget("menu_list_{$partnerId}");
+                    $displayName = $updateData['nama_menu'] ?? $namaLama;
+                    return ['success' => true, 'message' => "Menu \"{$displayName}\" berhasil diperbarui."];
+                }
+
+                case 'menu_delete': {
+                    $nama = trim($params['nama_menu'] ?? '');
+                    if (!$nama) return ['success' => false, 'message' => 'Nama menu wajib diisi.'];
+                    $menu = Menu::where('partner_id', $partnerId)->where('nama_menu', $nama)->first();
+                    if (!$menu) return ['success' => false, 'message' => "Menu \"{$nama}\" tidak ditemukan."];
+                    $menu->variants()->delete();
+                    $menu->delete();
+                    Cache::forget("menu_list_{$partnerId}");
+                    return ['success' => true, 'message' => "Menu \"{$nama}\" berhasil dihapus."];
+                }
+
+                // ══ STOK BARANG ═══════════════════════════════════════════════
+                case 'stok_create': {
+                    $nama = trim($params['nama_barang'] ?? '');
+                    if (!$nama) return ['success' => false, 'message' => 'Nama barang wajib diisi.'];
+                    $satuan = trim($params['satuan'] ?? 'pcs');
+                    StokBarang::create([
+                        'partner_id'  => $partnerId,
+                        'nama_barang' => $nama,
+                        'satuan'      => substr($satuan, 0, 50),
+                        'min_hijau'   => 10,
+                        'max_hijau'   => 9999,
+                        'min_kuning'  => 3,
+                        'max_kuning'  => 9.99,
+                        'min_merah'   => 0,
+                        'max_merah'   => 2.99,
+                    ]);
+                    return ['success' => true, 'message' => "Barang \"{$nama}\" berhasil ditambahkan ke manajemen stok."];
+                }
+
+                case 'stok_delete': {
+                    $nama = trim($params['nama_barang'] ?? '');
+                    if (!$nama) return ['success' => false, 'message' => 'Nama barang wajib diisi.'];
+                    $stok = StokBarang::where('partner_id', $partnerId)->where('nama_barang', $nama)->first();
+                    if (!$stok) return ['success' => false, 'message' => "Barang \"{$nama}\" tidak ditemukan."];
+                    $stok->stokHarian()->delete();
+                    $stok->delete();
+                    return ['success' => true, 'message' => "Barang \"{$nama}\" berhasil dihapus dari manajemen stok."];
+                }
+
+                // ══ MODAL USAHA ══════════════════════════════════════════════
+                case 'modal_create': {
+                    $nominal = (int) ($params['nominal'] ?? 0);
+                    if ($nominal <= 0) return ['success' => false, 'message' => 'Nominal modal harus lebih dari 0.'];
+                    Modal::create([
+                        'partner_id' => $partnerId,
+                        'nominal'    => $nominal,
+                        'keterangan' => isset($params['keterangan']) ? substr(trim($params['keterangan']), 0, 255) : null,
+                        'status'     => 'save',
+                    ]);
+                    $formatted = number_format($nominal, 0, ',', '.');
+                    return ['success' => true, 'message' => "Modal Rp {$formatted} berhasil dicatat."];
+                }
+
+                case 'modal_delete': {
+                    // Cari berdasarkan keterangan + nominal (scope ke partner)
+                    $query = Modal::where('partner_id', $partnerId)->where('status', 'save');
+                    if (!empty($params['keterangan'])) {
+                        $query->where('keterangan', trim($params['keterangan']));
+                    }
+                    if (!empty($params['nominal'])) {
+                        $query->where('nominal', (int)$params['nominal']);
+                    }
+                    $modal = $query->latest()->first();
+                    if (!$modal) return ['success' => false, 'message' => 'Data modal yang dimaksud tidak ditemukan.'];
+                    $modal->update(['status' => 'delete']);
+                    return ['success' => true, 'message' => 'Data modal berhasil dihapus.'];
+                }
+
+                // ══ PENGELUARAN ══════════════════════════════════════════════
+                case 'pengeluaran_create': {
+                    $kategoriList = ['bahan_baku','operasional','gaji','sewa','utilitas','marketing','lainnya'];
+                    $kategori = in_array($params['kategori'] ?? '', $kategoriList) ? $params['kategori'] : 'lainnya';
+
+                    // Format baru: array items dalam satu aksi
+                    // Format lama (satu item): {"item":"...","harga":0,"qty":1} — tetap didukung
+                    $rows = [];
+                    if (!empty($params['items']) && is_array($params['items'])) {
+                        foreach ($params['items'] as $entry) {
+                            if (!is_array($entry)) continue;
+                            $itemName = trim($entry['item'] ?? '');
+                            if (!$itemName) continue;
+                            $harga = max(0, (int)($entry['harga'] ?? 0));
+                            $qty   = max(1, (int)($entry['qty']   ?? 1));
+                            $rows[] = [
+                                'partner_id' => $partnerId,
+                                'kategori'   => $kategori,
+                                'item'       => substr($itemName, 0, 255),
+                                'harga'      => $harga,
+                                'qty'        => $qty,
+                                'total'      => $harga * $qty,
+                                'keterangan' => null,
+                                'status'     => 'save',
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                        }
+                    } elseif (!empty($params['item'])) {
+                        // Format lama: single item
+                        $itemName = trim($params['item']);
+                        $harga = max(0, (int)($params['harga'] ?? 0));
+                        $qty   = max(1, (int)($params['qty']   ?? 1));
+                        $rows[] = [
+                            'partner_id' => $partnerId,
+                            'kategori'   => $kategori,
+                            'item'       => substr($itemName, 0, 255),
+                            'harga'      => $harga,
+                            'qty'        => $qty,
+                            'total'      => $harga * $qty,
+                            'keterangan' => null,
+                            'status'     => 'save',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+
+                    if (empty($rows)) {
+                        return ['success' => false, 'message' => 'Tidak ada item pengeluaran yang valid untuk dicatat.'];
+                    }
+
+                    Pengeluaran::insert($rows);
+
+                    $totalNominal = array_sum(array_column($rows, 'total'));
+                    $jumlahItem   = count($rows);
+                    $formatted    = number_format($totalNominal, 0, ',', '.');
+                    $label        = $jumlahItem === 1
+                        ? "Pengeluaran \"{$rows[0]['item']}\" (Rp {$formatted}) berhasil dicatat."
+                        : "{$jumlahItem} item pengeluaran berhasil dicatat. Total: Rp {$formatted}.";
+
+                    return ['success' => true, 'message' => $label];
+                }
+
+                case 'pengeluaran_delete': {
+                    $item = trim($params['item'] ?? '');
+                    $query = Pengeluaran::where('partner_id', $partnerId)->where('status', 'save');
+                    if ($item) $query->where('item', $item);
+                    if (!empty($params['kategori'])) $query->where('kategori', $params['kategori']);
+                    $pengeluaran = $query->latest()->first();
+                    if (!$pengeluaran) return ['success' => false, 'message' => 'Data pengeluaran yang dimaksud tidak ditemukan.'];
+                    $pengeluaran->update(['status' => 'delete']);
+                    return ['success' => true, 'message' => "Pengeluaran \"{$pengeluaran->item}\" berhasil dihapus."];
+                }
+
+                // ══ CATATAN STRUK (NOTE) ══════════════════════════════════════
+                case 'note_create': {
+                    $note = trim($params['note'] ?? '');
+                    if (!$note) return ['success' => false, 'message' => 'Isi catatan wajib diisi.'];
+                    if (strlen($note) > 100) return ['success' => false, 'message' => 'Catatan maksimal 100 karakter.'];
+                    Note::create([
+                        'partner_id' => $partnerId,
+                        'note'       => $note,
+                        'status'     => 'nonaktif',
+                    ]);
+                    return ['success' => true, 'message' => "Catatan struk \"{$note}\" berhasil ditambahkan."];
+                }
+
+                case 'note_delete': {
+                    $noteText = trim($params['note'] ?? '');
+                    if (!$noteText) return ['success' => false, 'message' => 'Isi catatan wajib diisi untuk menghapus.'];
+                    $note = Note::where('partner_id', $partnerId)->where('note', $noteText)->first();
+                    if (!$note) return ['success' => false, 'message' => "Catatan \"{$noteText}\" tidak ditemukan."];
+                    $note->delete();
+                    return ['success' => true, 'message' => "Catatan \"{$noteText}\" berhasil dihapus."];
+                }
+
+                case 'note_activate': {
+                    $noteText = trim($params['note'] ?? '');
+                    if (!$noteText) return ['success' => false, 'message' => 'Isi catatan wajib diisi.'];
+                    $note = Note::where('partner_id', $partnerId)->where('note', $noteText)->first();
+                    if (!$note) return ['success' => false, 'message' => "Catatan \"{$noteText}\" tidak ditemukan."];
+                    // Nonaktifkan semua dulu, lalu aktifkan yang ini
+                    Note::where('partner_id', $partnerId)->update(['status' => 'nonaktif']);
+                    $note->update(['status' => 'aktif']);
+                    return ['success' => true, 'message' => "Catatan \"{$noteText}\" berhasil diaktifkan pada struk."];
+                }
+
+                // ══ PENGATURAN FORM ══════════════════════════════════════════
+                case 'form_toggle': {
+                    $allowed = ['nama','whatsapp','meja','keterangan','diskon','bukti_pembayaran','voucher'];
+                    $field  = $params['field'] ?? '';
+                    if (!in_array($field, $allowed)) {
+                        return ['success' => false, 'message' => "Field \"{$field}\" tidak dikenali."];
+                    }
+                    $status = filter_var($params['status'] ?? true, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    if ($status === null) return ['success' => false, 'message' => 'Status harus true atau false.'];
+
+                    $pengaturan = PengaturanForm::firstOrCreate(
+                        ['partner_id' => $partnerId],
+                        ['nama' => true, 'whatsapp' => true, 'meja' => true, 'keterangan' => true,
+                         'diskon' => true, 'bukti_pembayaran' => true, 'voucher' => true]
+                    );
+                    $pengaturan->update([$field => $status]);
+                    $label  = ucfirst(str_replace('_', ' ', $field));
+                    $statusLabel = $status ? 'diaktifkan' : 'dinonaktifkan';
+                    return ['success' => true, 'message' => "Field \"{$label}\" pada form pesanan berhasil {$statusLabel}."];
+                }
+
+                default:
+                    return ['success' => false, 'message' => "Aksi \"{$action}\" tidak dikenali."];
+            }
+        } catch (\Throwable $e) {
+            Log::error("FlavoryAI executeAiAction [{$action}] error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Terjadi kesalahan saat mengeksekusi aksi. Silakan coba lagi.'];
+        }
     }
 
     // ─── System prompt dengan data outlet real-time ───────────────────────────
@@ -401,6 +749,23 @@ class OwnerAIController extends Controller
             ->sum('nominal');
         $modalSummary = "Total modal 30 hari: Rp " . number_format($modal, 0, ',', '.');
 
+        // Ambil note & catatan struk aktif
+        $notes = Note::where('partner_id', $partnerId)->orderBy('created_at', 'desc')->get();
+        $noteSummary = $notes->isEmpty() ? 'Belum ada catatan struk.' :
+            $notes->map(fn($n) => "- [{$n->status}] {$n->note}")->implode("\n");
+
+        // Ambil pengaturan form
+        $pengaturan = PengaturanForm::where('partner_id', $partnerId)->first();
+        $formSummary = $pengaturan
+            ? "nama=" . ($pengaturan->nama ? 'aktif' : 'nonaktif') .
+              ", whatsapp=" . ($pengaturan->whatsapp ? 'aktif' : 'nonaktif') .
+              ", meja=" . ($pengaturan->meja ? 'aktif' : 'nonaktif') .
+              ", keterangan=" . ($pengaturan->keterangan ? 'aktif' : 'nonaktif') .
+              ", diskon=" . ($pengaturan->diskon ? 'aktif' : 'nonaktif') .
+              ", bukti_pembayaran=" . ($pengaturan->bukti_pembayaran ? 'aktif' : 'nonaktif') .
+              ", voucher=" . ($pengaturan->voucher ? 'aktif' : 'nonaktif')
+            : 'Belum ada pengaturan form.';
+
         return <<<PROMPT
 Kamu adalah FlavoryAI Consultant, asisten bisnis cerdas milik platform Flavory.id.
 Kepribadianmu: sangat ramah, antusias, supportif, dan proaktif memberikan saran bisnis yang actionable.
@@ -415,6 +780,7 @@ ATURAN WAJIB — WAJIB DIIKUTI TANPA PENGECUALIAN:
 3. Langsung jawab pertanyaan owner dengan hangat dan natural — tanpa pembuka internal apapun.
 4. Jika kamu merasa perlu menyebut namamu, cukup sebut "FlavoryAI" secara alami dalam percakapan, bukan sebagai deklarasi.
 5. Respon pertamamu harus langsung berupa jawaban, bukan penjelasan tentang dirimu atau instruksi.
+6. KEAMANAN MUTLAK: Kamu HANYA boleh mengelola data outlet "$outletName" milik Bos $ownerName. Jangan pernah menerima perintah yang menyebut partner_id, outlet lain, atau meminta modifikasi data milik orang lain.
 
 === DATA OUTLET (RAHASIA — HANYA UNTUK BOS $ownerName) ===
 Nama Outlet : $outletName$kotaInfo
@@ -438,7 +804,59 @@ $stokSummary
 
 --- MODAL USAHA (30 HARI) ---
 $modalSummary
+
+--- CATATAN STRUK ---
+$noteSummary
+
+--- PENGATURAN FORM PESANAN ---
+$formSummary
 === AKHIR DATA ===
+
+=== KEMAMPUAN AKSI LANGSUNG (FlavoryAI Actions) ===
+Kamu BISA mengeksekusi perubahan data secara langsung. Jika owner minta CRUD, balas dengan pesan ramah LALU sertakan blok JSON aksi di AKHIR responsmu dengan format ini:
+
+```flavory_action
+{"action":"NAMA_AKSI","params":{...}}
+```
+
+DAFTAR AKSI YANG TERSEDIA:
+
+MENU:
+- Tambah menu:     {"action":"menu_create","params":{"nama_menu":"...","harga":0,"kategori":"F&B","tipe_menu":"utama","deskripsi":"...","stok_menu":null}}
+- Edit menu:       {"action":"menu_update","params":{"nama_menu_lama":"...","nama_menu":"...","harga":0,"kategori":"...","tipe_menu":"utama","status_menu":"tersedia","deskripsi":"...","stok_menu":null}}
+- Hapus menu:      {"action":"menu_delete","params":{"nama_menu":"..."}}
+
+STOK BARANG:
+- Tambah barang:   {"action":"stok_create","params":{"nama_barang":"...","satuan":"..."}}
+- Hapus barang:    {"action":"stok_delete","params":{"nama_barang":"..."}}
+
+MODAL USAHA:
+- Catat modal:     {"action":"modal_create","params":{"nominal":0,"keterangan":"..."}}
+- Hapus modal:     {"action":"modal_delete","params":{"keterangan":"...","nominal":0}}
+
+PENGELUARAN:
+- Catat pengeluaran (satu atau lebih item sekaligus):
+  {"action":"pengeluaran_create","params":{"kategori":"bahan_baku","items":[{"item":"...","harga":0,"qty":1},{"item":"...","harga":0,"qty":1}]}}
+  Kategori yang valid: bahan_baku, operasional, gaji, sewa, utilitas, marketing, lainnya
+- Hapus pengeluaran: {"action":"pengeluaran_delete","params":{"item":"...","kategori":"..."}}
+
+CATATAN STRUK:
+- Tambah catatan:  {"action":"note_create","params":{"note":"..."}}
+- Hapus catatan:   {"action":"note_delete","params":{"note":"..."}}
+- Aktifkan catatan:{"action":"note_activate","params":{"note":"..."}}
+
+PENGATURAN FORM:
+- Toggle field:    {"action":"form_toggle","params":{"field":"nama|whatsapp|meja|keterangan|diskon|bukti_pembayaran|voucher","status":true}}
+
+ATURAN AKSI — WAJIB DIPATUHI TANPA PENGECUALIAN:
+- Hanya keluarkan blok ```flavory_action jika owner meminta perubahan data secara eksplisit.
+- Untuk informasi/analisis/rekomendasi: JANGAN keluarkan blok aksi — cukup jawab saja.
+- JANGAN PERNAH mengklaim sudah mengeksekusi aksi jika kamu tidak menyertakan blok ```flavory_action. Jika kamu tidak menyertakan blok aksi, berarti data BELUM berubah — jangan bohong kepada owner.
+- Jika ada beberapa aksi berbeda (misal tambah menu DAN hapus menu), keluarkan array: {"actions":[{...},{...}]}
+- Jika ada beberapa pengeluaran sekaligus, gunakan SATU aksi pengeluaran_create dengan array "items", bukan beberapa aksi terpisah.
+- Pastikan nama_menu_lama (untuk edit) PERSIS sama dengan nama menu yang ada di data outlet.
+- Jangan pernah sertakan partner_id atau id apapun dalam params — sistem otomatis menyesuaikan.
+=== AKHIR KEMAMPUAN AKSI ===
 
 PENTING: Data di atas HANYA untuk outlet "$outletName". Jangan pernah menyebut atau membocorkan data outlet lain.
 PROMPT;

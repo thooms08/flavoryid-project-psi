@@ -1481,6 +1481,87 @@
         .swal2-title {
             font-weight: 800;
         }
+
+        /* ═══════════════════════════════════════════════════════════════
+   ACTION RESULT CARD (hasil eksekusi CRUD oleh FlavoryAI)
+═══════════════════════════════════════════════════════════════ */
+        .action-results-card {
+            margin: 4px 0 18px 44px; /* sejajar dengan bubble AI */
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeUp .3s ease;
+        }
+
+        .action-results-label {
+            font-size: .66rem;
+            font-weight: 700;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            color: var(--mut);
+            padding-left: 2px;
+        }
+
+        .action-result-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 9px 13px;
+            border-radius: 12px;
+            font-size: .8rem;
+            font-weight: 500;
+            line-height: 1.5;
+            border: 1.5px solid transparent;
+        }
+
+        .action-result-item.success {
+            background: rgba(34, 197, 94, .07);
+            border-color: rgba(34, 197, 94, .2);
+            color: #15803d;
+        }
+
+        .action-result-item.error {
+            background: rgba(239, 68, 68, .07);
+            border-color: rgba(239, 68, 68, .2);
+            color: #b91c1c;
+        }
+
+        .action-result-icon {
+            flex-shrink: 0;
+            font-size: .95rem;
+            margin-top: 1px;
+        }
+
+        .action-result-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .action-result-badge {
+            flex-shrink: 0;
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .5px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+
+        .action-result-item.success .action-result-badge {
+            background: rgba(34, 197, 94, .15);
+            color: #15803d;
+        }
+
+        .action-result-item.error .action-result-badge {
+            background: rgba(239, 68, 68, .12);
+            color: #b91c1c;
+        }
+
+        @media (max-width: 768px) {
+            .action-results-card {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 
@@ -1646,8 +1727,8 @@
         const CSRF = document.querySelector('meta[name="csrf-token"]').content;
         const CHAT_URL = @json(route('owner.ai.chat'));
         const SESSIONS_URL = @json(route('owner.ai.sessions'));
-        const LOAD_URL = @json(url('owner/ai/session'));
-        const DEL_URL = @json(url('owner/ai/session'));
+        const LOAD_URL_BASE = '{{ route('owner.ai') }}/session';
+        const DEL_URL_BASE = '{{ route('owner.ai') }}/session';
         const OWNER_NAME = @json($ownerName);
 
         let currentSessionUuid = @json($activeSession ? $activeSession->uuid : null);
@@ -1972,6 +2053,55 @@
         }
 
         /* ═══════════════════════════════════════════════════════════════
+           ACTION RESULT CARD
+        ═══════════════════════════════════════════════════════════════ */
+        // Label singkat per jenis aksi untuk ditampilkan di badge
+        const ACTION_LABEL = {
+            menu_create:        'Tambah Menu',
+            menu_update:        'Edit Menu',
+            menu_delete:        'Hapus Menu',
+            stok_create:        'Tambah Stok',
+            stok_delete:        'Hapus Stok',
+            modal_create:       'Catat Modal',
+            modal_delete:       'Hapus Modal',
+            pengeluaran_create: 'Catat Pengeluaran',
+            pengeluaran_delete: 'Hapus Pengeluaran',
+            note_create:        'Tambah Catatan',
+            note_delete:        'Hapus Catatan',
+            note_activate:      'Aktifkan Catatan',
+            form_toggle:        'Pengaturan Form',
+        };
+
+        function createActionResultsEl(results) {
+            if (!results || !results.length) return null;
+
+            const card = document.createElement('div');
+            card.className = 'action-results-card';
+
+            const label = document.createElement('div');
+            label.className = 'action-results-label';
+            label.innerHTML = '<i class="bi bi-lightning-fill"></i> Aksi Dijalankan';
+            card.appendChild(label);
+
+            results.forEach(r => {
+                const item = document.createElement('div');
+                item.className = `action-result-item ${r.success ? 'success' : 'error'}`;
+
+                const icon = r.success ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+                const badge = ACTION_LABEL[r.action] || r.action;
+
+                item.innerHTML = `
+                    <i class="bi ${icon} action-result-icon"></i>
+                    <span class="action-result-text">${escHtml(r.message || '')}</span>
+                    <span class="action-result-badge">${escHtml(badge)}</span>
+                `;
+                card.appendChild(item);
+            });
+
+            return card;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
            KIRIM PESAN & STREAM SSE
         ═══════════════════════════════════════════════════════════════ */
         async function sendMessage() {
@@ -2107,6 +2237,48 @@
                             aiBubble.innerHTML = renderMd(aiText);
                             scrollBottom(false);
                         }
+
+                        // Hasil eksekusi aksi dari server — tampilkan sebagai card di bawah bubble AI
+                        if (parsed.action_results && Array.isArray(parsed.action_results)) {
+                            const card = createActionResultsEl(parsed.action_results);
+                            if (card) {
+                                chatInner.appendChild(card);
+                                scrollBottom();
+
+                                // Toast ringkas: berapa aksi sukses / gagal
+                                const total   = parsed.action_results.length;
+                                const success = parsed.action_results.filter(r => r.success).length;
+                                const failed  = total - success;
+
+                                if (failed === 0) {
+                                    Swal.fire({
+                                        toast: true, position: 'top-end',
+                                        icon: 'success',
+                                        title: success === 1
+                                            ? '✅ 1 aksi berhasil dijalankan'
+                                            : `✅ ${success} aksi berhasil dijalankan`,
+                                        showConfirmButton: false,
+                                        timer: 3000, timerProgressBar: true,
+                                    });
+                                } else if (success === 0) {
+                                    Swal.fire({
+                                        toast: true, position: 'top-end',
+                                        icon: 'error',
+                                        title: `❌ ${failed} aksi gagal dijalankan`,
+                                        showConfirmButton: false,
+                                        timer: 3500, timerProgressBar: true,
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        toast: true, position: 'top-end',
+                                        icon: 'warning',
+                                        title: `⚠️ ${success} berhasil, ${failed} gagal`,
+                                        showConfirmButton: false,
+                                        timer: 3500, timerProgressBar: true,
+                                    });
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -2157,7 +2329,7 @@
             chatInner.appendChild(createTypingEl());
 
             try {
-                const resp = await fetch(`${LOAD_URL}/${uuid}`, {
+                const resp = await fetch(`${LOAD_URL_BASE}/${uuid}/load`, {
                     headers: {
                         'X-CSRF-TOKEN': CSRF,
                         'Accept': 'application/json'
@@ -2166,11 +2338,25 @@
 
                 if (myToken !== loadToken) return; // sudah ada klik yang lebih baru
 
-                if (resp.status === 404) {
-                    resetToNewChat();
-                    return;
-                } // sesi sudah tidak ada
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                if (!resp.ok) {
+                    // Coba parse error message dari server
+                    let errorMsg = '⚠️ Gagal memuat percakapan.';
+                    try {
+                        const errorData = await resp.json();
+                        if (errorData.error) {
+                            errorMsg = `⚠️ ${errorData.error}`;
+                        }
+                    } catch (e) {
+                        // Jika gagal parse JSON, gunakan pesan default
+                    }
+                    
+                    if (resp.status === 404) {
+                        resetToNewChat();
+                        return;
+                    }
+                    
+                    throw new Error(errorMsg);
+                }
 
                 const data = await resp.json();
                 if (myToken !== loadToken) return;
@@ -2197,9 +2383,12 @@
                 if (myToken !== loadToken) return;
                 console.error('Load session error:', e);
                 chatInner.innerHTML = '';
+                
+                // Tampilkan pesan error yang lebih informatif
+                const errorMessage = e.message || '⚠️ Gagal memuat percakapan. Coba klik sesi dari daftar riwayat.';
                 const {
                     wrap
-                } = createMsgEl('ai', '⚠️ Gagal memuat percakapan. Coba klik sesi dari daftar riwayat.');
+                } = createMsgEl('ai', errorMessage, 'sad');
                 chatInner.appendChild(wrap);
             }
         }
@@ -2229,7 +2418,7 @@
             if (!result.isConfirmed) return;
 
             try {
-                const resp = await fetch(`${DEL_URL}/${uuid}`, {
+                const resp = await fetch(`${DEL_URL_BASE}/${uuid}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': CSRF,

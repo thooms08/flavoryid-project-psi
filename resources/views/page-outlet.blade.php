@@ -59,7 +59,7 @@
             #menuContainer:not(.show-all-menus) .menu-item:nth-child(n+9) { display: none !important; }
         }
 
-        /* --- TAMBAHAN CSS CART --- */
+        /* --- TAMBAHAN CSS CART (bottom sheet) --- */
         .floating-cart-btn {
             position: fixed; bottom: 30px; right: 30px; z-index: 999;
             width: 65px; height: 65px; border-radius: 50%; display: none;
@@ -75,6 +75,17 @@
             display: flex; align-items: center; justify-content: center; border-radius: 50%;
             border: 2px solid white;
         }
+
+        /* Bottom sheet offcanvas */
+        #cartOffcanvas {
+            border-radius: 24px 24px 0 0 !important;
+            height: 85dvh !important;
+            max-height: 85dvh;
+        }
+        #cartOffcanvas .offcanvas-body {
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+        }
+
         .form-control-custom { border-radius: 10px; background: #f8f9fa; border: 1px solid #dee2e6; }
         .form-control-custom:focus { border-color: var(--brand-orange); box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15); background: #fff; }
 
@@ -108,39 +119,16 @@
         <div class="mx-auto mt-3" style="width: 60px; height: 4px; background-color: var(--brand-orange); border-radius: 2px;"></div>
     </div>
 
-    <div class="row g-4 mb-5 align-items-stretch">
-        <div class="col-lg-6">
-            <div class="img-outlet-wrapper">
-                @if($outlet->foto_outlet && file_exists(public_path('assets/outlet/' . $outlet->foto_outlet)))
-                    <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
-                @else
-                    <div class="d-flex flex-column justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 350px;">
-                        <i class="bi bi-shop text-secondary" style="font-size: 5rem; opacity: 0.4;"></i>
-                        <span class="text-muted mt-2" style="font-size: 0.85rem; opacity: 0.6;">Foto outlet belum tersedia</span>
-                    </div>
-                @endif
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="info-card">
-                <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="bi bi-info-square-fill text-orange me-2 fs-4"></i> Tentang Outlet</h5>
-                <p class="text-secondary mb-4" style="line-height: 1.7;">{{ $outlet->deskripsi ?? 'Tidak ada deskripsi yang tersedia untuk outlet ini.' }}</p>
-                <div class="d-flex align-items-start mb-4 bg-light p-3 rounded-4 border">
-                    <div class="bg-white p-2 rounded-circle shadow-sm me-3 d-flex justify-content-center align-items-center"><i class="bi bi-geo-alt-fill text-orange fs-4"></i></div>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark">Alamat Lokasi</h6>
-                        <p class="mb-1 text-secondary" style="font-size: 0.95rem;">{{ $outlet->alamat_lengkap }}</p>
-                        <p class="text-muted mb-0 fw-medium small">{{ $outlet->kota }}, {{ $outlet->provinsi }}</p>
-                    </div>
+    <div class="mb-5">
+        <div class="img-outlet-wrapper" style="max-height: 400px;">
+            @if($outlet->foto_outlet && file_exists(public_path('assets/outlet/' . $outlet->foto_outlet)))
+                <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
+            @else
+                <div class="d-flex flex-column justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 300px;">
+                    <i class="bi bi-shop text-secondary" style="font-size: 5rem; opacity: 0.4;"></i>
+                    <span class="text-muted mt-2" style="font-size: 0.85rem; opacity: 0.6;">Foto outlet belum tersedia</span>
                 </div>
-                <div class="mt-auto">
-                    @if($outlet->maps)
-                        <a href="{{ $outlet->maps }}" target="_blank" class="btn btn-orange w-100 py-3 rounded-pill fs-6 d-flex justify-content-center align-items-center"><i class="bi bi-map-fill me-2 fs-5"></i> BUKA GOOGLE MAPS</a>
-                    @else
-                        <button class="btn btn-secondary w-100 py-3 rounded-pill fs-6" disabled><i class="bi bi-map-fill me-2 fs-5"></i> MAPS BELUM TERSEDIA</button>
-                    @endif
-                </div>
-            </div>
+            @endif
         </div>
     </div>
 
@@ -165,7 +153,14 @@
                         @elseif($menu->tipe_menu == 'best_seller')
                             <span class="badge badge-menu badge-best-seller"><i class="bi bi-fire me-1 text-warning"></i>Best Seller</span>
                         @endif
-                        <img src="{{ $menu->gambar ? asset('assets/menus/' . $menu->gambar) : 'https://placehold.co/400x300?text=No+Image' }}" class="card-img-top menu-img" alt="{{ $menu->nama_menu }}">
+                        @if($menu->gambar)
+                            <img src="{{ asset('assets/menus/' . $menu->gambar) }}" class="card-img-top menu-img" alt="{{ $menu->nama_menu }}">
+                        @else
+                            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background-color: #f1f5f9;">
+                                <i class="bi bi-image" style="font-size: 3rem; color: #cbd5e1;"></i>
+                                <span style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">Belum ada foto</span>
+                            </div>
+                        @endif
                     </div>
                     <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="card-title fw-bold text-truncate mb-1" style="color: #1e293b; font-size: 1.05rem;" title="{{ $menu->nama_menu }}">{{ $menu->nama_menu }}</h6>
@@ -181,7 +176,7 @@
                                 <h5 class="card-text text-orange fw-bolder mb-0" style="letter-spacing: -0.5px;">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h5>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center bg-light transition-all" style="width: 32px; height: 32px; {{ $menu->status_menu == 'habis' ? 'opacity:0.3' : 'opacity: 1; color: var(--brand-orange);' }}">
-                                <i class="bi bi-cart-plus-fill fs-5"></i>
+                                <i class="bi bi-pencil-square fs-5"></i>
                             </div>
                         </div>
                     </div>
@@ -198,20 +193,52 @@
 
     <hr class="text-secondary opacity-25 my-5">
 
-    @if($outlet->mediaQr && ($outlet->mediaQr->instagram || $outlet->mediaQr->x || $outlet->mediaQr->tiktok || $outlet->mediaQr->youtube || $outlet->mediaQr->facebook))
-        <div class="text-center pb-5 pt-2">
-            <h6 class="fw-bold mb-4 text-secondary text-uppercase tracking-wider">Kunjungi Sosial Media Kami</h6>
-            <div class="d-flex justify-content-center gap-3">
-                @if($outlet->mediaQr->facebook) <a href="{{ $outlet->mediaQr->facebook }}" target="_blank" class="btn btn-primary rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-facebook fs-5"></i></a> @endif
-                @if($outlet->mediaQr->instagram) <a href="{{ $outlet->mediaQr->instagram }}" target="_blank" class="btn rounded-circle shadow-sm text-white" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-instagram fs-5"></i></a> @endif
-                @if($outlet->mediaQr->tiktok) <a href="{{ $outlet->mediaQr->tiktok }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-tiktok fs-5"></i></a> @endif
-                @if($outlet->mediaQr->youtube) <a href="{{ $outlet->mediaQr->youtube }}" target="_blank" class="btn btn-danger rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-youtube fs-5"></i></a> @endif
-                @if($outlet->mediaQr->x) <a href="{{ $outlet->mediaQr->x }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-twitter-x fs-5"></i></a> @endif
+    {{-- FOOTER SECTION: Info Outlet + Sosial Media --}}
+    <footer class="mt-2 pb-5">
+        <div class="row g-4 align-items-start">
+            {{-- Kolom kiri: Deskripsi + Lokasi + Maps --}}
+            <div class="col-md-7">
+                <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="bi bi-info-square-fill text-orange me-2 fs-5"></i> Tentang Outlet</h5>
+                <p class="text-secondary mb-4" style="line-height: 1.8; font-size: 0.95rem;">{{ $outlet->deskripsi ?? 'Tidak ada deskripsi yang tersedia untuk outlet ini.' }}</p>
+                <div class="d-flex align-items-start mb-4 bg-white p-3 rounded-4 border shadow-sm">
+                    <div class="bg-light p-2 rounded-circle me-3 d-flex justify-content-center align-items-center flex-shrink-0"><i class="bi bi-geo-alt-fill text-orange fs-5"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.9rem;">Alamat Lokasi</h6>
+                        <p class="mb-1 text-secondary" style="font-size: 0.88rem;">{{ $outlet->alamat_lengkap }}</p>
+                        <p class="text-muted mb-0 fw-medium" style="font-size: 0.8rem;">{{ $outlet->kota }}, {{ $outlet->provinsi }}</p>
+                    </div>
+                </div>
+                @if($outlet->maps)
+                    <a href="{{ $outlet->maps }}" target="_blank" class="btn btn-orange px-4 py-2 rounded-pill fs-6 d-inline-flex align-items-center gap-2"><i class="bi bi-map-fill fs-5"></i> BUKA GOOGLE MAPS</a>
+                @else
+                    <button class="btn btn-secondary px-4 py-2 rounded-pill fs-6" disabled><i class="bi bi-map-fill me-2"></i> MAPS BELUM TERSEDIA</button>
+                @endif
+            </div>
+
+            {{-- Kolom kanan: Sosial Media --}}
+            <div class="col-md-5">
+                @if($outlet->mediaQr && ($outlet->mediaQr->instagram || $outlet->mediaQr->x || $outlet->mediaQr->tiktok || $outlet->mediaQr->youtube || $outlet->mediaQr->facebook))
+                <div class="bg-white p-4 rounded-4 border shadow-sm">
+                    <h6 class="fw-bold mb-4 text-secondary text-uppercase" style="letter-spacing: 0.05em; font-size: 0.8rem;">Kunjungi Sosial Media Kami</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        @if($outlet->mediaQr->facebook) <a href="{{ $outlet->mediaQr->facebook }}" target="_blank" class="btn btn-primary rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-facebook fs-5"></i></a> @endif
+                        @if($outlet->mediaQr->instagram) <a href="{{ $outlet->mediaQr->instagram }}" target="_blank" class="btn rounded-circle shadow-sm text-white" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-instagram fs-5"></i></a> @endif
+                        @if($outlet->mediaQr->tiktok) <a href="{{ $outlet->mediaQr->tiktok }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-tiktok fs-5"></i></a> @endif
+                        @if($outlet->mediaQr->youtube) <a href="{{ $outlet->mediaQr->youtube }}" target="_blank" class="btn btn-danger rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-youtube fs-5"></i></a> @endif
+                        @if($outlet->mediaQr->x) <a href="{{ $outlet->mediaQr->x }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-twitter-x fs-5"></i></a> @endif
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
-    @endif
-</div>
 
+        <div class="text-center mt-5 pb-2">
+            <p class="text-muted mb-0" style="font-size: 0.78rem;">Powered by <a href="https://flavory.id" target="_blank" class="text-orange fw-semibold text-decoration-none">Flavory.id</a></p>
+        </div>
+    </footer>
+</div>{{-- end .container --}}
+
+{{-- Modal Pilih Varian --}}
 <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -224,10 +251,9 @@
             </div>
             <div class="modal-body px-4 pb-4">
                 <form id="variantForm">
-                    <div id="variantOptions" class="mb-4">
-                        </div>
+                    <div id="variantOptions" class="mb-4"></div>
                     <button type="button" class="btn btn-orange w-100 py-3 rounded-pill fw-bold" onclick="submitVariantForm()">
-                        <i class="bi bi-cart-plus me-1"></i> TAMBAH KE PESANAN
+                        <i class="bi bi-journal-bookmark-fill me-1"></i> TAMBAH KE PESANAN
                     </button>
                 </form>
             </div>
@@ -235,15 +261,21 @@
     </div>
 </div>
 
+{{-- Tombol floating buku/catatan pesanan --}}
 <button class="floating-cart-btn" id="floatingCart" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
-    <i class="bi bi-basket2-fill"></i>
+    <i class="bi bi-journal-bookmark-fill"></i>
     <span class="cart-badge" id="cartCountBadge">0</span>
 </button>
 
-<div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel" style="width: 400px; border-left: none;">
-    <div class="offcanvas-header border-bottom bg-light">
+{{-- Bottom Sheet Pesanan (dari bawah ke atas) --}}
+<div class="offcanvas offcanvas-bottom shadow-lg" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel" style="height: 85dvh; border-radius: 24px 24px 0 0; border-top: none;">
+    {{-- Drag handle --}}
+    <div class="d-flex justify-content-center pt-3 pb-1" style="cursor: pointer;" data-bs-dismiss="offcanvas">
+        <div style="width: 40px; height: 5px; background: #dee2e6; border-radius: 10px;"></div>
+    </div>
+    <div class="offcanvas-header border-bottom bg-white px-4 pt-1 pb-3" style="border-radius: 24px 24px 0 0;">
         <h5 class="offcanvas-title fw-bold text-dark d-flex align-items-center" id="cartOffcanvasLabel">
-            <i class="bi bi-basket2-fill text-orange me-2 fs-4"></i> Pesanan Saya
+            <i class="bi bi-journal-bookmark-fill text-orange me-2 fs-4"></i> Catatan Pesanan Saya
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
@@ -251,8 +283,8 @@
     <div class="offcanvas-body p-0 d-flex flex-column bg-white">
         <div id="cartList" class="flex-grow-1 overflow-y-auto p-3" style="background: #fdfdfd;">
             <div class="text-center py-5 text-muted">
-                <i class="bi bi-cart3 display-4 opacity-25"></i>
-                <p class="mt-3">Keranjang masih kosong</p>
+                <i class="bi bi-journal-bookmark display-4 opacity-25"></i>
+                <p class="mt-3">Catatan pesanan masih kosong</p>
             </div>
         </div>
 
@@ -560,7 +592,7 @@
         list.innerHTML = '';
 
         if (cart.length === 0) {
-            list.innerHTML = `<div class="text-center py-5 text-muted"><i class="bi bi-cart3 display-4 opacity-25"></i><p class="mt-3">Keranjang masih kosong</p></div>`;
+            list.innerHTML = `<div class="text-center py-5 text-muted"><i class="bi bi-journal-bookmark display-4 opacity-25"></i><p class="mt-3">Catatan pesanan masih kosong</p></div>`;
             floatBtn.style.display = 'none';
         } else {
             floatBtn.style.display = 'flex';
@@ -718,11 +750,13 @@
                     }
 
                     data.forEach(menu => {
-                        let imgSrc = menu.gambar ? (assetUrl + 'assets/menus/' + menu.gambar) : 'https://placehold.co/400x300?text=No+Image';
+                        let imgContent = menu.gambar
+                            ? `<img src="${assetUrl + 'assets/menus/' + menu.gambar}" class="card-img-top menu-img" alt="${menu.nama_menu}">`
+                            : `<div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background-color: #f1f5f9;"><i class="bi bi-image" style="font-size: 3rem; color: #cbd5e1;"></i><span style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">Belum ada foto</span></div>`;
                         let overlayHabis = menu.status_menu === 'habis' ? `<div class="menu-overlay-habis"><span class="label-habis">HABIS</span></div>` : '';
                         let badgeTipe = '';
-                        if (menu.tipe_menu === 'utama') badgeTipe = `<span class="badge bg-primary badge-menu shadow-sm">Menu Utama</span>`;
-                        else if (menu.tipe_menu === 'best_seller') badgeTipe = `<span class="badge bg-danger badge-menu shadow-sm"><i class="bi bi-star-fill me-1 text-warning"></i>Best Seller</span>`;
+                        if (menu.tipe_menu === 'utama') badgeTipe = `<span class="badge badge-menu badge-utama">Menu Utama</span>`;
+                        else if (menu.tipe_menu === 'best_seller') badgeTipe = `<span class="badge badge-menu badge-best-seller"><i class="bi bi-fire me-1 text-warning"></i>Best Seller</span>`;
 
                         // Tanda Varian untuk hasil pencarian
                         let variantBadge = (menu.variants && menu.variants.length > 0) 
@@ -731,13 +765,13 @@
 
                         let jsonStr = JSON.stringify(menu).replace(/'/g, "\\'");
                         let cursorClick = menu.status_menu === 'habis' ? '' : `onclick='handleMenuClick(${jsonStr})'`;
-                        let iconCart = menu.status_menu === 'habis' ? 'opacity:0.3' : 'opacity:1; color: var(--brand-orange)';
+                        let iconStyle = menu.status_menu === 'habis' ? 'opacity:0.3' : 'opacity:1; color: var(--brand-orange)';
 
                         let cardHtml = `
                             <div class="col menu-item" ${cursorClick}>
                                 <div class="card menu-card h-100">
                                     ${overlayHabis}
-                                    <div class="menu-img-wrapper">${badgeTipe}<img src="${imgSrc}" class="card-img-top menu-img" alt="${menu.nama_menu}"></div>
+                                    <div class="menu-img-wrapper">${badgeTipe}${imgContent}</div>
                                     <div class="card-body d-flex flex-column p-3 p-md-4">
                                         <h6 class="card-title fw-bold text-dark text-truncate mb-1" style="font-size: 1.05rem;" title="${menu.nama_menu}">${menu.nama_menu}</h6>
                                         ${variantBadge}
@@ -746,8 +780,8 @@
                                                 <span class="d-block text-muted" style="font-size: 0.75rem; font-weight: 500; margin-bottom: 2px;">Harga Mulai</span>
                                                 <h5 class="card-text text-orange fw-bolder mb-0" style="letter-spacing: -0.5px;">${formatRupiah(menu.harga)}</h5>
                                             </div>
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light transition-all" style="width: 32px; height: 32px; ${iconCart}">
-                                                <i class="bi bi-cart-plus-fill fs-5"></i>
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light transition-all" style="width: 32px; height: 32px; ${iconStyle}">
+                                                <i class="bi bi-pencil-square fs-5"></i>
                                             </div>
                                         </div>
                                     </div>
