@@ -229,99 +229,95 @@ class OwnerAIController extends Controller
                 flush();
 
                 try {
-                    // Bangun payload sesuai model:
-                    // - qwen/qwen3.8-27b: reasoning_effort=none (matikan chain-of-thought)
-                    // - gpt-oss-*       : include_reasoning=false, max_completion_tokens (max_tokens deprecated)
-                    $payload = [
-                        'model'    => $activeModel,
-                        'messages' => $messages,
-                        'stream'   => true,
-                        'temperature'          => 0.7,
-                        'max_completion_tokens' => 2048,
-                    ];
+                    // ── Coba GROQ terlebih dahulu ──────────────────────────────────────
+                    $groqResult = $this->callGroqStream($messages, $activeModel, $isGptOss);
 
-                    if ($isGptOss) {
-                        $payload['include_reasoning'] = false;
-                    } else {
-                        // qwen3 dan model lain — matikan reasoning
-                        $payload['reasoning_effort'] = 'none';
-                    }
+                    if ($groqResult['status'] === 'rate_limited') {
+                        // GROQ kena 429 → fallback ke Gemini
+                        Log::warning('FlavoryAI: GROQ rate limited (429), fallback ke Gemini.');
+                        $geminiResult = $this->callGeminiBlocking($messages);
 
-                    $groqResp = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . config('services.groq.key'),
-                        'Content-Type'  => 'application/json',
-                    ])->timeout(90)->withOptions(['stream' => true])
-                    ->post('https://api.groq.com/openai/v1/chat/completions', $payload);
+                        if ($geminiResult['status'] === 'ok') {
+                            // Stream teks Gemini secara manual ke client (chunk per 80 karakter)
+                            $text        = $geminiResult['text'];
+                            $fullResponse = $text;
+                            $chunkSize   = 80;
+                            $offset      = 0;
+                            $len         = mb_strlen($text);
 
-                    if (!$groqResp->successful()) {
-                        $httpStatus = $groqResp->status();
-                        Log::error('FlavoryAI Groq API error ' . $httpStatus . ': ' . $groqResp->body());
+                            while ($offset < $len) {
+                                $piece = mb_substr($text, $offset, $chunkSize);
+                                $offset += $chunkSize;
 
-                        $friendlyError = match(true) {
-                            $httpStatus === 429 =>
-                                'Maaf Bos, FlavoryAI sedang terlalu sibuk saat ini (batas permintaan tercapai). ' .
-                                'Tunggu sebentar lalu coba lagi ya. 🙏',
-                            $httpStatus === 503 =>
-                                'Aduh, server AI sedang dalam pemeliharaan sebentar. ' .
-                                'Coba lagi dalam beberapa menit ya, Bos! 🔧',
-                            $httpStatus === 401 || $httpStatus === 403 =>
-                                'Hmm, ada masalah autentikasi dengan layanan AI. ' .
-                                'Silakan hubungi admin Flavory.id untuk bantuan. 🔑',
-                            $httpStatus >= 500 =>
-                                'Ups, FlavoryAI sedang mengalami gangguan teknis. ' .
-                                'Tim kami sedang menanganinya — coba lagi sebentar lagi ya, Bos! ⚙️',
-                            default =>
-                                'Oops, ada kendala menghubungi FlavoryAI. ' .
-                                'Coba kirim pesanmu lagi, Bos! 😊',
-                        };
-
-                        echo "data: " . json_encode(['error' => $friendlyError]) . "\n\n";
-                        echo "data: [DONE]\n\n";
-                        flush();
-                        return;
-                    }
-
-                    $body   = $groqResp->getBody();
-                    $buffer = '';
-
-                    while (!$done && !$body->eof()) {
-                        $chunk  = $body->read(4096);
-                        if ($chunk === '' || $chunk === false) break;
-                        $buffer .= $chunk;
-
-                        // Proses baris-baris lengkap
-                        while (($pos = strpos($buffer, "\n")) !== false) {
-                            $line   = substr($buffer, 0, $pos);
-                            $buffer = substr($buffer, $pos + 1);
-                            $line   = trim($line);
-
-                            if ($line === '') continue;
-                            if (!str_starts_with($line, 'data:')) continue;
-
-                            $raw = trim(substr($line, 5));
-
-                            if ($raw === '[DONE]') {
-                                $done = true;
-                                break;
-                            }
-
-                            $decoded = json_decode($raw, true);
-                            if (!$decoded) continue;
-
-                            // Ambil HANYA delta.content — delta.reasoning adalah thinking internal model,
-                            // tidak boleh ditampilkan ke user.
-                            $delta = $decoded['choices'][0]['delta']['content'] ?? null;
-                            if ($delta !== null && $delta !== '') {
-                                $fullResponse .= $delta;
-                                // Sembunyikan blok ```flavory_action dari tampilan chat.
-                                // Potong response di titik awal blok aksi — user tidak perlu melihatnya.
-                                $visibleText = preg_replace('/```flavory_action[\s\S]*$/u', '', $fullResponse);
+                                $visibleText = preg_replace('/```flavory_action[\s\S]*$/u', '', mb_substr($text, 0, $offset));
                                 $safeLen     = strlen($visibleText);
                                 if ($safeLen > $lastSentLen) {
                                     $safeDelta   = substr($visibleText, $lastSentLen);
                                     $lastSentLen = $safeLen;
                                     echo "data: " . json_encode(['delta' => $safeDelta]) . "\n\n";
                                     flush();
+                                }
+                            }
+                            $done = true;
+                        } else {
+                            // Gemini juga gagal → tampilkan error informatif
+                            echo "data: " . json_encode(['error' => $geminiResult['error']]) . "\n\n";
+                            echo "data: [DONE]\n\n";
+                            flush();
+                            return;
+                        }
+
+                    } elseif ($groqResult['status'] === 'error') {
+                        // Error GROQ selain 429
+                        echo "data: " . json_encode(['error' => $groqResult['error']]) . "\n\n";
+                        echo "data: [DONE]\n\n";
+                        flush();
+                        return;
+
+                    } else {
+                        // GROQ sukses → baca stream seperti semula
+                        $body   = $groqResult['body'];
+                        $buffer = '';
+
+                        while (!$done && !$body->eof()) {
+                            $chunk  = $body->read(4096);
+                            if ($chunk === '' || $chunk === false) break;
+                            $buffer .= $chunk;
+
+                            // Proses baris-baris lengkap
+                            while (($pos = strpos($buffer, "\n")) !== false) {
+                                $line   = substr($buffer, 0, $pos);
+                                $buffer = substr($buffer, $pos + 1);
+                                $line   = trim($line);
+
+                                if ($line === '') continue;
+                                if (!str_starts_with($line, 'data:')) continue;
+
+                                $raw = trim(substr($line, 5));
+
+                                if ($raw === '[DONE]') {
+                                    $done = true;
+                                    break;
+                                }
+
+                                $decoded = json_decode($raw, true);
+                                if (!$decoded) continue;
+
+                                // Ambil HANYA delta.content — delta.reasoning adalah thinking internal model,
+                                // tidak boleh ditampilkan ke user.
+                                $delta = $decoded['choices'][0]['delta']['content'] ?? null;
+                                if ($delta !== null && $delta !== '') {
+                                    $fullResponse .= $delta;
+                                    // Sembunyikan blok ```flavory_action dari tampilan chat.
+                                    // Potong response di titik awal blok aksi — user tidak perlu melihatnya.
+                                    $visibleText = preg_replace('/```flavory_action[\s\S]*$/u', '', $fullResponse);
+                                    $safeLen     = strlen($visibleText);
+                                    if ($safeLen > $lastSentLen) {
+                                        $safeDelta   = substr($visibleText, $lastSentLen);
+                                        $lastSentLen = $safeLen;
+                                        echo "data: " . json_encode(['delta' => $safeDelta]) . "\n\n";
+                                        flush();
+                                    }
                                 }
                             }
                         }
@@ -390,6 +386,195 @@ class OwnerAIController extends Controller
                 'Pragma'            => 'no-cache',
             ]
         );
+    }
+
+    // ─── Panggil GROQ dengan streaming ───────────────────────────────────────
+    /**
+     * Coba panggil GROQ API dengan mode stream.
+     * Return:
+     *   ['status' => 'ok',           'body' => <GuzzleBodyStream>]
+     *   ['status' => 'rate_limited']
+     *   ['status' => 'error',        'error' => <string pesan friendly>]
+     */
+    private function callGroqStream(array $messages, string $model, bool $isGptOss): array
+    {
+        $payload = [
+            'model'                => $model,
+            'messages'             => $messages,
+            'stream'               => true,
+            'temperature'          => 0.7,
+            'max_completion_tokens' => 2048,
+        ];
+
+        if ($isGptOss) {
+            $payload['include_reasoning'] = false;
+        } else {
+            $payload['reasoning_effort'] = 'none';
+        }
+
+        $resp = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.groq.key'),
+            'Content-Type'  => 'application/json',
+        ])->timeout(90)->withOptions(['stream' => true])
+        ->post('https://api.groq.com/openai/v1/chat/completions', $payload);
+
+        if ($resp->successful()) {
+            return ['status' => 'ok', 'body' => $resp->getBody()];
+        }
+
+        $httpStatus = $resp->status();
+        Log::error('FlavoryAI Groq API error ' . $httpStatus . ': ' . $resp->body());
+
+        if ($httpStatus === 429) {
+            return ['status' => 'rate_limited'];
+        }
+
+        $friendlyError = match(true) {
+            $httpStatus === 503 =>
+                'Aduh, server AI sedang dalam pemeliharaan sebentar. ' .
+                'Coba lagi dalam beberapa menit ya, Bos! 🔧',
+            $httpStatus === 401 || $httpStatus === 403 =>
+                'Hmm, ada masalah autentikasi dengan layanan AI. ' .
+                'Silakan hubungi admin Flavory.id untuk bantuan. 🔑',
+            $httpStatus >= 500 =>
+                'Ups, FlavoryAI sedang mengalami gangguan teknis. ' .
+                'Tim kami sedang menanganinya — coba lagi sebentar lagi ya, Bos! ⚙️',
+            default =>
+                'Oops, ada kendala menghubungi FlavoryAI. ' .
+                'Coba kirim pesanmu lagi, Bos! 😊',
+        };
+
+        return ['status' => 'error', 'error' => $friendlyError];
+    }
+
+    // ─── Panggil Google Gemini (non-streaming, sebagai fallback) ─────────────
+    /**
+     * Fallback ke Google AI Studio (Gemini) saat GROQ rate limited.
+     * Menggunakan generateContent REST API (non-streaming).
+     * Mengonversi format pesan OpenAI → format Gemini.
+     * Return:
+     *   ['status' => 'ok',    'text' => <string>]
+     *   ['status' => 'error', 'error' => <string pesan friendly>]
+     */
+    private function callGeminiBlocking(array $messages): array
+    {
+        $geminiKey   = config('services.gemini.key');
+        $geminiModel = config('services.gemini.model', 'gemini-2.0-flash');
+
+        if (empty($geminiKey)) {
+            Log::error('FlavoryAI: GEMINI_API_KEY tidak dikonfigurasi.');
+            return [
+                'status' => 'error',
+                'error'  => 'Maaf Bos, FlavoryAI sedang terlalu sibuk dan layanan cadangan belum dikonfigurasi. ' .
+                            'Coba lagi beberapa saat lagi ya! 🙏',
+            ];
+        }
+
+        // ── Konversi pesan OpenAI ke format Gemini ──────────────────────────
+        // Gemini: role 'user' | 'model', system prompt jadi systemInstruction terpisah.
+        $systemInstruction = null;
+        $geminiContents    = [];
+
+        foreach ($messages as $msg) {
+            $role    = $msg['role'];
+            $content = $msg['content'];
+
+            if ($role === 'system') {
+                // Gemini memisahkan system instruction
+                $systemInstruction = $content;
+                continue;
+            }
+
+            $geminiRole = ($role === 'assistant') ? 'model' : 'user';
+
+            // Gemini tidak boleh ada dua pesan berurutan dengan role yang sama.
+            // Kalau terjadi, gabungkan ke pesan sebelumnya.
+            $last = end($geminiContents);
+            if ($last && $last['role'] === $geminiRole) {
+                $geminiContents[count($geminiContents) - 1]['parts'][0]['text'] .= "\n" . $content;
+            } else {
+                $geminiContents[] = [
+                    'role'  => $geminiRole,
+                    'parts' => [['text' => $content]],
+                ];
+            }
+        }
+
+        // Gemini wajib diawali dengan role 'user'
+        if (!empty($geminiContents) && $geminiContents[0]['role'] !== 'user') {
+            array_unshift($geminiContents, [
+                'role'  => 'user',
+                'parts' => [['text' => 'Halo']],
+            ]);
+        }
+
+        // Jika kosong setelah filter, kembalikan error
+        if (empty($geminiContents)) {
+            return ['status' => 'error', 'error' => 'Tidak ada pesan untuk dikirim ke AI.'];
+        }
+
+        $payload = [
+            'contents'         => $geminiContents,
+            'generationConfig' => [
+                'temperature'     => 0.7,
+                'maxOutputTokens' => 2048,
+            ],
+        ];
+
+        if ($systemInstruction) {
+            $payload['system_instruction'] = [
+                'parts' => [['text' => $systemInstruction]],
+            ];
+        }
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent?key={$geminiKey}";
+
+        try {
+            $resp = Http::withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(60)
+                ->post($url, $payload);
+
+            if (!$resp->successful()) {
+                $status = $resp->status();
+                Log::error('FlavoryAI Gemini API error ' . $status . ': ' . $resp->body());
+
+                $friendlyError = match(true) {
+                    $status === 429 =>
+                        'Maaf Bos, FlavoryAI sedang sangat sibuk saat ini. ' .
+                        'Tunggu sebentar lalu coba lagi ya! 🙏',
+                    $status === 400 =>
+                        'Oops, ada masalah dengan permintaan ke FlavoryAI. Coba ulangi pesanmu ya, Bos! 😊',
+                    $status === 401 || $status === 403 =>
+                        'Hmm, ada masalah autentikasi dengan layanan AI cadangan. ' .
+                        'Silakan hubungi admin Flavory.id. 🔑',
+                    default =>
+                        'Oops, ada kendala menghubungi FlavoryAI. ' .
+                        'Coba kirim pesanmu lagi, Bos! 😊',
+                };
+
+                return ['status' => 'error', 'error' => $friendlyError];
+            }
+
+            $data = $resp->json();
+            $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+            if (!$text) {
+                Log::error('FlavoryAI Gemini: respons kosong.', ['body' => $resp->body()]);
+                return [
+                    'status' => 'error',
+                    'error'  => 'FlavoryAI mendapatkan respons kosong dari layanan cadangan. Coba lagi ya, Bos! 😊',
+                ];
+            }
+
+            return ['status' => 'ok', 'text' => $text];
+
+        } catch (\Throwable $e) {
+            Log::error('FlavoryAI Gemini exception: ' . $e->getMessage());
+            return [
+                'status' => 'error',
+                'error'  => 'Koneksi ke FlavoryAI cadangan gagal. Pastikan internet kamu aktif dan coba lagi. 📶',
+            ];
+        }
     }
 
     // ─── Eksekusi daftar aksi AI (dipanggil dari chat() setelah stream selesai) ──
@@ -835,10 +1020,38 @@ $formSummary
 === AKHIR DATA ===
 
 === KEMAMPUAN AKSI LANGSUNG (FlavoryAI Actions) ===
-Kamu BISA mengeksekusi perubahan data secara langsung. Jika owner minta CRUD, balas dengan pesan ramah LALU sertakan blok JSON aksi di AKHIR responsmu dengan format ini:
+PENTING: Kamu ADALAH sistem yang bisa langsung mengeksekusi perubahan data di Flavory.id.
+Kamu BUKAN chatbot biasa yang hanya bisa menyarankan — kamu BISA langsung melakukannya.
+Jangan pernah bilang "maaf belum bisa eksekusi", "silakan lakukan manual", atau kalimat sejenis.
+Jika owner minta tambah/catat/hapus/edit data, langsung kerjakan: balas dengan pesan ramah LALU
+sertakan blok JSON aksi di AKHIR responsmu.
 
+FORMAT BLOK AKSI:
 ```flavory_action
 {"action":"NAMA_AKSI","params":{...}}
+```
+
+CONTOH PERCAKAPAN (few-shot — IKUTI POLA INI):
+
+Contoh 1 — catat pengeluaran:
+Owner: "tolong catat pengeluaran beli es batu 10rb ya"
+FlavoryAI: "Siap Bos! Pengeluaran beli es batu Rp 10.000 sudah saya catat ya! 🧊✅"
+```flavory_action
+{"action":"pengeluaran_create","params":{"kategori":"bahan_baku","items":[{"item":"Es Batu","harga":10000,"qty":1}]}}
+```
+
+Contoh 2 — tambah menu:
+Owner: "tambahkan menu Es Teh Manis harga 5000"
+FlavoryAI: "Oke Bos! Menu Es Teh Manis Rp 5.000 langsung saya tambahkan! 🍹"
+```flavory_action
+{"action":"menu_create","params":{"nama_menu":"Es Teh Manis","harga":5000,"kategori":"F&B","tipe_menu":"utama","deskripsi":"","stok_menu":null}}
+```
+
+Contoh 3 — catat modal:
+Owner: "saya setor modal 500rb"
+FlavoryAI: "Setoran modal Rp 500.000 berhasil saya catat Bos! 💰"
+```flavory_action
+{"action":"modal_create","params":{"nominal":500000,"keterangan":"Setoran modal"}}
 ```
 
 DAFTAR AKSI YANG TERSEDIA:
@@ -871,8 +1084,9 @@ PENGATURAN FORM:
 - Toggle field:    {"action":"form_toggle","params":{"field":"nama|whatsapp|meja|keterangan|diskon|bukti_pembayaran|voucher","status":true}}
 
 ATURAN AKSI — WAJIB DIPATUHI TANPA PENGECUALIAN:
-- Hanya keluarkan blok ```flavory_action jika owner meminta perubahan data secara eksplisit.
-- Untuk informasi/analisis/rekomendasi: JANGAN keluarkan blok aksi — cukup jawab saja.
+- Jika owner minta tambah/catat/simpan/hapus/edit/ubah data → WAJIB keluarkan blok ```flavory_action. Jangan tanya "mau dieksekusi?", langsung kerjakan.
+- Untuk informasi/analisis/rekomendasi/pertanyaan: JANGAN keluarkan blok aksi — cukup jawab saja.
+- JANGAN PERNAH bilang "maaf belum bisa", "lakukan manual di aplikasi", atau menyiratkan kamu tidak mampu mengeksekusi — karena kamu BISA dan HARUS melakukannya.
 - JANGAN PERNAH mengklaim sudah mengeksekusi aksi jika kamu tidak menyertakan blok ```flavory_action. Jika kamu tidak menyertakan blok aksi, berarti data BELUM berubah — jangan bohong kepada owner.
 - Jika ada beberapa aksi berbeda (misal tambah menu DAN hapus menu), keluarkan array: {"actions":[{...},{...}]}
 - Jika ada beberapa pengeluaran sekaligus, gunakan SATU aksi pengeluaran_create dengan array "items", bukan beberapa aksi terpisah.
@@ -988,14 +1202,31 @@ PROMPT;
     }
 
     /**
-     * Ekstrak teks plain dari file Blade panduan.
-     * - Hilangkan @extends, @section, @push, @endpush, @stop, @include, @if, @endif, @foreach, @endforeach, @php, @endphp, dll.
-     * - Hilangkan tag HTML & style/script block.
-     * - Bersihkan whitespace berlebih.
-     * - Batasi panjang output.
+     * Ekstrak teks plain dari file panduan.
+     * Prioritas: resources/ai-docs/<slug>.md → resources/views/<path>.blade.php
+     *
+     * File .md digunakan langsung tanpa transformasi — isinya sudah bersih dan akurat.
+     * File .blade.php diproses dengan strip tag HTML & Blade directive.
      */
     private function extractGuideText(string $bladePath, int $maxChars = 3500): string
     {
+        // ── Coba file .md dulu (ai-docs/<slug terakhir>.md) ──────────────────
+        // bladePath contoh: "panduan.laporan-pengeluaran" → slug = "laporan-pengeluaran"
+        $slug   = last(explode('.', $bladePath));
+        $mdPath = resource_path('ai-docs/' . $slug . '.md');
+
+        if (is_file($mdPath)) {
+            $raw = file_get_contents($mdPath);
+            if ($raw !== false && $raw !== '') {
+                $raw = trim($raw);
+                if (mb_strlen($raw) > $maxChars) {
+                    $raw = mb_substr($raw, 0, $maxChars) . "\n…(dipotong)";
+                }
+                return $raw;
+            }
+        }
+
+        // ── Fallback: parsing file .blade.php ────────────────────────────────
         $full = resource_path('views/' . str_replace('.', '/', $bladePath) . '.blade.php');
         if (!is_file($full)) return '';
 
@@ -1061,8 +1292,8 @@ PROMPT;
 
         // Ambil teks tiap file, batasi total agar tidak meledak token
         $chunks = [];
-        $totalBudget = 6000; // total char semua panduan digabung
-        $perFile     = max(1500, intdiv($totalBudget, max(1, count($files))));
+        $totalBudget = 8000; // .md jauh lebih padat dari blade, naikkan budget
+        $perFile     = max(2000, intdiv($totalBudget, max(1, count($files))));
 
         foreach ($files as $f) {
             $txt = $this->extractGuideText($f, $perFile);

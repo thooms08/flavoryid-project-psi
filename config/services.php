@@ -40,4 +40,9 @@ return [
         'model' => env('GROQ_DEFAULT_MODEL', 'qwen/qwen3.8-27b'),
     ],
 
+    'gemini' => [
+        'key'   => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_DEFAULT_MODEL', 'gemini-2.0-flash'),
+    ],
+
 ];
