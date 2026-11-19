@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Manajemen Shift Karyawan — Dasbor Manager Flavory.id')
+@section('title', 'Panduan Manajemen Shift Karyawan — Dashboard Owner Flavory.id')
 @push('styles')
-<meta name="description" content="Cara membuat kategori shift, mengatur rotasi jadwal kerja, dan menugaskan karyawan ke shift di Dasbor Manager Flavory.id.">
+<meta name="description" content="Cara membuat kategori shift, mengatur rotasi jadwal kerja, dan menugaskan karyawan ke shift di Dashboard Owner Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
+                          style="background:var(--manager-light);color:var(--primary-orange);border:1px solid rgba(255,106,0,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dashboard Owner
                     </span>
                     <h1>Manajemen Shift Karyawan</h1>
                     <p class="mt-2">Buat kategori shift, atur rotasi jadwal harian, dan tugaskan karyawan ke shift yang tepat.</p>

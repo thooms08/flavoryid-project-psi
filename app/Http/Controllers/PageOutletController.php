@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\PengaturanForm;
 use App\Models\Voucher;
+use App\Models\NomorMeja;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Events\OrderMasuk;
@@ -36,7 +37,28 @@ class PageOutletController extends Controller
             return compact('outlet', 'pengaturan', 'menus');
         });
 
-        return view('page-outlet', $cached);
+        return view('page-outlet', $cached + ['mejaList' => $this->getMejaList($cached['outlet']->partner_id, $cached['pengaturan'])]);
+    }
+
+    /**
+     * Ambil daftar meja tersedia (exclude yang sudah dipakai order pending).
+     */
+    private function getMejaList(int $partnerId, $pengaturan)
+    {
+        if (!$pengaturan || !$pengaturan->meja) return collect();
+
+        $usedMeja = Order::where('partner_id', $partnerId)
+            ->where('status', 'pending')
+            ->whereNotNull('no_meja')
+            ->where('no_meja', '!=', '')
+            ->pluck('no_meja')
+            ->toArray();
+
+        return NomorMeja::where('partner_id', $partnerId)
+            ->where('is_active', true)
+            ->whereNotIn('nama_meja', $usedMeja)
+            ->orderBy('nama_meja', 'asc')
+            ->get();
     }
 
     /**
@@ -60,6 +82,33 @@ class PageOutletController extends Controller
             ->get();
 
         return response()->json($menus);
+    }
+
+    /**
+     * AJAX: Ambil daftar meja tersedia untuk dropdown (halaman publik).
+     * Meja yang sedang dipakai order pending dihilangkan.
+     */
+    public function getAvailableMeja($page_name)
+    {
+        $outlet = InformasiOutlet::where('page_name', $page_name)->firstOrFail();
+
+        $usedMeja = Order::where('partner_id', $outlet->partner_id)
+            ->where('status', 'pending')
+            ->whereNotNull('no_meja')
+            ->where('no_meja', '!=', '')
+            ->pluck('no_meja')
+            ->toArray();
+
+        $available = NomorMeja::where('partner_id', $outlet->partner_id)
+            ->where('is_active', true)
+            ->whereNotIn('nama_meja', $usedMeja)
+            ->orderBy('nama_meja', 'asc')
+            ->get(['id', 'nama_meja']);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $available,
+        ]);
     }
 
     /**

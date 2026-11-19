@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Mengelola Data Karyawan — Dasbor Manager Flavory.id')
+@section('title', 'Panduan Mengelola Data Karyawan — Dashboard Owner Flavory.id')
 @push('styles')
-<meta name="description" content="Cara menambah, mengedit, dan mengelola data karyawan aktif maupun nonaktif di Dasbor Manager Flavory.id.">
+<meta name="description" content="Cara menambah, mengedit, dan mengelola data karyawan aktif maupun nonaktif di Dashboard Owner Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
+                          style="background:var(--manager-light);color:var(--primary-orange);border:1px solid rgba(255,106,0,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dashboard Owner
                     </span>
                     <h1>Mengelola Data Karyawan</h1>
                     <p class="mt-2">Kelola profil, tambah anggota tim baru, dan atur akses akun kasir untuk setiap karyawan.</p>

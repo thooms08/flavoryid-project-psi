@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan AI Consultant — Dasbor Manager Flavory.id')
+@section('title', 'Panduan AI Consultant — Dashboard Owner Flavory.id')
 @push('styles')
-<meta name="description" content="Cara menggunakan AI Consultant di Dasbor Manager Flavory.id untuk mendapatkan insight bisnis dan berkonsultasi dengan asisten AI berbasis data outlet.">
+<meta name="description" content="Cara menggunakan AI Consultant di Dashboard Owner Flavory.id untuk mendapatkan insight bisnis dan berkonsultasi dengan asisten AI berbasis data outlet.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
+                          style="background:var(--manager-light);color:var(--primary-orange);border:1px solid rgba(255,106,0,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dashboard Owner
                     </span>
                     <h1>AI Consultant</h1>
                     <p class="mt-2">Konsultan bisnis berbasis AI milik Flavory.id yang membaca data nyata outlet Anda dan memberikan saran strategis langsung dari dasbor manager.</p>
@@ -103,7 +103,7 @@
                         </p>
                         <a href="{{ route('register') }}"
                            class="btn btn-light fw-bold rounded-pill px-4 py-2 shadow-sm"
-                           style="color:var(--manager-green);">
+                           style="color:var(--primary-orange);">
                             <i class="bi bi-person-plus-fill me-1"></i> Daftar Sekarang
                         </a>
                     </div>

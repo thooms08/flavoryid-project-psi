@@ -168,7 +168,7 @@ class OwnerAIController extends Controller
         ]);
 
         // ── System prompt dengan data outlet ──
-        $systemPrompt = $this->buildSystemPrompt($partner);
+        $systemPrompt = $this->buildSystemPrompt($partner, $userMessage);
 
         // ── History N pesan terakhir ──
         $history = FlavoryAiMessage::where('flavory_ai_session_id', $session->id)
@@ -675,8 +675,30 @@ class OwnerAIController extends Controller
     }
 
     // ─── System prompt dengan data outlet real-time ───────────────────────────
-    private function buildSystemPrompt(Partner $partner): string
+    private function buildSystemPrompt(Partner $partner, ?string $userMessage = null): string
     {
+        // ── RAG panduan: jika owner menanyakan tutorial, ambil teks panduan asli ──
+        $guideContext = '';
+        $guideInstruction = '';
+        if ($userMessage) {
+            $guideContext = $this->buildGuideContext($userMessage);
+            if ($guideContext !== '') {
+                $guideInstruction = <<<INSTR
+
+=== PANDUAN RESMI FLAVORY.ID (SUMBER UTAMA UNTUK TUTORIAL) ===
+Saat owner menanyakan CARA PAKAI / TUTORIAL / LANGKAH untuk fitur tertentu, kamu WAJIB
+menjawab berdasarkan teks panduan resmi di bawah ini — JANGAN mengarang langkah dari asumsi.
+Cara menjawab tutorial:
+1. Rangkum langkah dari panduan dengan gaya yang friendly & gampang dimengerti.
+2. Pertahankan urutan langkah yang akurat sesuai panduan.
+3. Boleh ringkas tapi jangan menghapus langkah penting.
+4. Jika panduan tidak mencakup pertanyaan owner, akui dengan jujur lalu sarankan owner
+   melihat halaman panduan langsung.
+=== AKHIR PANDUAN ===
+
+INSTR;
+            }
+        }
         $outlet    = $partner->outlet;
         $partnerId = $partner->id;
         $today     = Carbon::today('Asia/Jakarta');
@@ -857,8 +879,200 @@ ATURAN AKSI — WAJIB DIPATUHI TANPA PENGECUALIAN:
 - Pastikan nama_menu_lama (untuk edit) PERSIS sama dengan nama menu yang ada di data outlet.
 - Jangan pernah sertakan partner_id atau id apapun dalam params — sistem otomatis menyesuaikan.
 === AKHIR KEMAMPUAN AKSI ===
+{$guideInstruction}{$guideContext}
 
 PENTING: Data di atas HANYA untuk outlet "$outletName". Jangan pernah menyebut atau membocorkan data outlet lain.
 PROMPT;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  RAG PANDUAN — FlavoryAI bisa baca file panduan & jawab tutorial dari sumber asli
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * Mapping kata kunci → file panduan yang relevan.
+     * Key = keyword (lowercase, dipakai untuk stripos matching),
+     * Value = array of blade file path (relatif ke resources/views, tanpa .blade.php).
+     */
+    private function detectGuideIntent(string $message): array
+    {
+        $msg = mb_strtolower(trim($message));
+        if ($msg === '') return [];
+
+        // Daftar mapping: pola kata kunci → file panduan
+        $map = [
+            // Onboarding / akun
+            'daftar'             => ['panduan.daftar'],
+            'registrasi'         => ['panduan.daftar'],
+            'buat akun'           => ['panduan.daftar'],
+            'log in'              => ['panduan.login'],
+            'login'               => ['panduan.login'],
+            'masuk'               => ['panduan.login'],
+            'akses dasbor'         => ['panduan.hrms.akses-dasbor'],
+            'akses dashboard'     => ['panduan.hrms.akses-dasbor'],
+
+            // Menu
+            'tambah menu'         => ['panduan.menu'],
+            'buat menu'           => ['panduan.menu'],
+            'edit menu'           => ['panduan.menu'],
+            'kelola menu'         => ['panduan.menu'],
+            'menu'                => ['panduan.menu'],
+
+            // Pesanan
+            'pesanan'             => ['panduan.pesanan'],
+            'order'               => ['panduan.pesanan'],
+            'buat pesanan'        => ['panduan.pesanan'],
+            'riwayat pesanan'      => ['panduan.riwayat-pesanan'],
+            'riwayat order'        => ['panduan.riwayat-pesanan'],
+            'cetak struk'         => ['panduan.riwayat-pesanan'],
+            'struk'               => ['panduan.riwayat-pesanan'],
+            'batal'               => ['panduan.pesanan-batal'],
+            'batalkan pesanan'    => ['panduan.pesanan-batal'],
+            'pesanan offline'     => ['panduan.pesanan-offline'],
+            'offline'             => ['panduan.pesanan-offline'],
+
+            // Form pesanan
+            'form'                => ['panduan.form'],
+            'formulir'            => ['panduan.form'],
+            'form data'           => ['panduan.form'],
+            'pengaturan form'      => ['panduan.form'],
+
+            // Catatan struk
+            'catatan struk'        => ['panduan.catatan'],
+            'note struk'          => ['panduan.catatan'],
+            'struk catatan'       => ['panduan.catatan'],
+            'catatan'             => ['panduan.catatan'],
+
+            // Ikhtisar bisnis / laporan
+            'ikhtisar bisnis'      => ['panduan.ikhtisar-bisnis'],
+            'ikhtisar'            => ['panduan.ikhtisar-bisnis'],
+            'laporan pengeluaran'  => ['panduan.laporan-pengeluaran'],
+            'pengeluaran'         => ['panduan.laporan-pengeluaran'],
+            'laporan bisnis'      => ['panduan.hrms.laporan-bisnis', 'panduan.laporan-pengeluaran'],
+            'laporan'             => ['panduan.ikhtisar-bisnis', 'panduan.laporan-pengeluaran'],
+
+            // Modal usaha
+            'modal usaha'          => ['panduan.modal-usaha', 'panduan.hrms.modal-usaha'],
+            'modal'               => ['panduan.modal-usaha'],
+            'setoran modal'        => ['panduan.modal-usaha'],
+            'tambah modal'         => ['panduan.modal-usaha'],
+            'catat modal'          => ['panduan.modal-usaha'],
+
+            // Dashboard Owner / HRMS
+            'dashboard owner'      => ['panduan.hrms', 'panduan.hrms.akses-dasbor'],
+            'dasbor manager'       => ['panduan.hrms', 'panduan.hrms.akses-dasbor'],
+            'manajemen shift'      => ['panduan.hrms.shift'],
+            'shift'               => ['panduan.hrms.shift'],
+            'absensi'             => ['panduan.hrms.absensi'],
+            'rekap absensi'        => ['panduan.hrms.absensi'],
+            'data karyawan'        => ['panduan.hrms.data-karyawan'],
+            'karyawan'            => ['panduan.hrms.data-karyawan'],
+
+            // Tutorial umum
+            'tutorial'            => ['panduan.menu', 'panduan.pesanan', 'panduan.ikhtisar-bisnis'],
+            'panduan'             => ['panduan.menu', 'panduan.pesanan', 'panduan.ikhtisar-bisnis'],
+            'cara pakai'          => ['panduan.menu', 'panduan.pesanan'],
+            'cara menggunakan'     => ['panduan.menu', 'panduan.pesanan'],
+        ];
+
+        $matched = [];
+        foreach ($map as $keyword => $files) {
+            if (str_contains($msg, $keyword)) {
+                foreach ($files as $f) {
+                    $matched[$f] = true; // dedup pakai key
+                }
+            }
+        }
+
+        return array_keys($matched);
+    }
+
+    /**
+     * Ekstrak teks plain dari file Blade panduan.
+     * - Hilangkan @extends, @section, @push, @endpush, @stop, @include, @if, @endif, @foreach, @endforeach, @php, @endphp, dll.
+     * - Hilangkan tag HTML & style/script block.
+     * - Bersihkan whitespace berlebih.
+     * - Batasi panjang output.
+     */
+    private function extractGuideText(string $bladePath, int $maxChars = 3500): string
+    {
+        $full = resource_path('views/' . str_replace('.', '/', $bladePath) . '.blade.php');
+        if (!is_file($full)) return '';
+
+        $raw = file_get_contents($full);
+        if ($raw === false || $raw === '') return '';
+
+        // 1. Hapus seluruh blok <style>...</style> dan <script>...</script>
+        $raw = preg_replace('#<style[\s\S]*?</style>#i', '', $raw);
+        $raw = preg_replace('#<script[\s\S]*?</script>#i', '', $raw);
+
+        // 2. Hapus Blade directives (satu baris penuh yang diawali @...)
+        $raw = preg_replace('/^\s*@(extends|section|push|endpush|stop|endsection|php|endphp|if|else|endif|foreach|endforeach|once|endonce|auth|endauth|include|yield|stack|parent|csrf|method|error|json|stack)\b.*$/m', '', $raw);
+
+        // 3. Hapus Blade echo {{ ... }} dan {!! ... !!}
+        $raw = preg_replace('/\{\{\!\!.*?\!\!\}\}/s', '', $raw);
+        $raw = preg_replace('/\{\{.*?\}\}/s', '', $raw);
+        $raw = preg_replace('/@\{.*?\}/s', '', $raw);
+
+        // 4. Hapus komentar Blade {{-- ... --}}
+        $raw = preg_replace('/\{\{--[\s\S]*?--\}\}/', '', $raw);
+
+        // 5. Konversi tag HTML ke teks: <li> → "- ", <br> → "\n", <p> & </p> → "\n", <h1-6> → "\n## "
+        $raw = preg_replace('#<li[^>]*>#i', "\n- ", $raw);
+        $raw = preg_replace('#</li>#i', '', $raw);
+        $raw = preg_replace('#<br\s*/?>#i', "\n", $raw);
+        $raw = preg_replace('#</(p|div|section|article|header|footer|aside|nav|ul|ol|table|tr|h[1-6])>#i', "\n", $raw);
+        $raw = preg_replace('#<h([1-6])[^>]*>#i', "\n## ", $raw);
+        $raw = preg_replace('#<p[^>]*>#i', '', $raw);
+        $raw = preg_replace('#<strong[^>]*>#i', '**', $raw);
+        $raw = preg_replace('#</strong>#i', '**', $raw);
+        $raw = preg_replace('#<em[^>]*>#i', '_', $raw);
+        $raw = preg_replace('#</em>#i', '_', $raw);
+
+        // 6. Strip semua sisa tag HTML
+        $raw = strip_tags($raw);
+
+        // 7. Decode HTML entity
+        $raw = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // 8. Bersihkan whitespace berlebih
+        $raw = preg_replace('/[ \t]+/', ' ', $raw);
+        $raw = preg_replace('/\n[ \t]+/', "\n", $raw);
+        $raw = preg_replace('/\n{3,}/', "\n\n", $raw);
+        $raw = preg_replace('/^\s+|\s+$/m', '', $raw);
+        $raw = trim($raw);
+
+        // 9. Batasi panjang
+        if (mb_strlen($raw) > $maxChars) {
+            $raw = mb_substr($raw, 0, $maxChars) . "\n…(dipotong)";
+        }
+
+        return $raw;
+    }
+
+    /**
+     * Bangun konteks panduan dari pesan owner.
+     * Mendeteksi intent, ambil teks panduan relevan, rangkai jadi 1 blok konteks.
+     */
+    private function buildGuideContext(string $userMessage): string
+    {
+        $files = $this->detectGuideIntent($userMessage);
+        if (empty($files)) return '';
+
+        // Ambil teks tiap file, batasi total agar tidak meledak token
+        $chunks = [];
+        $totalBudget = 6000; // total char semua panduan digabung
+        $perFile     = max(1500, intdiv($totalBudget, max(1, count($files))));
+
+        foreach ($files as $f) {
+            $txt = $this->extractGuideText($f, $perFile);
+            if ($txt !== '') {
+                $chunks[] = "### PANDUAN: {$f}\n{$txt}";
+            }
+        }
+
+        if (empty($chunks)) return '';
+
+        return implode("\n\n---\n\n", $chunks);
     }
 }

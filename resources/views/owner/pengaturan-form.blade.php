@@ -145,14 +145,23 @@
                         </div>
 
                         {{-- Nomor Meja --}}
-                        <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-bottom">
-                            <div>
-                                <h6 class="mb-0 fw-semibold">Nomor Meja</h6>
-                                <small class="text-muted">Cocok untuk pemesanan dine-in.</small>
+                        <div class="list-group-item py-3 px-0 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">Nomor Meja</h6>
+                                    <small class="text-muted">Cocok untuk pemesanan dine-in.</small>
+                                </div>
+                                <div class="form-check form-switch fs-4 mb-0">
+                                    <input class="form-check-input switch-orange toggle-setting" type="checkbox"
+                                        id="toggle-meja" data-field="meja" {{ $pengaturan->meja ? 'checked' : '' }}>
+                                </div>
                             </div>
-                            <div class="form-check form-switch fs-4 mb-0">
-                                <input class="form-check-input switch-orange toggle-setting" type="checkbox"
-                                    data-field="meja" {{ $pengaturan->meja ? 'checked' : '' }}>
+                            {{-- Tombol Atur Nomor Meja - muncul saat toggle aktif --}}
+                            <div id="btn-atur-meja-wrapper" class="{{ $pengaturan->meja ? '' : 'd-none' }} mt-3">
+                                <button type="button" class="btn btn-sm btn-outline-warning rounded-3 fw-semibold"
+                                    data-bs-toggle="modal" data-bs-target="#modalMeja" id="btn-atur-meja">
+                                    <i class="bi bi-plus-circle me-1"></i> Atur Nomor Meja
+                                </button>
                             </div>
                         </div>
 
@@ -290,7 +299,75 @@
 </div>
 {{-- ===================== END MODAL VOUCHER ===================== --}}
 
+{{-- ===================== MODAL MEJA ===================== --}}
+<div class="modal fade" id="modalMeja" tabindex="-1" aria-labelledby="modalMejaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow">
+
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalMejaLabel">
+                    <i class="bi bi-table text-warning me-2"></i>Atur Nomor Meja
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body px-4">
+
+                {{-- Form tambah meja (multiple row) --}}
+                <div class="card border-0 bg-light rounded-3 p-3 mb-4">
+                    <label class="form-label-custom fw-semibold mb-2">Nama/Nomor Meja</label>
+
+                    <div id="meja-rows-container" class="d-flex flex-column gap-2 mb-2">
+                        {{-- Baris pertama selalu ada, tombol hapus disabled --}}
+                        <div class="meja-row d-flex gap-2 align-items-center">
+                            <input type="text"
+                                   class="form-control form-control-custom meja-name-input"
+                                   placeholder="cth: Meja 1"
+                                   maxlength="100">
+                            <button type="button"
+                                    class="btn btn-outline-danger btn-sm rounded-3 btn-remove-meja-row"
+                                    style="min-width:36px;" disabled>
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Tombol tambah baris --}}
+                    <button type="button"
+                            class="btn btn-sm btn-outline-warning rounded-pill fw-semibold px-3 mb-3"
+                            id="btn-add-meja-row">
+                        <i class="bi bi-plus-circle me-1"></i> Tambah Baris
+                    </button>
+
+                    <div id="meja-form-error" class="alert alert-danger small d-none rounded-3 py-2"></div>
+
+                    <button type="button" id="btn-simpan-meja" class="btn btn-warning text-white fw-semibold w-100 rounded-3">
+                        <i class="bi bi-plus-circle me-1"></i> Simpan Meja
+                    </button>
+                </div>
+
+                {{-- Daftar meja yang sudah ada --}}
+                <div>
+                    <p class="fw-semibold small text-muted mb-2">Meja Tersimpan</p>
+                    <div id="meja-list-loading" class="text-center py-3 d-none">
+                        <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                        <span class="ms-2 small text-muted">Memuat...</span>
+                    </div>
+                    <div id="meja-list-empty" class="text-center py-3 d-none">
+                        <i class="bi bi-table text-muted fs-3"></i>
+                        <p class="text-muted small mt-1 mb-0">Belum ada meja. Tambahkan di atas.</p>
+                    </div>
+                    <ul class="list-group list-group-flush" id="meja-list"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{{-- ===================== END MODAL MEJA ===================== --}}
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -300,6 +377,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const routeVoucherStore= '{{ route("owner.voucher.store") }}';
     const routeVoucherCheck= '{{ route("owner.voucher.check-kode") }}';
     const routeVoucherDel  = '{{ url("owner/voucher") }}'; // + /{id} DELETE
+
+    // ── Meja routes ──
+    const routeMejaList  = '{{ route("owner.meja.index") }}';
+    const routeMejaStore = '{{ route("owner.meja.store") }}';
+    const routeMejaDel   = '{{ url("owner/meja") }}'; // + /{id} DELETE
 
     const alertNotif        = document.getElementById('alert-notif');
     const toggleVoucher     = document.getElementById('toggle-voucher');
@@ -315,6 +397,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const listLoading       = document.getElementById('voucher-list-loading');
     const listEmpty         = document.getElementById('voucher-list-empty');
 
+    // ── Meja DOM refs ──
+    const btnAturMejaWrapper = document.getElementById('btn-atur-meja-wrapper');
+    const btnSimpanMeja      = document.getElementById('btn-simpan-meja');
+    const mejaFormError      = document.getElementById('meja-form-error');
+    const mejaList           = document.getElementById('meja-list');
+    const mejaListLoading    = document.getElementById('meja-list-loading');
+    const mejaListEmpty      = document.getElementById('meja-list-empty');
+    const mejaRowsContainer  = document.getElementById('meja-rows-container');
+    const btnAddMejaRow      = document.getElementById('btn-add-meja-row');
+
     let checkKodeTimeout = null;
     let kodeValid        = false; // flag hasil check AJAX
 
@@ -329,6 +421,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Tampilkan/sembunyikan tombol Atur Kode Voucher
             if (field === 'voucher') {
                 btnAturWrapper.classList.toggle('d-none', !this.checked);
+            }
+            // Tampilkan/sembunyikan tombol Atur Nomor Meja
+            if (field === 'meja') {
+                btnAturMejaWrapper.classList.toggle('d-none', !this.checked);
             }
 
             fetch(routeUpdate, {
@@ -352,6 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (window.hideLoading) window.hideLoading();
                 this.checked = !this.checked;
                 if (field === 'voucher') btnAturWrapper.classList.toggle('d-none', !this.checked);
+                if (field === 'meja') btnAturMejaWrapper.classList.toggle('d-none', !this.checked);
                 alert('Terjadi kesalahan sistem saat menyimpan pengaturan.');
             });
         });
@@ -575,6 +672,186 @@ document.addEventListener('DOMContentLoaded', function () {
         hideKodeAlert();
         hideFormError();
         voucherList.innerHTML = '';
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    //  MEJA — load, store, delete
+    // ════════════════════════════════════════════════════════════════
+    document.getElementById('modalMeja').addEventListener('show.bs.modal', loadMejaList);
+
+    function loadMejaList() {
+        mejaListLoading.classList.remove('d-none');
+        mejaListEmpty.classList.add('d-none');
+        mejaList.innerHTML = '';
+
+        fetch(routeMejaList, {
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            mejaListLoading.classList.add('d-none');
+            if (!data.success || data.data.length === 0) {
+                mejaListEmpty.classList.remove('d-none');
+                return;
+            }
+            data.data.forEach(m => {
+                mejaList.insertAdjacentHTML('beforeend', renderMejaItem(m));
+            });
+            bindMejaDeleteButtons();
+        })
+        .catch(() => {
+            mejaListLoading.classList.add('d-none');
+            mejaListEmpty.classList.remove('d-none');
+        });
+    }
+
+    function renderMejaItem(m) {
+        return `
+        <li class="list-group-item voucher-item d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-1">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark kode-badge px-2 py-1">${m.nama_meja}</span>
+            </div>
+            <button class="btn btn-sm btn-outline-danger rounded-3 btn-hapus-meja" data-id="${m.id}" data-nama="${m.nama_meja}">
+                <i class="bi bi-trash3"></i>
+            </button>
+        </li>`;
+    }
+
+    function bindMejaDeleteButtons() {
+        document.querySelectorAll('.btn-hapus-meja').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id   = this.dataset.id;
+                const nama = this.dataset.nama;
+                const self = this;
+
+                Swal.fire({
+                    title: 'Hapus meja?',
+                    html: `Meja <strong>${nama}</strong> akan dihapus permanen.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus',
+                    cancelButtonText: 'Batal',
+                }).then(result => {
+                    if (!result.isConfirmed) return;
+
+                    self.disabled = true;
+                    fetch(routeMejaDel + '/' + id, {
+                        method: 'DELETE',
+                        headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadMejaList();
+                        } else {
+                            Swal.fire('Gagal', data.message || 'Gagal menghapus meja.', 'error');
+                            self.disabled = false;
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+                        self.disabled = false;
+                    });
+                });
+            });
+        });
+    }
+
+    // ─── Tambah baris meja ─────────────────────────────────────────────────
+    btnAddMejaRow.addEventListener('click', function () {
+        const row = document.createElement('div');
+        row.className = 'meja-row d-flex gap-2 align-items-center';
+        row.innerHTML = `
+            <input type="text"
+                   class="form-control form-control-custom meja-name-input"
+                   placeholder="cth: Meja 2"
+                   maxlength="100">
+            <button type="button"
+                    class="btn btn-outline-danger btn-sm rounded-3 btn-remove-meja-row"
+                    style="min-width:36px;">
+                <i class="bi bi-trash3"></i>
+            </button>`;
+        mejaRowsContainer.appendChild(row);
+        row.querySelector('.meja-name-input').focus();
+    });
+
+    // ─── Hapus baris meja (delegasi event) ─────────────────────────────────
+    mejaRowsContainer.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-remove-meja-row');
+        if (!btn) return;
+        const rows = mejaRowsContainer.querySelectorAll('.meja-row');
+        if (rows.length <= 1) return;
+        btn.closest('.meja-row').remove();
+        const remaining = mejaRowsContainer.querySelectorAll('.btn-remove-meja-row');
+        if (remaining.length === 1) remaining[0].disabled = true;
+    });
+
+    // ─── Simpan meja (multiple rows) ─────────────────────────────────────────────
+    btnSimpanMeja.addEventListener('click', function () {
+        mejaFormError.classList.add('d-none');
+
+        const names = [...mejaRowsContainer.querySelectorAll('.meja-name-input')]
+            .map(inp => inp.value.trim())
+            .filter(v => v !== '');
+
+        if (names.length === 0) {
+            mejaFormError.textContent = 'Masukkan minimal satu nama meja.';
+            mejaFormError.classList.remove('d-none');
+            mejaRowsContainer.querySelector('.meja-name-input').focus();
+            return;
+        }
+
+        const unique = [...new Set(names)];
+
+        btnSimpanMeja.disabled = true;
+        btnSimpanMeja.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+        fetch(routeMejaStore, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ nama_meja: unique })
+        })
+        .then(r => r.json())
+        .then(data => {
+            btnSimpanMeja.disabled = false;
+            btnSimpanMeja.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Simpan Meja';
+
+            if (data.success) {
+                resetMejaForm();
+                loadMejaList();
+            } else {
+                mejaFormError.innerHTML = data.message || 'Gagal menyimpan meja.';
+                mejaFormError.classList.remove('d-none');
+            }
+        })
+        .catch(() => {
+            btnSimpanMeja.disabled = false;
+            btnSimpanMeja.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Simpan Meja';
+            mejaFormError.textContent = 'Terjadi kesalahan jaringan. Coba lagi.';
+            mejaFormError.classList.remove('d-none');
+        });
+    });
+
+    function resetMejaForm() {
+        const rows = mejaRowsContainer.querySelectorAll('.meja-row');
+        rows.forEach((r, i) => { if (i > 0) r.remove(); });
+        const remaining = mejaRowsContainer.querySelector('.meja-name-input');
+        if (remaining) remaining.value = '';
+        const delBtn = mejaRowsContainer.querySelector('.btn-remove-meja-row');
+        if (delBtn) delBtn.disabled = true;
+        mejaFormError.classList.add('d-none');
+    }
+
+    // Reset form meja saat modal ditutup
+    document.getElementById('modalMeja').addEventListener('hidden.bs.modal', function () {
+        resetMejaForm();
+        mejaList.innerHTML = '';
     });
 
 });

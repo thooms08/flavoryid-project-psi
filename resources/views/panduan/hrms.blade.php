@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', 'Panduan Dasbor Manager — Overview Fitur & AI Consultant Flavory.id')
+@section('title', 'Panduan Dashboard Owner — Overview Fitur & FlavoryAI Flavory.id')
 @push('styles')
-<meta name="description" content="Panduan lengkap Dasbor Manager Flavory.id: manajemen karyawan, shift, absensi, modal usaha, laporan bisnis, dan AI Consultant untuk owner dan manager outlet kuliner.">
-<meta name="keywords" content="panduan dasbor manager flavory, manajemen karyawan restoran, laporan bisnis kuliner, AI consultant flavory">
+<meta name="description" content="Panduan lengkap Dashboard Owner Flavory.id: manajemen karyawan, shift, absensi, modal usaha, laporan bisnis, dan FlavoryAI untuk owner dan manager outlet kuliner.">
+<meta name="keywords" content="panduan dashboard owner flavory, manajemen karyawan restoran, laporan bisnis kuliner, FlavoryAI flavory">
 <meta name="author" content="Flavory.id">
 <style>
     :root {
-        --manager-green:  #198754;
-        --manager-light:  #f0fdf4;
+        --manager-green:  #ff6a00;
+        --manager-light:  #fff4e6;
         --text-dark:      #1e293b;
         --text-muted:     #64748b;
         --primary-orange: #ff6a00;
@@ -26,33 +26,33 @@
     .manager-ov-card {
         display: flex; flex-direction: column;
         background: #fff; border-radius: 16px;
-        border: 1.5px solid rgba(25,135,84,.14);
+        border: 1.5px solid rgba(255,106,0,.14);
         padding: 22px 20px; text-decoration: none;
         transition: transform .22s, box-shadow .22s, border-color .22s;
         box-shadow: 0 4px 14px rgba(0,0,0,.04);
     }
     .manager-ov-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(25,135,84,.12);
-        border-color: var(--manager-green);
+        box-shadow: 0 12px 30px rgba(255,106,0,.12);
+        border-color: var(--primary-orange);
     }
     .manager-ov-icon {
         width: 46px; height: 46px; border-radius: 12px;
         background: var(--manager-light);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.3rem; color: var(--manager-green);
+        font-size: 1.3rem; color: var(--primary-orange);
         margin-bottom: 14px; flex-shrink: 0;
     }
     .manager-ov-card h3 { font-size: .95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
     .manager-ov-card p  { font-size: .78rem; color: var(--text-muted); margin: 0; line-height: 1.5; flex-grow: 1; }
-    .manager-ov-arrow   { font-size: .75rem; color: var(--manager-green); margin-top: 14px; font-weight: 600; }
+    .manager-ov-arrow   { font-size: .75rem; color: var(--primary-orange); margin-top: 14px; font-weight: 600; }
 
     /* CTA box */
     .manager-cta {
-        background: linear-gradient(135deg, var(--manager-green), #20c997);
+        background: linear-gradient(135deg, var(--primary-orange), #ff8c33);
         border-radius: 20px; padding: 36px 32px;
         color: white; text-align: center;
-        box-shadow: 0 12px 30px rgba(25,135,84,.25);
+        box-shadow: 0 12px 30px rgba(255,106,0,.25);
     }
 
     @media(max-width: 768px) {
@@ -73,13 +73,13 @@
 
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
+                          style="background:var(--manager-light);color:var(--primary-orange);border:1px solid rgba(255,106,0,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dashboard Owner
                     </span>
-                    <h1>Panduan Dasbor Manager Flavory.id</h1>
+                    <h1>Panduan Dashboard Owner Flavory.id</h1>
                     <p class="mt-2">
-                        <strong>Dasbor Manager</strong> adalah platform manajemen tim dan bisnis milik Flavory.id yang
-                        membantu owner & manager mengelola karyawan, laporan bisnis, dan berkonsultasi dengan AI Consultant — semuanya terintegrasi
+                        <strong>Dashboard Owner</strong> adalah platform manajemen tim dan bisnis milik Flavory.id yang
+                        membantu owner & manager mengelola karyawan, laporan bisnis, dan berkonsultasi dengan FlavoryAI — semuanya terintegrasi
                         dengan data kasir secara real-time.
                     </p>
                 </header>
@@ -88,8 +88,8 @@
                 <div class="manager-overview-grid mb-5">
                     <a href="{{ route('panduan.hrms.akses-dasbor') }}" class="manager-ov-card">
                         <div class="manager-ov-icon"><i class="bi bi-box-arrow-in-right"></i></div>
-                        <h3>Akses Dasbor Manager</h3>
-                        <p>Cara login dan mulai menjelajahi dasbor manager Flavory.id.</p>
+                        <h3>Akses Dashboard Owner</h3>
+                        <p>Cara login dan mulai menjelajahi dashboard owner Flavory.id.</p>
                         <span class="manager-ov-arrow">Baca panduan <i class="bi bi-arrow-right"></i></span>
                     </a>
                     <a href="{{ route('panduan.hrms.data-karyawan') }}" class="manager-ov-card">
@@ -124,7 +124,7 @@
                     </a>
                     <a href="{{ route('panduan.hrms.mineai-manager') }}" class="manager-ov-card">
                         <div class="manager-ov-icon"><i class="bi bi-stars"></i></div>
-                        <h3>AI Consultant</h3>
+                        <h3>FlavoryAI</h3>
                         <p>Dapatkan insight AI bisnis dan berkonsultasi langsung berbasis data outlet Anda.</p>
                         <span class="manager-ov-arrow">Baca panduan <i class="bi bi-arrow-right"></i></span>
                     </a>
@@ -139,7 +139,7 @@
                     </p>
                     <a href="{{ route('register') }}"
                        class="btn btn-light fw-bold rounded-pill px-5 py-2 shadow-sm"
-                       style="color:var(--manager-green);">
+                       style="color:var(--primary-orange);">
                         <i class="bi bi-person-plus-fill me-1"></i> Daftar Sekarang
                     </a>
                 </div>

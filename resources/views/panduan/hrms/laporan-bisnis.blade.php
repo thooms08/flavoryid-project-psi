@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Panduan Laporan Bisnis & Pengeluaran — Dasbor Manager Flavory.id')
+@section('title', 'Panduan Laporan Bisnis & Pengeluaran — Dashboard Owner Flavory.id')
 @push('styles')
-<meta name="description" content="Cara memantau laporan omzet, keuntungan, kerugian, dan pengeluaran outlet dari Dasbor Manager Flavory.id.">
+<meta name="description" content="Cara memantau laporan omzet, keuntungan, kerugian, dan pengeluaran outlet dari Dashboard Owner Flavory.id.">
 @include('panduan.hrms._style')
 @endpush
 @section('content')
@@ -12,8 +12,8 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
+                          style="background:var(--manager-light);color:var(--primary-orange);border:1px solid rgba(255,106,0,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dashboard Owner
                     </span>
                     <h1>Laporan Bisnis & Pengeluaran</h1>
                     <p class="mt-2">Pantau omzet, keuntungan, kerugian, dan pengeluaran outlet secara real-time langsung dari dasbor manager.</p>

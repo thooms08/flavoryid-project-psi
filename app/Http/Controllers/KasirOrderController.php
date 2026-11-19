@@ -5,6 +5,7 @@ use App\Models\OrderDetail;
 use App\Models\PengaturanForm;
 use App\Models\Menu;
 use App\Models\Voucher;
+use App\Models\NomorMeja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,34 @@ class KasirOrderController extends Controller
         if ($request->has('edit_id')) {
             $editOrder = Order::with('orderDetails.menu')->find($request->edit_id);
         }
-        return view('kasir.order', compact('menus', 'editOrder', 'partnerId', 'pengaturan'));
+
+        // Ambil daftar meja tersedia (exclude yang dipakai order pending lain)
+        $mejaList = collect();
+        if ($pengaturan->meja) {
+            $usedMeja = Order::where('partner_id', $partnerId)
+                ->where('status', 'pending')
+                ->whereNotNull('no_meja')
+                ->where('no_meja', '!=', '')
+                ->when($editOrder, fn($q) => $q->where('id', '!=', $editOrder->id))
+                ->pluck('no_meja')
+                ->toArray();
+
+            $mejaList = NomorMeja::where('partner_id', $partnerId)
+                ->where('is_active', true)
+                ->whereNotIn('nama_meja', $usedMeja)
+                ->orderBy('nama_meja', 'asc')
+                ->get();
+
+            // Saat edit, pastikan meja order saat ini tetap muncul di list
+            if ($editOrder && $editOrder->no_meja) {
+                $existing = $mejaList->firstWhere('nama_meja', $editOrder->no_meja);
+                if (!$existing) {
+                    $mejaList->push((object)['id' => null, 'nama_meja' => $editOrder->no_meja]);
+                }
+            }
+        }
+
+        return view('kasir.order', compact('menus', 'editOrder', 'partnerId', 'pengaturan', 'mejaList'));
     }
 
     // ─── Helper: hitung nilai voucher dari subtotal ─────────────────────────

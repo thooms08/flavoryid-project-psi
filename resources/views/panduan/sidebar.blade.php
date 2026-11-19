@@ -13,8 +13,8 @@
     :root {
         --primary-orange: #ff6a00;
         --light-orange:   #fff4e6;
-        --manager-green:  #198754;
-        --manager-light:  #f0fdf4;
+        --manager-green:  #ff6a00;   /* diganti oranye — alias */
+        --manager-light:  #fff4e6;   /* diganti light-orange */
         --text-dark:      #1e293b;
         --text-muted:     #64748b;
     }
@@ -54,7 +54,7 @@
         font-size: .95rem; flex-shrink: 0;
     }
     .flavory-btn .sp-group-icon  { background: rgba(255,106,0,.12); color: var(--primary-orange); }
-    .manager-btn .sp-group-icon  { background: rgba(25,135,84,.12);  color: var(--manager-green); }
+    .manager-btn .sp-group-icon  { background: rgba(255,106,0,.12);  color: var(--primary-orange); }
 
     /* Chevron */
     .sp-chevron {
@@ -124,7 +124,7 @@
         margin-left: 20px;
     }
     .flavory-btn  ~ .sp-submenu ul { border-left-color: rgba(255,106,0,.18); }
-    .manager-btn  ~ .sp-submenu ul { border-left-color: rgba(25,135,84,.18); }
+    .manager-btn  ~ .sp-submenu ul { border-left-color: rgba(255,106,0,.18); }
 
     /* ── Mobile toggle ── */
     .btn-mobile-toggle {
@@ -266,7 +266,7 @@
             </div>
 
             {{-- ════════════════════════════════
-                 GRUP 2 — Dasbor Manager
+                 GRUP 2 — Dashboard Owner
             ════════════════════════════════ --}}
             <button type="button"
                     class="sp-group-btn manager-btn mt-1 {{ $isManagerRoute ? 'open' : '' }}"
@@ -274,7 +274,7 @@
                     aria-expanded="{{ $isManagerRoute ? 'true' : 'false' }}">
                 <span class="d-flex align-items-center gap-2">
                     <span class="sp-group-icon"><i class="bi bi-people-fill"></i></span>
-                    Dasbor Manager
+                    Dashboard Owner
                 </span>
                 <i class="bi bi-chevron-down sp-chevron"></i>
             </button>
@@ -285,13 +285,13 @@
                     <li>
                         <a class="sp-link {{ request()->routeIs('panduan.hrms') && !request()->routeIs('panduan.hrms.*') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms') }}">
-                            <i class="bi bi-grid-fill"></i> Overview Dasbor Manager
+                            <i class="bi bi-grid-fill"></i> Overview Dashboard Owner
                         </a>
                     </li>
                     <li>
                         <a class="sp-link {{ request()->routeIs('panduan.hrms.akses-dasbor') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.akses-dasbor') }}">
-                            <i class="bi bi-box-arrow-in-right"></i> Akses Dasbor Manager
+                            <i class="bi bi-box-arrow-in-right"></i> Akses Dashboard Owner
                         </a>
                     </li>
                     <li>
@@ -327,7 +327,7 @@
                     <li>
                         <a class="sp-link {{ request()->routeIs('panduan.hrms.mineai-manager') ? 'active-manager' : '' }}"
                            href="{{ route('panduan.hrms.mineai-manager') }}">
-                            <i class="bi bi-stars"></i> AI Consultant
+                            <i class="bi bi-stars"></i> FlavoryAI
                         </a>
                     </li>
                 </ul>

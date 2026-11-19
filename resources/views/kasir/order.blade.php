@@ -514,7 +514,16 @@
                     @if($pengaturan->meja)
                     <div class="col-6 mb-3">
                         <label class="form-label-custom">No. Meja</label>
-                        <input type="text" id="cust_table" class="form-control form-control-custom" placeholder="01">
+                        @if(isset($mejaList) && $mejaList->isNotEmpty())
+                            <select id="cust_table" class="form-control form-control-custom">
+                                <option value="" selected disabled>Pilih Meja</option>
+                                @foreach($mejaList as $meja)
+                                    <option value="{{ $meja->nama_meja }}">{{ $meja->nama_meja }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input type="text" id="cust_table" class="form-control form-control-custom" placeholder="01">
+                        @endif
                     </div>
                     @endif
 

@@ -19,6 +19,7 @@
             --brand-orange: #ff6a00;
             --brand-orange-hover: #e65f00;
             --bg-light-grey: #f8f9fa;
+            --outlet-left-w: 520px;   /* lebar split kiri (dipakai sync dgn offcanvas desktop) */
         }
 
         body {
@@ -109,134 +110,258 @@
         .variant-box:hover {
             background-color: #fff7ed !important;
         }
+
+        /* ═══════════════════════════════════════════════════
+           DESKTOP SPLIT LAYOUT (≥992px)
+           - Kiri: foto + info outlet + maps + medsos (fixed)
+           - Kanan: search + grid menu (scroll)
+        ═══════════════════════════════════════════════════ */
+        .outlet-split {
+            display: flex;
+            flex-direction: column;     /* mobile: tetap 1 kolom */
+            gap: 0;
+        }
+
+        .outlet-left {
+            background: #fff7ed;
+            padding: 28px 22px;
+        }
+        .outlet-right {
+            background: #fff;
+            padding: 28px 22px;
+        }
+
+        @media (min-width: 992px) {
+            body { overflow: hidden; }
+            .outlet-title { font-size: 2.2rem; }
+
+            .outlet-split {
+                flex-direction: row;
+                min-height: 100vh;
+            }
+            .outlet-left {
+                width: var(--outlet-left-w);
+                min-width: var(--outlet-left-w);
+                max-width: var(--outlet-left-w);
+                height: 100vh;
+                overflow-y: auto;
+                position: sticky;
+                top: 0;
+                border-right: 1px solid rgba(255,106,0,.12);
+                box-shadow: 4px 0 24px rgba(0,0,0,.04);
+                padding: 32px 28px 40px;
+            }
+            .outlet-right {
+                flex: 1;
+                height: 100vh;
+                overflow-y: auto;
+                padding: 32px 28px 40px;
+            }
+
+            /* Grid menu desktop menyesuaikan lebar kolom kanan:
+               lg (≥992): 4 kolom | xl (≥1200): 5 kolom | xxl (≥1400): 6 kolom */
+            #menuContainer.row-cols-lg-4 > .col { flex: 0 0 auto; width: 25%; }
+            @media (min-width: 1200px) {
+                #menuContainer > .col { flex: 0 0 auto; width: 20%; }
+            }
+            @media (min-width: 1400px) {
+                #menuContainer > .col { flex: 0 0 auto; width: 16.6667%; }
+            }
+
+            /* Bottom sheet (offcanvas-bottom) dibatasi selebar kolom kanan,
+               sejajar offset kolom kiri — bukan full lebar layar */
+            #cartOffcanvas.offcanvas-bottom {
+                left: var(--outlet-left-w) !important;
+                right: 0 !important;
+                width: auto !important;
+                border-radius: 24px 0 0 0 !important;
+            }
+            /* Floating cart tetap di kanan kolom kanan */
+            .floating-cart-btn {
+                right: 30px;
+                bottom: 30px;
+            }
+        }
+
+        /* Scrollbar styling di kolom kiri desktop */
+        @media (min-width: 992px) {
+            .outlet-left::-webkit-scrollbar { width: 6px; }
+            .outlet-left::-webkit-scrollbar-thumb { background: rgba(255,106,0,.2); border-radius: 10px; }
+            .outlet-left::-webkit-scrollbar-track { background: transparent; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h1 class="outlet-title m-0">{{ $outlet->nama_outlet }}</h1>
-        <div class="mx-auto mt-3" style="width: 60px; height: 4px; background-color: var(--brand-orange); border-radius: 2px;"></div>
-    </div>
+<div class="outlet-split">
 
-    <div class="mb-5">
-        <div class="img-outlet-wrapper" style="max-height: 400px;">
-            @if($outlet->foto_outlet && file_exists(public_path('assets/outlet/' . $outlet->foto_outlet)))
-                <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
-            @else
-                <div class="d-flex flex-column justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 300px;">
-                    <i class="bi bi-shop text-secondary" style="font-size: 5rem; opacity: 0.4;"></i>
-                    <span class="text-muted mt-2" style="font-size: 0.85rem; opacity: 0.6;">Foto outlet belum tersedia</span>
+    {{-- ════════ KIRI: Foto + Info Outlet + Maps + Medsos (fixed desktop) ════════ --}}
+    <aside class="outlet-left">
+        <div class="text-center mb-4">
+            <h1 class="outlet-title m-0">{{ $outlet->nama_outlet }}</h1>
+            <div class="mx-auto mt-3" style="width: 60px; height: 4px; background-color: var(--brand-orange); border-radius: 2px;"></div>
+        </div>
+
+        <div class="mb-4">
+            <div class="img-outlet-wrapper" style="max-height: 320px; min-height: 220px;">
+                @if($outlet->foto_outlet && file_exists(public_path('assets/outlet/' . $outlet->foto_outlet)))
+                    <img src="{{ asset('assets/outlet/' . $outlet->foto_outlet) }}" alt="{{ $outlet->nama_outlet }}" class="img-fluid">
+                @else
+                    <div class="d-flex flex-column justify-content-center align-items-center bg-light w-100 h-100" style="min-height: 220px;">
+                        <i class="bi bi-shop text-secondary" style="font-size: 4rem; opacity: 0.4;"></i>
+                        <span class="text-muted mt-2" style="font-size: 0.85rem; opacity: 0.6;">Foto outlet belum tersedia</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="d-none d-lg-block">{{-- Info outlet + Maps + Medsos (desktop only — di mobile tampil di footer) --}}
+        {{-- Info Outlet --}}
+        <div class="info-card mb-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="bi bi-info-square-fill text-orange me-2 fs-5"></i> Tentang Outlet</h5>
+            <p class="text-secondary mb-4" style="line-height: 1.7; font-size: 0.9rem;">{{ $outlet->deskripsi ?? 'Tidak ada deskripsi yang tersedia untuk outlet ini.' }}</p>
+            <div class="d-flex align-items-start mb-4 bg-light p-3 rounded-4 border">
+                <div class="bg-white p-2 rounded-circle shadow-sm me-3 d-flex justify-content-center align-items-center flex-shrink-0"><i class="bi bi-geo-alt-fill text-orange fs-4"></i></div>
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.85rem;">Alamat Lokasi</h6>
+                    <p class="mb-1 text-secondary" style="font-size: 0.82rem;">{{ $outlet->alamat_lengkap }}</p>
+                    <p class="text-muted mb-0 fw-medium small" style="font-size: 0.75rem;">{{ $outlet->kota }}, {{ $outlet->provinsi }}</p>
                 </div>
+            </div>
+            @if($outlet->maps)
+                <a href="{{ $outlet->maps }}" target="_blank" class="btn btn-orange w-100 py-2 rounded-pill fs-6 d-flex justify-content-center align-items-center gap-2"><i class="bi bi-map-fill fs-5"></i> BUKA GOOGLE MAPS</a>
+            @else
+                <button class="btn btn-secondary w-100 py-2 rounded-pill fs-6" disabled><i class="bi bi-map-fill me-2"></i> MAPS BELUM TERSEDIA</button>
             @endif
         </div>
-    </div>
 
-    <div class="bg-white p-4 rounded-4 shadow-sm mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center border">
-        <h4 class="fw-bold mb-3 mb-md-0 m-0 d-flex align-items-center text-dark"><i class="bi bi-grid-fill text-orange me-2 fs-4"></i> Daftar Menu</h4>
-        <div class="input-group w-100 w-md-50" style="max-width: 450px;">
-            <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3"><i class="bi bi-search text-orange"></i></span>
-            <input type="text" id="searchInput" class="form-control bg-light border-start-0 rounded-end-pill py-2" placeholder="Cari menu, harga, jenis...">
+        {{-- Sosial Media --}}
+        @if($outlet->mediaQr && ($outlet->mediaQr->instagram || $outlet->mediaQr->x || $outlet->mediaQr->tiktok || $outlet->mediaQr->youtube || $outlet->mediaQr->facebook))
+        <div class="bg-white p-3 rounded-4 border shadow-sm mb-3">
+            <h6 class="fw-bold mb-3 text-secondary text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Kunjungi Sosial Media Kami</h6>
+            <div class="d-flex flex-wrap gap-2">
+                @if($outlet->mediaQr->facebook) <a href="{{ $outlet->mediaQr->facebook }}" target="_blank" class="btn btn-primary rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-facebook fs-6"></i></a> @endif
+                @if($outlet->mediaQr->instagram) <a href="{{ $outlet->mediaQr->instagram }}" target="_blank" class="btn rounded-circle shadow-sm text-white" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-instagram fs-6"></i></a> @endif
+                @if($outlet->mediaQr->tiktok) <a href="{{ $outlet->mediaQr->tiktok }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-tiktok fs-6"></i></a> @endif
+                @if($outlet->mediaQr->youtube) <a href="{{ $outlet->mediaQr->youtube }}" target="_blank" class="btn btn-danger rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-youtube fs-6"></i></a> @endif
+                @if($outlet->mediaQr->x) <a href="{{ $outlet->mediaQr->x }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-twitter-x fs-6"></i></a> @endif
+            </div>
         </div>
-    </div>
+        @endif
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4 mb-4" id="menuContainer">
-        @foreach($menus as $index => $menu)
-           <div class="col menu-item" @if($menu->status_menu != 'habis') onclick='handleMenuClick(@json($menu))' @endif>
-                <div class="card menu-card h-100">
-                    @if($menu->status_menu == 'habis')
-                        <div class="menu-overlay-habis"><span class="label-habis">HABIS</span></div>
-                    @endif
-                    <div class="menu-img-wrapper">
-                        @if($menu->tipe_menu == 'utama')
-                            <span class="badge badge-menu badge-utama">Menu Utama</span>
-                        @elseif($menu->tipe_menu == 'best_seller')
-                            <span class="badge badge-menu badge-best-seller"><i class="bi bi-fire me-1 text-warning"></i>Best Seller</span>
-                        @endif
-                        @if($menu->gambar)
-                            <img src="{{ asset('assets/menus/' . $menu->gambar) }}" class="card-img-top menu-img" alt="{{ $menu->nama_menu }}">
-                        @else
-                            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background-color: #f1f5f9;">
-                                <i class="bi bi-image" style="font-size: 3rem; color: #cbd5e1;"></i>
-                                <span style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">Belum ada foto</span>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="card-body d-flex flex-column p-3 p-md-4">
-                        <h6 class="card-title fw-bold text-truncate mb-1" style="color: #1e293b; font-size: 1.05rem;" title="{{ $menu->nama_menu }}">{{ $menu->nama_menu }}</h6>
-                        
-                        @if(count($menu->variants) > 0)
-                            <span class="badge bg-light text-dark border d-inline-block mt-1 mb-2" style="width: fit-content; font-size: 0.7rem;"><i class="bi bi-tags-fill text-orange me-1"></i> Punya Varian</span>
-                        @else
-                            <div class="mb-2" style="height: 20px;"></div> @endif
+        <div class="text-center pt-2 pb-1">
+            <p class="text-muted mb-0" style="font-size: 0.72rem;">Powered by <a href="https://flavory.id" target="_blank" class="text-orange fw-semibold text-decoration-none">Flavory.id</a></p>
+        </div>
+        </div>{{-- end d-none d-lg-block (info outlet desktop) --}}
+    </aside>
 
-                        <div class="mt-auto pt-3 d-flex align-items-end justify-content-between border-top border-light">
-                            <div>
-                                <span class="d-block text-muted" style="font-size: 0.75rem; font-weight: 500; margin-bottom: 2px;">Harga Mulai</span>
-                                <h5 class="card-text text-orange fw-bolder mb-0" style="letter-spacing: -0.5px;">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h5>
-                            </div>
-                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light transition-all" style="width: 32px; height: 32px; {{ $menu->status_menu == 'habis' ? 'opacity:0.3' : 'opacity: 1; color: var(--brand-orange);' }}">
-                                <i class="bi bi-pencil-square fs-5"></i>
+    {{-- ════════ KANAN: Search + Grid Menu (scroll desktop) ════════ --}}
+    <section class="outlet-right">
+        <div class="bg-white p-3 p-md-4 rounded-4 shadow-sm mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center border sticky-top" style="z-index: 10; top: 0;">
+            <h4 class="fw-bold mb-3 mb-md-0 m-0 d-flex align-items-center text-dark"><i class="bi bi-grid-fill text-orange me-2 fs-4"></i> Daftar Menu</h4>
+            <div class="input-group w-100 w-md-50" style="max-width: 450px;">
+                <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3"><i class="bi bi-search text-orange"></i></span>
+                <input type="text" id="searchInput" class="form-control bg-light border-start-0 rounded-end-pill py-2" placeholder="Cari menu, harga, jenis...">
+            </div>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-3 g-md-4 mb-4" id="menuContainer">
+            @foreach($menus as $index => $menu)
+               <div class="col menu-item" @if($menu->status_menu != 'habis') onclick='handleMenuClick(@json($menu))' @endif>
+                    <div class="card menu-card h-100">
+                        @if($menu->status_menu == 'habis')
+                            <div class="menu-overlay-habis"><span class="label-habis">HABIS</span></div>
+                        @endif
+                        <div class="menu-img-wrapper">
+                            @if($menu->tipe_menu == 'utama')
+                                <span class="badge badge-menu badge-utama">Menu Utama</span>
+                            @elseif($menu->tipe_menu == 'best_seller')
+                                <span class="badge badge-menu badge-best-seller"><i class="bi bi-fire me-1 text-warning"></i>Best Seller</span>
+                            @endif
+                            @if($menu->gambar)
+                                <img src="{{ asset('assets/menus/' . $menu->gambar) }}" class="card-img-top menu-img" alt="{{ $menu->nama_menu }}">
+                            @else
+                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background-color: #f1f5f9;">
+                                    <i class="bi bi-image" style="font-size: 3rem; color: #cbd5e1;"></i>
+                                    <span style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">Belum ada foto</span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="card-body d-flex flex-column p-3 p-md-4">
+                            <h6 class="card-title fw-bold text-truncate mb-1" style="color: #1e293b; font-size: 1.05rem;" title="{{ $menu->nama_menu }}">{{ $menu->nama_menu }}</h6>
+                            
+                            @if(count($menu->variants) > 0)
+                                <span class="badge bg-light text-dark border d-inline-block mt-1 mb-2" style="width: fit-content; font-size: 0.7rem;"><i class="bi bi-tags-fill text-orange me-1"></i> Punya Varian</span>
+                            @else
+                                <div class="mb-2" style="height: 20px;"></div> @endif
+
+                            <div class="mt-auto pt-3 d-flex align-items-end justify-content-between border-top border-light">
+                                <div>
+                                    <span class="d-block text-muted" style="font-size: 0.75rem; font-weight: 500; margin-bottom: 2px;">Harga Mulai</span>
+                                    <h5 class="card-text text-orange fw-bolder mb-0" style="letter-spacing: -0.5px;">Rp {{ number_format($menu->harga, 0, ',', '.') }}</h5>
+                                </div>
+                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light transition-all" style="width: 32px; height: 32px; {{ $menu->status_menu == 'habis' ? 'opacity:0.3' : 'opacity: 1; color: var(--brand-orange);' }}">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
-
-    @if(count($menus) > 4)
-        <div class="text-center mb-5 mt-4 {{ count($menus) <= 8 ? 'd-md-none' : '' }}" id="toggleMenuContainer">
-            <button id="btnToggleMenu" class="btn btn-modern-outline px-5 py-3 rounded-pill fw-bold">LIHAT SEMUA MENU <i class="bi bi-chevron-down ms-2"></i></button>
+            @endforeach
         </div>
-    @endif
 
-    <hr class="text-secondary opacity-25 my-5">
+        @if(count($menus) > 4)
+            <div class="text-center mb-5 mt-4 {{ count($menus) <= 8 ? 'd-md-none' : '' }}" id="toggleMenuContainer">
+                <button id="btnToggleMenu" class="btn btn-modern-outline px-5 py-3 rounded-pill fw-bold">LIHAT SEMUA MENU <i class="bi bi-chevron-down ms-2"></i></button>
+            </div>
+        @endif
 
-    {{-- FOOTER SECTION: Info Outlet + Sosial Media --}}
-    <footer class="mt-2 pb-5">
-        <div class="row g-4 align-items-start">
-            {{-- Kolom kiri: Deskripsi + Lokasi + Maps --}}
-            <div class="col-md-7">
-                <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="bi bi-info-square-fill text-orange me-2 fs-5"></i> Tentang Outlet</h5>
-                <p class="text-secondary mb-4" style="line-height: 1.8; font-size: 0.95rem;">{{ $outlet->deskripsi ?? 'Tidak ada deskripsi yang tersedia untuk outlet ini.' }}</p>
-                <div class="d-flex align-items-start mb-4 bg-white p-3 rounded-4 border shadow-sm">
-                    <div class="bg-light p-2 rounded-circle me-3 d-flex justify-content-center align-items-center flex-shrink-0"><i class="bi bi-geo-alt-fill text-orange fs-5"></i></div>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.9rem;">Alamat Lokasi</h6>
-                        <p class="mb-1 text-secondary" style="font-size: 0.88rem;">{{ $outlet->alamat_lengkap }}</p>
-                        <p class="text-muted mb-0 fw-medium" style="font-size: 0.8rem;">{{ $outlet->kota }}, {{ $outlet->provinsi }}</p>
+        <hr class="text-secondary opacity-25 my-4 d-lg-none">
+
+        {{-- Footer info di mobile (di desktop sudah di kolom kiri) --}}
+        <footer class="d-lg-none mt-2 pb-5">
+            <div class="row g-4 align-items-start">
+                <div class="col-md-7">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="bi bi-info-square-fill text-orange me-2 fs-5"></i> Tentang Outlet</h5>
+                    <p class="text-secondary mb-4" style="line-height: 1.8; font-size: 0.95rem;">{{ $outlet->deskripsi ?? 'Tidak ada deskripsi yang tersedia untuk outlet ini.' }}</p>
+                    <div class="d-flex align-items-start mb-4 bg-white p-3 rounded-4 border shadow-sm">
+                        <div class="bg-light p-2 rounded-circle me-3 d-flex justify-content-center align-items-center flex-shrink-0"><i class="bi bi-geo-alt-fill text-orange fs-5"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.9rem;">Alamat Lokasi</h6>
+                            <p class="mb-1 text-secondary" style="font-size: 0.88rem;">{{ $outlet->alamat_lengkap }}</p>
+                            <p class="text-muted mb-0 fw-medium" style="font-size: 0.8rem;">{{ $outlet->kota }}, {{ $outlet->provinsi }}</p>
+                        </div>
                     </div>
+                    @if($outlet->maps)
+                        <a href="{{ $outlet->maps }}" target="_blank" class="btn btn-orange px-4 py-2 rounded-pill fs-6 d-inline-flex align-items-center gap-2"><i class="bi bi-map-fill fs-5"></i> BUKA GOOGLE MAPS</a>
+                    @else
+                        <button class="btn btn-secondary px-4 py-2 rounded-pill fs-6" disabled><i class="bi bi-map-fill me-2"></i> MAPS BELUM TERSEDIA</button>
+                    @endif
                 </div>
-                @if($outlet->maps)
-                    <a href="{{ $outlet->maps }}" target="_blank" class="btn btn-orange px-4 py-2 rounded-pill fs-6 d-inline-flex align-items-center gap-2"><i class="bi bi-map-fill fs-5"></i> BUKA GOOGLE MAPS</a>
-                @else
-                    <button class="btn btn-secondary px-4 py-2 rounded-pill fs-6" disabled><i class="bi bi-map-fill me-2"></i> MAPS BELUM TERSEDIA</button>
-                @endif
-            </div>
 
-            {{-- Kolom kanan: Sosial Media --}}
-            <div class="col-md-5">
-                @if($outlet->mediaQr && ($outlet->mediaQr->instagram || $outlet->mediaQr->x || $outlet->mediaQr->tiktok || $outlet->mediaQr->youtube || $outlet->mediaQr->facebook))
-                <div class="bg-white p-4 rounded-4 border shadow-sm">
-                    <h6 class="fw-bold mb-4 text-secondary text-uppercase" style="letter-spacing: 0.05em; font-size: 0.8rem;">Kunjungi Sosial Media Kami</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        @if($outlet->mediaQr->facebook) <a href="{{ $outlet->mediaQr->facebook }}" target="_blank" class="btn btn-primary rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-facebook fs-5"></i></a> @endif
-                        @if($outlet->mediaQr->instagram) <a href="{{ $outlet->mediaQr->instagram }}" target="_blank" class="btn rounded-circle shadow-sm text-white" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-instagram fs-5"></i></a> @endif
-                        @if($outlet->mediaQr->tiktok) <a href="{{ $outlet->mediaQr->tiktok }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-tiktok fs-5"></i></a> @endif
-                        @if($outlet->mediaQr->youtube) <a href="{{ $outlet->mediaQr->youtube }}" target="_blank" class="btn btn-danger rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-youtube fs-5"></i></a> @endif
-                        @if($outlet->mediaQr->x) <a href="{{ $outlet->mediaQr->x }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-twitter-x fs-5"></i></a> @endif
+                <div class="col-md-5">
+                    @if($outlet->mediaQr && ($outlet->mediaQr->instagram || $outlet->mediaQr->x || $outlet->mediaQr->tiktok || $outlet->mediaQr->youtube || $outlet->mediaQr->facebook))
+                    <div class="bg-white p-4 rounded-4 border shadow-sm">
+                        <h6 class="fw-bold mb-4 text-secondary text-uppercase" style="letter-spacing: 0.05em; font-size: 0.8rem;">Kunjungi Sosial Media Kami</h6>
+                        <div class="d-flex flex-wrap gap-3">
+                            @if($outlet->mediaQr->facebook) <a href="{{ $outlet->mediaQr->facebook }}" target="_blank" class="btn btn-primary rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-facebook fs-5"></i></a> @endif
+                            @if($outlet->mediaQr->instagram) <a href="{{ $outlet->mediaQr->instagram }}" target="_blank" class="btn rounded-circle shadow-sm text-white" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-instagram fs-5"></i></a> @endif
+                            @if($outlet->mediaQr->tiktok) <a href="{{ $outlet->mediaQr->tiktok }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-tiktok fs-5"></i></a> @endif
+                            @if($outlet->mediaQr->youtube) <a href="{{ $outlet->mediaQr->youtube }}" target="_blank" class="btn btn-danger rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-youtube fs-5"></i></a> @endif
+                            @if($outlet->mediaQr->x) <a href="{{ $outlet->mediaQr->x }}" target="_blank" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-twitter-x fs-5"></i></a> @endif
+                        </div>
                     </div>
+                    @endif
                 </div>
-                @endif
             </div>
-        </div>
 
-        <div class="text-center mt-5 pb-2">
-            <p class="text-muted mb-0" style="font-size: 0.78rem;">Powered by <a href="https://flavory.id" target="_blank" class="text-orange fw-semibold text-decoration-none">Flavory.id</a></p>
-        </div>
-    </footer>
-</div>{{-- end .container --}}
+            <div class="text-center mt-5 pb-2">
+                <p class="text-muted mb-0" style="font-size: 0.78rem;">Powered by <a href="https://flavory.id" target="_blank" class="text-orange fw-semibold text-decoration-none">Flavory.id</a></p>
+            </div>
+        </footer>
+    </section>
+
+</div>{{-- end .outlet-split --}}
 
 {{-- Modal Pilih Varian --}}
 <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
@@ -299,7 +424,18 @@
             
             <div class="row g-2 mb-2">
                 @if(isset($pengaturan) && $pengaturan->meja)
-                    <div class="col-6"><input type="text" id="custTable" class="form-control form-control-sm form-control-custom" placeholder="No. Meja"></div>
+                    <div class="col-6">
+                        @if(isset($mejaList) && $mejaList->isNotEmpty())
+                            <select id="custTable" class="form-select form-select-sm form-control-custom">
+                                <option value="" selected disabled>Pilih Meja</option>
+                                @foreach($mejaList as $meja)
+                                    <option value="{{ $meja->nama_meja }}">{{ $meja->nama_meja }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input type="text" id="custTable" class="form-control form-control-sm form-control-custom" placeholder="No. Meja">
+                        @endif
+                    </div>
                 @endif
                 @if(isset($pengaturan) && $pengaturan->whatsapp)
                     <div class="col-6"><input type="number" id="custWa" class="form-control form-control-sm form-control-custom" placeholder="WhatsApp"></div>
@@ -361,6 +497,7 @@
 
     // URL apply voucher - gunakan route helper agar tidak salah path
     const VOUCHER_APPLY_URL = "{{ route('outlet.voucher.apply', $outlet->page_name) }}";
+    const MEJA_AVAILABLE_URL = "{{ route('outlet.meja.available', $outlet->page_name) }}";
 
     document.addEventListener("DOMContentLoaded", function () {
         // Inisialisasi modal BS
@@ -549,6 +686,31 @@
             const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
             bsOffcanvas.show();
         }
+
+        // Refresh meja dropdown saat offcanvas dibuka (exclude yang sudah dipakai)
+        refreshMejaDropdown();
+    }
+
+    // ─── Refresh dropdown meja via AJAX (hilangkan yang sudah dipakai order pending) ──
+    function refreshMejaDropdown() {
+        const select = document.getElementById('custTable');
+        if (!select || select.tagName !== 'SELECT') return;
+
+        fetch(MEJA_AVAILABLE_URL, { headers: { 'Accept': 'application/json' } })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="" selected disabled>Pilih Meja</option>';
+            data.data.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.nama_meja;
+                opt.textContent = m.nama_meja;
+                if (m.nama_meja === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        })
+        .catch(() => {});
     }
 
     // --- LOGIC UPDATE QTY ---

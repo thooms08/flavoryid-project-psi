@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Panduan Akses Dasbor Manager Flavory.id')
+@section('title', 'Panduan Akses Dashboard Owner Flavory.id')
 @push('styles')
 <meta name="description" content="Cara login dan mengakses dasbor manager Flavory.id untuk mengelola karyawan dan bisnis outlet Anda.">
 @include('panduan.hrms._style')
@@ -12,11 +12,11 @@
             <div class="col-lg-9">
                 <header class="guide-header mb-5">
                     <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm"
-                          style="background:var(--manager-light);color:var(--manager-green);border:1px solid rgba(25,135,84,.2);">
-                        <i class="bi bi-people-fill me-1"></i> Dasbor Manager
+                          style="background:var(--manager-light);color:var(--primary-orange);border:1px solid rgba(255,106,0,.2);">
+                        <i class="bi bi-people-fill me-1"></i> Dashboard Owner
                     </span>
-                    <h1>Mengakses Dasbor Manager</h1>
-                    <p class="mt-2">Panduan login ke Dasbor Manager Flavory.id dan mulai mengelola outlet dari satu tempat.</p>
+                    <h1>Mengakses Dashboard Owner</h1>
+                    <p class="mt-2">Panduan login ke Dashboard Owner Flavory.id dan mulai mengelola outlet dari satu tempat.</p>
                 </header>
 
                 <section>
@@ -24,7 +24,7 @@
                         <li class="timeline-item">
                             <div class="timeline-icon">1</div>
                             <article class="guide-card">
-                                <h2>Buka Dasbor Manager</h2>
+                                <h2>Buka Dashboard Owner</h2>
                                 <ul class="step-list">
                                     <li>Buka website <strong>flavory.id</strong>, klik tombol <strong>"Masuk"</strong> di navbar.</li>
                                     <li>Pada modal pilihan, pilih <strong>"Masuk Beranda Manager"</strong>.</li>

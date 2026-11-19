@@ -8,7 +8,7 @@ KasirController, KasirOrderController, KasirOrderHistoryController, KasirOrderBa
 KasirFormController, KasirStokController, KasirProfileController, KasirIkhtisarBisnisController,
 KasirLaporanPengeluaranController, PageOutletController,
 KasirNoteController, KasirLanggananController, KasirAkunController, PublicController,
-KasirVoucherController};
+KasirVoucherController, KasirMejaController};
 use App\Http\Middleware\CheckSubscriptionStatus;
 use App\Http\Controllers\PartnerResetPasswordController;
 
@@ -114,6 +114,11 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::post('/voucher/check-kode', [KasirVoucherController::class, 'checkKode'])->name('voucher.check-kode');
     Route::post('/voucher/apply',      [KasirVoucherController::class, 'applyVoucher'])->name('voucher.apply');
 
+    // Nomor Meja
+    Route::get('/meja',            [KasirMejaController::class, 'index'])->name('meja.index');
+    Route::post('/meja',           [KasirMejaController::class, 'store'])->name('meja.store');
+    Route::delete('/meja/{meja}',  [KasirMejaController::class, 'destroy'])->name('meja.destroy');
+
     // Langganan
     Route::get('/langganan',               [\App\Http\Controllers\OwnerLanggananController::class, 'index'])->name('langganan.index');
     Route::post('/langganan/subscribe',    [\App\Http\Controllers\OwnerLanggananController::class, 'subscribe'])->name('langganan.subscribe');
@@ -143,6 +148,7 @@ Route::get('/outlet/{page_name}', [PageOutletController::class, 'show'])->name('
 Route::get('/outlet/{page_name}/search', [PageOutletController::class, 'search'])->name('outlet.search');
 Route::get('/outlet/{page_name}/menu', [PageOutletController::class, 'allMenu'])->name('outlet.menu.all');
 Route::post('/outlet/{page_name}/voucher/apply', [PageOutletController::class, 'applyVoucher'])->name('outlet.voucher.apply');
+Route::get('/outlet/{page_name}/meja', [PageOutletController::class, 'getAvailableMeja'])->name('outlet.meja.available');
 
 // Proteksi Halaman
 Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
@@ -186,6 +192,12 @@ Route::middleware(['auth', 'role:kasir', 'cek.langganan'])->group(function () {
     Route::post('/kasir/voucher/check-kode', [KasirVoucherController::class, 'checkKode'])->name('kasir.voucher.check-kode');
     // Cek voucher saat order (validasi + ambil data potongan)
     Route::post('/kasir/voucher/apply', [KasirVoucherController::class, 'applyVoucher'])->name('kasir.voucher.apply');
+
+    // Nomor Meja routes
+    Route::get('/kasir/meja', [KasirMejaController::class, 'index'])->name('kasir.meja.index');
+    Route::post('/kasir/meja', [KasirMejaController::class, 'store'])->name('kasir.meja.store');
+    Route::delete('/kasir/meja/{meja}', [KasirMejaController::class, 'destroy'])->name('kasir.meja.destroy');
+
     Route::get('/stok-management', [KasirStokController::class, 'index'])->name('kasir.stok.index');
     Route::post('/stok/store', [KasirStokController::class, 'store'])->name('kasir.stok.store');
     Route::post('/stok/update/{stok}', [KasirStokController::class, 'update'])->name('kasir.stok.update');
